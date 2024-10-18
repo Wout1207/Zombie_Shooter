@@ -6,6 +6,7 @@ public class Gun : MonoBehaviour
 {
     public int maxBullets;
     public int currentBullets;
+    public WeaponType weaponType;
     public enum WeaponType
     {
         Shotgun,

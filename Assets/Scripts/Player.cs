@@ -6,6 +6,7 @@ public class Player : MonoBehaviour
 {
     public int maxHP;
     public int currentHP;
+    public float speed;
     // Start is called before the first frame update
     void Start()
     {
@@ -20,6 +21,6 @@ public class Player : MonoBehaviour
 
         Vector3 direction = new Vector3(horizontalInput, 0, verticalInput);
 
-        transform.Translate(direction * 25 * Time.deltaTime);
+        transform.Translate(direction * speed * Time.deltaTime);
     }
 }
