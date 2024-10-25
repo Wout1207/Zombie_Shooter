@@ -15,7 +15,7 @@ public class ReceiveIMUValues : MonoBehaviour
 
     void Start()
     {
-        //  UduinoManager.Instance.OnDataReceived += ReadIMU;
+        UduinoManager.Instance.OnDataReceived += ReadIMU;
         //  Note that here, we don't use the delegate but the Events, assigned in the Inpsector Panel
     }
 
@@ -24,10 +24,14 @@ public class ReceiveIMUValues : MonoBehaviour
     public void ReadIMU(string data, UduinoDevice device)
     {
         //Debug.Log("Data received : " + data);
-        //Debug.Log(data);
+        Debug.Log(data);
         string[] values = data.Split('/');
         if (values.Length == 5 && values[0] == imuName) // Rotation of the first one 
         {
+            Debug.Log(values[1]);
+            Debug.Log(values[2]);
+            Debug.Log(values[3]);
+            Debug.Log(values[4]);
             float w = float.Parse(values[1]);
             float x = float.Parse(values[2]);
             float y = float.Parse(values[3]);
@@ -61,7 +65,7 @@ public class ReceiveIMUValues : MonoBehaviour
         }
         else if (values.Length != 5)
         {
-            Debug.LogWarning(data);
+           Debug.LogWarning(data);
         }
         this.transform.parent.transform.eulerAngles = rotationOffset;
         //this.transform.localRotation = new Quaternion(rotationOffset.x, rotationOffset.y, rotationOffset.z, 0);
