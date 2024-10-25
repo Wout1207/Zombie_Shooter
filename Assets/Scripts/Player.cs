@@ -4,6 +4,7 @@ public class Player : MonoBehaviour
 {
     public int maxHP = 100;
     public int currentHP;
+    public float speed;
 
     void Start()
     {
@@ -17,6 +18,9 @@ public class Player : MonoBehaviour
         {
             TakeDamage(10); 
         }
+        float horizontalMovement = Input.GetAxis("Horizontal");
+        float verticalMovement = Input.GetAxis("Vertical");
+        transform.Translate(new Vector3(horizontalMovement * Time.deltaTime * speed, 0, verticalMovement * Time.deltaTime * speed));
     }
 
     public void TakeDamage(int damage)
