@@ -9,7 +9,7 @@ public class Player : MonoBehaviour
     void Start()
     {
         currentHP = maxHP;
-        SendHealthData();
+        //SendHealthData();
     }
 
     void Update()

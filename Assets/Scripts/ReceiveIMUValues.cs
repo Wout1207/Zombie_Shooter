@@ -1,5 +1,5 @@
 using UnityEngine;
-using Uduino;
+//using Uduino;
 
 public class ReceiveIMUValues : MonoBehaviour
 {
@@ -8,30 +8,27 @@ public class ReceiveIMUValues : MonoBehaviour
     Vector3 rotation;
     public Vector3 rotationOffset;
     public float speedFactor = 15.0f;
-    public string imuName = "r"; // You should ignore this if there is one IMU.
 
     private bool firstTime = true;
     private Quaternion firstPos;
 
     void Start()
     {
-        UduinoManager.Instance.OnDataReceived += ReadIMU;
+        //UduinoManager.Instance.OnDataReceived += ReadIMU;
         //  Note that here, we don't use the delegate but the Events, assigned in the Inpsector Panel
+        if (SerialManager.Instance != null)
+        {
+            SerialManager.Instance.OnDataReceived += ReadIMU    ;
+        }
     }
 
     void Update() { }
 
-    public void ReadIMU(string data, UduinoDevice device)
+    public void ReadIMU(string data)
     {
-        //Debug.Log("Data received : " + data);
-        Debug.Log(data);
         string[] values = data.Split('/');
-        if (values.Length == 5 && values[0] == imuName) // Rotation of the first one 
+        if (values.Length == 5 && values[0] == "r") // Rotation of the first one 
         {
-            Debug.Log(values[1]);
-            Debug.Log(values[2]);
-            Debug.Log(values[3]);
-            Debug.Log(values[4]);
             float w = float.Parse(values[1]);
             float x = float.Parse(values[2]);
             float y = float.Parse(values[3]);
@@ -40,7 +37,6 @@ public class ReceiveIMUValues : MonoBehaviour
             if (firstTime)
             {
                 firstTime = false;
-                //Debug.Log("First time");
                 //firstPos = new Quaternion(-y, -z, x, w);
                 firstPos = new Quaternion(x, -z, -y, w);
                 return;
@@ -49,7 +45,8 @@ public class ReceiveIMUValues : MonoBehaviour
             {
                 //A * B * iB = C
                 //Quaternion A = new Quaternion(-y, -z, x, w);
-                Quaternion A = new Quaternion(x, -z, -y, w);
+                //Quaternion A = new Quaternion(x, -z, -y, w); // The one from Uduino tests
+                Quaternion A = new Quaternion(-x, -z, -y, w);
                 Quaternion B = firstPos;
                 Quaternion iB = Quaternion.Inverse(firstPos);
                 Quaternion C = A * iB;
@@ -68,10 +65,15 @@ public class ReceiveIMUValues : MonoBehaviour
            Debug.LogWarning(data);
         }
         this.transform.parent.transform.eulerAngles = rotationOffset;
-        //this.transform.localRotation = new Quaternion(rotationOffset.x, rotationOffset.y, rotationOffset.z, 0);
+        
+    }
 
-        //Debug.Log("The new rotation is : " + this.transform.localRotation.eulerAngles);
-        //Debug.Log("first pos : " + firstPos.eulerAngles);
-        //Debug.Log("finished");
+    void OnDestroy()
+    {
+        //UduinoManager.Instance.OnDataReceived -= ReadIMU;
+        if (SerialManager.Instance != null)
+        {
+            SerialManager.Instance.OnDataReceived -= ReadIMU;
+        }
     }
 }

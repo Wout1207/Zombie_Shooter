@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using Uduino;
 using UnityEngine;
 
 public class TargetShooter : MonoBehaviour
@@ -16,7 +15,7 @@ public class TargetShooter : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        UduinoManager.Instance.OnDataReceived += ReadIMU;
+        SerialManager.Instance.OnDataReceived += ReadIMU;
     }
 
     // Update is called once per frame
@@ -53,7 +52,12 @@ public class TargetShooter : MonoBehaviour
         }
     }
 
-    public void ReadIMU(string data, UduinoDevice device)
+    //public void OnDataReceived(string data)
+    //{
+    //    Debug.Log("Received from ESP32 in targetShoother: " + data);
+    //}
+
+    public void ReadIMU(string data)
     {
         if (imuObject != null)
         {
@@ -70,5 +74,10 @@ public class TargetShooter : MonoBehaviour
     {
         ammoCount += amount;
         Debug.Log("Ammo: " + ammoCount);
+    }
+
+    private void OnDestroy()
+    {
+        SerialManager.Instance.OnDataReceived -= ReadIMU;
     }
 }
