@@ -53,6 +53,7 @@ public class SerialManager : MonoBehaviour
             try
             {
                 string data = serialPort.ReadLine();
+                Debug.Log("Data received: " + data);
 
                 string[] values = data.Split('/');
                 if (values.Length == 5 && values[0] == "r")

@@ -60,7 +60,10 @@ public class Crosshair : MonoBehaviour
 
     private void OnDestroy()
     {
-        SerialManager.Instance.OnDataReceived -= ReadIMU;
+        if (SerialManager.Instance != null)
+        {
+            SerialManager.Instance.OnDataReceived -= ReadIMU;
+        }
     }
 
 }
