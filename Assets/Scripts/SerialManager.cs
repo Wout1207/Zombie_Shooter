@@ -18,7 +18,7 @@ public class SerialManager : MonoBehaviour
 
     private static SerialManager instance;
 
-    public static SerialManager Instance
+    public static SerialManager Instance //TODO move to GameEvents script
     {
         get
         {
@@ -30,13 +30,23 @@ public class SerialManager : MonoBehaviour
         }
     }
 
-    //make the data recieved available to other scripts to subscribe to
-    public event Action<string> OnDataReceived;
-    public void Datarecieved(string data)
+    //make the IMU data recieved available to other scripts to subscribe to
+    public event Action<string> OnDataReceivedIMU;
+    public void DatarecievedIMU(string data) //TODO move to GameEvents script
     {
-        if (OnDataReceived != null)
+        if (OnDataReceivedIMU != null)
         {
-            OnDataReceived?.Invoke(data);
+            OnDataReceivedIMU?.Invoke(data);
+        }
+    }
+
+    //make the Trigger data recieved available to other scripts to subscribe to
+    public event Action<string> OnDataReceivedTrigger;
+    public void DatarecievedTrigger(string data)
+    {
+        if (OnDataReceivedTrigger != null)
+        {
+            OnDataReceivedTrigger?.Invoke(data);
         }
     }
 
@@ -53,13 +63,17 @@ public class SerialManager : MonoBehaviour
             try
             {
                 string data = serialPort.ReadLine();
-                Debug.Log("Data received: " + data);
+                //Debug.Log("Data received: " + data);
 
                 string[] values = data.Split('/');
-                if (values.Length == 5 && values[0] == "r")
+                if (values[0] == "r" && values.Length == 5)
                 {
-                    Debug.Log("IMU data received and trigger called");
-                    SerialManager.Instance.Datarecieved(data); // Trigger event for IMU data
+                    //Debug.Log("IMU data received");
+                    SerialManager.Instance.DatarecievedIMU(data); // Trigger event for IMU data
+                }else if (values[0] == "tr" && values.Length == 2)
+                {
+                    //Debug.Log("Trigger data received");
+                    SerialManager.Instance.DatarecievedTrigger(values[1]); // Trigger event for Trigger data
                 }
             }
             catch (System.Exception ex)

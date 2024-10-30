@@ -22,7 +22,7 @@ public class Crosshair : MonoBehaviour
         // Hide the system cursor
         Cursor.visible = false;
 
-        SerialManager.Instance.OnDataReceived += ReadIMU;
+        SerialManager.Instance.OnDataReceivedIMU += ReadIMU;
 
         target.transform.position = new Vector3(0, 0, speedFactor);
     }
@@ -62,7 +62,7 @@ public class Crosshair : MonoBehaviour
     {
         if (SerialManager.Instance != null)
         {
-            SerialManager.Instance.OnDataReceived -= ReadIMU;
+            SerialManager.Instance.OnDataReceivedIMU -= ReadIMU;
         }
     }
 

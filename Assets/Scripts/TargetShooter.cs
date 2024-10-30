@@ -7,55 +7,40 @@ public class TargetShooter : MonoBehaviour
     //public static Action OnTargetMissed;
 
     [SerializeField] Camera cam;
-    [SerializeField] public int ammoCount = 10;
+    [SerializeField] public int currentAmmoCount = 0;
+    [SerializeField] public int maxAmmoCountInMag = 10;
+    [SerializeField] public int tottalAmmoCount = 100;
+    [SerializeField] public float reloadTime = 2f;
 
     public Transform imuObject; // Reference to the object that provides the IMU's rotation
     private Vector3 imuEulerAngles; // Stores IMU Euler angles
 
+    private float lastClickTime = 0f;  // Time of the last valid button press
+    public float clickCooldown = 0.2f; // Time (in seconds) to wait between clicks
+    private bool isReloading = false;
+
     // Start is called before the first frame update
     void Start()
     {
-        SerialManager.Instance.OnDataReceived += ReadIMU;
+        SerialManager.Instance.OnDataReceivedIMU += ReadIMU;
+        SerialManager.Instance.OnDataReceivedTrigger += Shoot;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown("space") && ammoCount > 0)
+        if (Input.GetKeyDown("r") && tottalAmmoCount != 0 && !isReloading)
         {
-            //Ray ray = cam.ViewportPointToRay(new Vector3(0.5f, 0.5f));
-            //Ray ray = imuEulerAngles;
-            Ray ray = new Ray(imuObject.position, imuObject.forward);
+            StartCoroutine(Reload());
+            return;
+        }
 
-            AddAmmo(-1);
-            GameEvents.current.ShotFired();
-
-
-
-            if (Physics.Raycast(ray, out RaycastHit hit))
-            {
-                Target target = hit.collider.gameObject.GetComponent<Target>();
-
-                if (target != null)
-                {
-                    target.Hit();
-                }
-                else
-                {
-                    //OnTargetMissed?.Invoke();
-                }
-            }
-            else
-            {
-                //OnTargetMissed?.Invoke();
-            }
+        // Check for shooting input
+        if (Input.GetKeyDown("space") && currentAmmoCount > 0 && !isReloading)
+        {
+            ShootRay();
         }
     }
-
-    //public void OnDataReceived(string data)
-    //{
-    //    Debug.Log("Received from ESP32 in targetShoother: " + data);
-    //}
 
     public void ReadIMU(string data)
     {
@@ -70,17 +55,88 @@ public class TargetShooter : MonoBehaviour
         }
     }
 
+    public void Shoot(string data)
+    {
+        float currentTime = Time.time;
+        
+        if (currentTime - lastClickTime >= clickCooldown && !isReloading) // Check if enough time has passed since the last click
+        {
+            lastClickTime = currentTime;
+
+            int shot = System.Convert.ToInt32(data);
+            if (currentAmmoCount > 0 && shot == 0)
+            {
+                ShootRay();
+            }
+            else if (currentAmmoCount == 0)
+            {
+                Debug.Log("Out of ammo!");
+            }
+        }
+    }
+
+    public void ShootRay()
+    {
+        Ray ray = new Ray(imuObject.position, imuObject.forward);
+
+        AddAmmo(-1);
+        GameEvents.current.ShotFired();
+
+        if (Physics.Raycast(ray, out RaycastHit hit))
+        {
+            Target target = hit.collider.gameObject.GetComponent<Target>();
+
+            if (target != null)
+            {
+                target.Hit();
+            }
+            else
+            {
+                //OnTargetMissed?.Invoke();
+            }
+        }
+        else
+        {
+            //OnTargetMissed?.Invoke();
+        }
+    }
+
+    private IEnumerator Reload()
+    {
+        isReloading = true;
+        Debug.Log("Reloading...");
+        yield return new WaitForSeconds(reloadTime); // Wait for reload time
+        if (tottalAmmoCount >= maxAmmoCountInMag)
+        {
+            tottalAmmoCount -= maxAmmoCountInMag - currentAmmoCount;
+            currentAmmoCount = maxAmmoCountInMag;
+            
+        }
+        else
+        {
+            currentAmmoCount = tottalAmmoCount;
+            tottalAmmoCount = 0;
+        }
+        Debug.Log("Reload complete! Ammo refilled.");
+        isReloading = false;
+    }
+
     public void AddAmmo(int amount)
     {
-        ammoCount += amount;
-        Debug.Log("Ammo: " + ammoCount);
+        currentAmmoCount += amount;
+        Debug.Log("Ammo: " + currentAmmoCount);
     }
 
     private void OnDestroy()
     {
         if (SerialManager.Instance != null)
         {
-            SerialManager.Instance.OnDataReceived -= ReadIMU;
+            SerialManager.Instance.OnDataReceivedIMU -= ReadIMU;
+        }
+
+        if (SerialManager.Instance != null)
+        {
+            SerialManager.Instance.OnDataReceivedTrigger -= Shoot;
         }
     }
 }

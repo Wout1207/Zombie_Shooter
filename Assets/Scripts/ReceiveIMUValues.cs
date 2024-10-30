@@ -18,7 +18,7 @@ public class ReceiveIMUValues : MonoBehaviour
         //  Note that here, we don't use the delegate but the Events, assigned in the Inpsector Panel
         if (SerialManager.Instance != null)
         {
-            SerialManager.Instance.OnDataReceived += ReadIMU    ;
+            SerialManager.Instance.OnDataReceivedIMU += ReadIMU    ;
         }
     }
 
@@ -73,7 +73,7 @@ public class ReceiveIMUValues : MonoBehaviour
         //UduinoManager.Instance.OnDataReceived -= ReadIMU;
         if (SerialManager.Instance != null)
         {
-            SerialManager.Instance.OnDataReceived -= ReadIMU;
+            SerialManager.Instance.OnDataReceivedIMU -= ReadIMU;
         }
     }
 }

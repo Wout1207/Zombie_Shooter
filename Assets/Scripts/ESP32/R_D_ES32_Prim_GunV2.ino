@@ -7,23 +7,14 @@
 MPU6050 mpu;
 
 #define INTERRUPT_PIN 47  // W Set the interrupt pin
-const int buttonTrigger = 10;
-int buttonTriggerState = 0;
+const int trigger_pin = 48;
+int lastTriggerState = 1;
 
 //ESP now 
 uint8_t broadcastAddress[] = {0xDC, 0xDA, 0x0C, 0x63, 0xCC, 0x9C}; // send to esp32s3 divice 2
 String success;
 
 esp_now_peer_info_t peerInfo;
-
-typedef struct QuaternionData {
-  float w;
-  float x;
-  float y;
-  float z;
-} QuaternionData;
-
-QuaternionData qData; // Instance of quaternion data structure
 
 
 // ================================================================
@@ -100,7 +91,7 @@ void setup() {
     Serial.println("Error initializing ESP-NOW");
     return;
   }
-  esp_now_register_send_cb(OnDataSent);
+  esp_now_register_send_cb(OnDataSent); // set wich func to execute on data sent event
  
   memcpy(peerInfo.peer_addr, broadcastAddress, 6);
   peerInfo.channel = 0; 
@@ -110,10 +101,10 @@ void setup() {
     Serial.println("Failed to add peer");
     return;
   }
-  esp_now_register_recv_cb(OnDataRecv);
+  esp_now_register_recv_cb(OnDataRecv); // set wich func to execute on data recieve event
 
   //for button functionality
-  pinMode(buttonTrigger, INPUT_PULLUP);
+  pinMode(trigger_pin, INPUT_PULLUP);
 }
 
 
@@ -148,111 +139,28 @@ void loop() {
     //SendWorldAccel();
   }
 
-
-  // buttonTriggerState = digitalRead(buttonTrigger);
-  //SendTriggerState()
-}
-
-
-// ================================================================
-// ===                       MPU FUNCTIONS                      ===
-// ================================================================
-
-void SendQuaternion() {
-  mpu.dmpGetQuaternion(&q, fifoBuffer);
-  Serial.print("r/");
-  Serial.print(q.w, 4);
-  Serial.print("/");
-  Serial.print(q.x, 4);
-  Serial.print("/");
-  Serial.print(q.y, 4);
-  Serial.print("/");
-  Serial.println(q.z, 4);
-}
-
-void SendQuaternionEspNow() {
-  mpu.dmpGetQuaternion(&q, fifoBuffer);
-
-  // Fill the structure with quaternion values
-  // qData.w = q.w;
-  // qData.x = q.x;
-  // qData.y = q.y;
-  // qData.z = q.z;
-
-  String message = "r/" + String(q.w, 4) 
-                  + "/" + String(q.x, 4) 
-                  + "/" + String(q.y, 4) 
-                  + "/" + String(q.z, 4);
-  esp_err_t result = esp_now_send(broadcastAddress, (uint8_t *) message.c_str(), message.length() + 1); // Send the message
-
-  // Send the structure data over ESP-NOW
-  // esp_err_t result = esp_now_send(peerAddress, (uint8_t *) &qData, sizeof(qData));
-  
-  if (result == ESP_OK) {
-    Serial.println("Quaternion data sent successfully");
-  } else {
-    Serial.println("Error sending quaternion data");
+  int triggerState = digitalRead(trigger_pin);
+  if (triggerState == 0 || (lastTriggerState == 0 && triggerState == 1)) {
+    lastTriggerState = triggerState;
+    SendTriggerStateEspNow(triggerState);
   }
-
-  // // print the quaternion data to Serial
-  // Serial.print("Quaternion Sent: ");
-  // Serial.print("w: "); Serial.print(qData.w, 4);
-  // Serial.print(", x: "); Serial.print(qData.x, 4);
-  // Serial.print(", y: "); Serial.print(qData.y, 4);
-  // Serial.print(", z: "); Serial.println(qData.z, 4);
 }
 
-void SendEuler() {
-  // display Euler angles in degrees
-  mpu.dmpGetQuaternion(&q, fifoBuffer);
-  mpu.dmpGetEuler(euler, &q);
-  Serial.print(euler[0] * 180 / M_PI);
-  Serial.print("/");
-  Serial.print(euler[1] * 180 / M_PI);
-  Serial.print("/");
-  Serial.println(euler[2] * 180 / M_PI);
-}
 
-void SendYawPitchRoll() {
-  // display Euler angles in degrees
-  mpu.dmpGetQuaternion(&q, fifoBuffer);
-  mpu.dmpGetGravity(&gravity, &q);
-  mpu.dmpGetYawPitchRoll(ypr, &q, &gravity);
-  Serial.print(ypr[0] * 180 / M_PI);
-  Serial.print("/");
-  Serial.print(ypr[1] * 180 / M_PI);
-  Serial.print("/");
-  Serial.println(ypr[2] * 180 / M_PI);
-}
+// ================================================================
+// ===                   TRIGGER FUNCTIONS                      ===
+// ================================================================
 
-void SendRealAccel() {
-  // display real acceleration, adjusted to remove gravity
-  mpu.dmpGetQuaternion(&q, fifoBuffer);
-  mpu.dmpGetAccel(&aa, fifoBuffer);
-  mpu.dmpGetGravity(&gravity, &q);
-  mpu.dmpGetLinearAccel(&aaReal, &aa, &gravity);
-  Serial.print("a/");
-  Serial.print(aaReal.x);
-  Serial.print("/");
-  Serial.print(aaReal.y);
-  Serial.print("/");
-  Serial.println(aaReal.z);
-}
+// send button state via ESP-NOW
+void SendTriggerStateEspNow(int State) {
+  String message = "tr/" + String(State);
+  esp_err_t result = esp_now_send(broadcastAddress, (uint8_t *) message.c_str(), message.length() + 1);
 
-void SendWorldAccel() {
-  // display initial world-frame acceleration, adjusted to remove gravity
-  // and rotated based on known orientation from quaternion
-  mpu.dmpGetQuaternion(&q, fifoBuffer);
-  mpu.dmpGetAccel(&aa, fifoBuffer);
-  mpu.dmpGetGravity(&gravity, &q);
-  mpu.dmpGetLinearAccel(&aaReal, &aa, &gravity);
-  mpu.dmpGetLinearAccelInWorld(&aaWorld, &aaReal, &q);
-  Serial.print("a/");
-  Serial.print(aaWorld.x);
-  Serial.print("/");
-  Serial.print(aaWorld.y);
-  Serial.print("/");
-  Serial.println(aaWorld.z);
+  if (result == ESP_OK) {
+    Serial.println("Trigger state sent successfully");
+  } else {
+    Serial.println("Error sending trigger state");
+  }
 }
 
 
@@ -290,9 +198,89 @@ void OnDataRecv(const esp_now_recv_info* recv_info, const uint8_t *incomingData,
 }
 
 
-//button functions
-void SendTriggerState() {
-  // Send the states to Unity in a single message
-  String message = "tr/" + String(buttonTriggerState);
-  Serial.println(message);
+// ================================================================
+// ===                       MPU FUNCTIONS                      ===
+// ================================================================
+
+
+
+void SendQuaternionEspNow() {
+  mpu.dmpGetQuaternion(&q, fifoBuffer);
+
+  String message = "r/" + String(q.w, 4) 
+                  + "/" + String(q.x, 4) 
+                  + "/" + String(q.y, 4) 
+                  + "/" + String(q.z, 4);
+  esp_err_t result = esp_now_send(broadcastAddress, (uint8_t *) message.c_str(), message.length() + 1); // Send the message
+  
+  if (result == ESP_OK) {
+    Serial.println("Quaternion data sent successfully");
+  } else {
+    Serial.println("Error sending quaternion data");
+  }
 }
+
+// void SendQuaternion() {
+//   mpu.dmpGetQuaternion(&q, fifoBuffer);
+//   Serial.print("r/");
+//   Serial.print(q.w, 4);
+//   Serial.print("/");
+//   Serial.print(q.x, 4);
+//   Serial.print("/");
+//   Serial.print(q.y, 4);
+//   Serial.print("/");
+//   Serial.println(q.z, 4);
+// }
+
+// void SendEuler() {
+//   // display Euler angles in degrees
+//   mpu.dmpGetQuaternion(&q, fifoBuffer);
+//   mpu.dmpGetEuler(euler, &q);
+//   Serial.print(euler[0] * 180 / M_PI);
+//   Serial.print("/");
+//   Serial.print(euler[1] * 180 / M_PI);
+//   Serial.print("/");
+//   Serial.println(euler[2] * 180 / M_PI);
+// }
+
+// void SendYawPitchRoll() {
+//   // display Euler angles in degrees
+//   mpu.dmpGetQuaternion(&q, fifoBuffer);
+//   mpu.dmpGetGravity(&gravity, &q);
+//   mpu.dmpGetYawPitchRoll(ypr, &q, &gravity);
+//   Serial.print(ypr[0] * 180 / M_PI);
+//   Serial.print("/");
+//   Serial.print(ypr[1] * 180 / M_PI);
+//   Serial.print("/");
+//   Serial.println(ypr[2] * 180 / M_PI);
+// }
+
+// void SendRealAccel() {
+//   // display real acceleration, adjusted to remove gravity
+//   mpu.dmpGetQuaternion(&q, fifoBuffer);
+//   mpu.dmpGetAccel(&aa, fifoBuffer);
+//   mpu.dmpGetGravity(&gravity, &q);
+//   mpu.dmpGetLinearAccel(&aaReal, &aa, &gravity);
+//   Serial.print("a/");
+//   Serial.print(aaReal.x);
+//   Serial.print("/");
+//   Serial.print(aaReal.y);
+//   Serial.print("/");
+//   Serial.println(aaReal.z);
+// }
+
+// void SendWorldAccel() {
+//   // display initial world-frame acceleration, adjusted to remove gravity
+//   // and rotated based on known orientation from quaternion
+//   mpu.dmpGetQuaternion(&q, fifoBuffer);
+//   mpu.dmpGetAccel(&aa, fifoBuffer);
+//   mpu.dmpGetGravity(&gravity, &q);
+//   mpu.dmpGetLinearAccel(&aaReal, &aa, &gravity);
+//   mpu.dmpGetLinearAccelInWorld(&aaWorld, &aaReal, &q);
+//   Serial.print("a/");
+//   Serial.print(aaWorld.x);
+//   Serial.print("/");
+//   Serial.print(aaWorld.y);
+//   Serial.print("/");
+//   Serial.println(aaWorld.z);
+// }
