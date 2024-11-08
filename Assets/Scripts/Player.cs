@@ -12,7 +12,7 @@ public class Player : MonoBehaviour
         //SendHealthData();
     }
 
-    void Update()
+    void FixedUpdate()
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {

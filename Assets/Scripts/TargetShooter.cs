@@ -78,7 +78,6 @@ public class TargetShooter : MonoBehaviour
     public void ShootRay()
     {
         Ray ray = new Ray(imuObject.position, imuObject.forward);
-        Debug.Log("shoot");
         
         GameEvents.current.ShotFired();
 
