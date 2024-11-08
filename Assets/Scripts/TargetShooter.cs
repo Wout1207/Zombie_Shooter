@@ -9,7 +9,7 @@ public class TargetShooter : MonoBehaviour
     [SerializeField] Camera cam;
     [SerializeField] public int currentAmmoCount = 0;
     [SerializeField] public int maxAmmoCountInMag = 10;
-    [SerializeField] public int tottalAmmoCount = 100;
+    [SerializeField] public int totalAmmoCount = 100;
     [SerializeField] public float reloadTime = 2f;
 
     public Transform imuObject; // Reference to the object that provides the IMU's rotation
@@ -29,14 +29,14 @@ public class TargetShooter : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown("r") && tottalAmmoCount != 0 && !isReloading)
+        if (Input.GetKeyDown("r") && totalAmmoCount != 0 && !isReloading)
         {
             StartCoroutine(Reload());
             return;
         }
 
         // Check for shooting input
-        if (Input.GetKeyDown("space") && currentAmmoCount > 0 && !isReloading)
+        if (Input.GetKeyDown("space") && !isReloading)
         {
             ShootRay();
         }
@@ -78,21 +78,30 @@ public class TargetShooter : MonoBehaviour
     public void ShootRay()
     {
         Ray ray = new Ray(imuObject.position, imuObject.forward);
-
-        AddAmmo(-1);
+        Debug.Log("shoot");
+        
         GameEvents.current.ShotFired();
 
         if (Physics.Raycast(ray, out RaycastHit hit))
         {
             Target target = hit.collider.gameObject.GetComponent<Target>();
 
-            if (target != null)
+            if (target != null && currentAmmoCount > 0)
             {
+                AddAmmo(-1);
                 target.Hit();
             }
             else
             {
-                //OnTargetMissed?.Invoke();
+                DoorController controller = hit.collider.gameObject.GetComponent<DoorController>();
+                if (controller)
+                {
+                    controller.hit();
+                }
+                else
+                {
+                    //OnTargetMissed?.Invoke();
+                }
             }
         }
         else
@@ -106,16 +115,16 @@ public class TargetShooter : MonoBehaviour
         isReloading = true;
         Debug.Log("Reloading...");
         yield return new WaitForSeconds(reloadTime); // Wait for reload time
-        if (tottalAmmoCount >= maxAmmoCountInMag)
+        if (totalAmmoCount >= maxAmmoCountInMag)
         {
-            tottalAmmoCount -= maxAmmoCountInMag - currentAmmoCount;
+            totalAmmoCount -= maxAmmoCountInMag - currentAmmoCount;
             currentAmmoCount = maxAmmoCountInMag;
             
         }
         else
         {
-            currentAmmoCount = tottalAmmoCount;
-            tottalAmmoCount = 0;
+            currentAmmoCount = totalAmmoCount;
+            totalAmmoCount = 0;
         }
         Debug.Log("Reload complete! Ammo refilled.");
         isReloading = false;

@@ -9,9 +9,25 @@ public class DoorCollider : MonoBehaviour
     // Start is called before the first frame update
     private void OnTriggerEnter(Collider other)
     {
-        if (DoorController)
+        if (DoorController.open)
         {
-            GameEvents.current.openDoor(DoorController.id);
+            GameEvents.current.toggleCloseDoorText(DoorController.id);
+        }
+        else
+        {
+            GameEvents.current.toggleOpenDoorText(DoorController.id);
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (DoorController.open)
+        {
+            GameEvents.current.toggleCloseDoorText(DoorController.id);
+        }
+        else
+        {
+            GameEvents.current.toggleOpenDoorText(DoorController.id);
         }
     }
 }

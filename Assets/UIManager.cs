@@ -31,7 +31,7 @@ public class UIManager : MonoBehaviour
         //if (totalAmmo != prevTotalAmmoCount)
         //{
             //prevTotalAmmoCount = totalAmmo;
-            textTotalAmmoCount.text = "totalAmmo: " + TargetShooter.tottalAmmoCount.ToString();
+            textTotalAmmoCount.text = "totalAmmo: " + TargetShooter.totalAmmoCount.ToString();
         //}
     }
 

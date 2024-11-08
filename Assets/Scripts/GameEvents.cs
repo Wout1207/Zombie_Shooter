@@ -25,6 +25,8 @@ public class GameEvents : MonoBehaviour
     {
         if (onOpenDoor != null)
         {
+            onToggleCloseDoorText(id);
+            onToggleOpenDoorText(id);
             onOpenDoor(id);
         }
     }
@@ -34,7 +36,27 @@ public class GameEvents : MonoBehaviour
     {
         if (onCloseDoor != null)
         {
+            onToggleCloseDoorText(id);
+            onToggleOpenDoorText(id);
             onCloseDoor(id);
+        }
+    }
+
+    public event System.Action<int> onToggleOpenDoorText;
+    public void toggleOpenDoorText(int id)
+    {
+        if (onToggleOpenDoorText != null)
+        {
+            onToggleOpenDoorText(id);
+        }
+    }
+
+    public event System.Action<int> onToggleCloseDoorText;
+    public void toggleCloseDoorText(int id)
+    {
+        if (onToggleCloseDoorText != null)
+        {
+            onToggleCloseDoorText(id);
         }
     }
 }
