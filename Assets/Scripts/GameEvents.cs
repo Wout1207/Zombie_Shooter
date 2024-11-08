@@ -19,4 +19,22 @@ public class GameEvents : MonoBehaviour
             onShotFired();
         }
     }
+
+    public event System.Action<int> onOpenDoor;
+    public void openDoor(int id)
+    {
+        if (onOpenDoor != null)
+        {
+            onOpenDoor(id);
+        }
+    }
+
+    public event System.Action<int> onCloseDoor;
+    public void closeDoor(int id)
+    {
+        if (onCloseDoor != null)
+        {
+            onCloseDoor(id);
+        }
+    }
 }
