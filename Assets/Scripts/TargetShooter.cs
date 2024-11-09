@@ -24,6 +24,7 @@ public class TargetShooter : MonoBehaviour
     {
         SerialManager.Instance.OnDataReceivedIMU += ReadIMU;
         SerialManager.Instance.OnDataReceivedTrigger += Shoot;
+        SerialManager.Instance.OnDataReceivedRFID += readMag;
     }
 
     // Update is called once per frame
@@ -41,6 +42,21 @@ public class TargetShooter : MonoBehaviour
             ShootRay();
         }
     }
+
+    public void readMag(string data) // The data is in the format "G1/M1/10" where G1: gun 1, M1: magazine 1 and 10: the capacity of the mag
+    {
+        string[] values = data.Split('/');
+
+        Debug.Log("Reading mag data: " + data);
+
+        if (values.Length == 4)
+        {
+            maxAmmoCountInMag = System.Convert.ToInt32(values[3]);
+            Debug.Log("Magazine capacity: " + maxAmmoCountInMag);
+        }
+        StartCoroutine(Reload());
+    }
+
 
     public void ReadIMU(string data)
     {
@@ -145,6 +161,10 @@ public class TargetShooter : MonoBehaviour
         if (SerialManager.Instance != null)
         {
             SerialManager.Instance.OnDataReceivedTrigger -= Shoot;
+        }
+        if (SerialManager.Instance != null)
+        {
+            SerialManager.Instance.OnDataReceivedRFID -= readMag;
         }
     }
 }

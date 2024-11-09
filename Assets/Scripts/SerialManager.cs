@@ -9,7 +9,7 @@ public class SerialManager : MonoBehaviour
 {
     private SerialPort serialPort;
 
-    public string portName = "COM10"; // change depending on your system!!!
+    public string portName = "COM12"; // change depending on your system!!!
     private int baudRate = 115200;
     //private Queue<string> receivedDataQueue = new Queue<string>(); // to store received data
 
@@ -50,6 +50,16 @@ public class SerialManager : MonoBehaviour
         }
     }
 
+    //make the RFID data recieved available to other scripts to subscribe to
+    public event Action<string> OnDataReceivedRFID;
+    public void DatarecievedRFID(string data)
+    {
+        if (OnDataReceivedRFID != null)
+        {
+            OnDataReceivedRFID?.Invoke(data);
+        }
+    }
+
     void Awake()
     {
         instance = this;
@@ -65,15 +75,19 @@ public class SerialManager : MonoBehaviour
                 string data = serialPort.ReadLine();
                 //Debug.Log("Data received: " + data);
 
-                string[] values = data.Split('/');
+                string[] values = data.Split('/'); // format : "r/0.1/0.2/0.3/0.4"
                 if (values[0] == "r" && values.Length == 5)
                 {
                     //Debug.Log("IMU data received");
                     SerialManager.Instance.DatarecievedIMU(data); // Trigger event for IMU data
-                }else if (values[0] == "tr" && values.Length == 2)
+                }else if (values[0] == "tr" && values.Length == 2) // format : "tr/1"
                 {
                     //Debug.Log("Trigger data received");
                     SerialManager.Instance.DatarecievedTrigger(values[1]); // Trigger event for Trigger data
+                }else if (values[0] == "mg" && values.Length == 4) // format : "mg/G1/M1/10"
+                {
+                    //Debug.Log("RFID data received");
+                    SerialManager.Instance.DatarecievedRFID(data); // Trigger event for RFID data
                 }
             }
             catch (System.Exception ex)
