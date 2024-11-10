@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 public class TargetShooter : MonoBehaviour
 {
@@ -37,9 +38,12 @@ public class TargetShooter : MonoBehaviour
         }
 
         // Check for shooting input
-        if (Input.GetKeyDown("space") && !isReloading)
+        if (Input.GetKeyDown("b") && !isReloading)
         {
-            ShootRay();
+            SerialManager.Instance.DatarecievedTrigger("0");
+            //Shoot("0");
+            //currentAmmoCount--;
+            //sendToGun("b");
         }
     }
 
@@ -82,6 +86,7 @@ public class TargetShooter : MonoBehaviour
             int shot = System.Convert.ToInt32(data);
             if (currentAmmoCount > 0 && shot == 0)
             {
+                Debug.Log("Shooting...");
                 ShootRay();
             }
             else if (currentAmmoCount == 0)
@@ -93,17 +98,19 @@ public class TargetShooter : MonoBehaviour
 
     public void ShootRay()
     {
+        Debug.Log("I am in ShootRay()");
         Ray ray = new Ray(imuObject.position, imuObject.forward);
         
         GameEvents.current.ShotFired();
+        AddAmmo(-1);
 
         if (Physics.Raycast(ray, out RaycastHit hit))
         {
             Target target = hit.collider.gameObject.GetComponent<Target>();
 
-            if (target != null && currentAmmoCount > 0)
+            if (target != null && currentAmmoCount > 0) // waarom alleen ammo verliezen als je raakt?
             {
-                AddAmmo(-1);
+                //AddAmmo(-1);
                 target.Hit();
             }
             else
@@ -129,26 +136,44 @@ public class TargetShooter : MonoBehaviour
     {
         isReloading = true;
         Debug.Log("Reloading...");
+
         yield return new WaitForSeconds(reloadTime); // Wait for reload time
         if (totalAmmoCount >= maxAmmoCountInMag)
         {
             totalAmmoCount -= maxAmmoCountInMag - currentAmmoCount;
             currentAmmoCount = maxAmmoCountInMag;
-            
         }
         else
         {
             currentAmmoCount = totalAmmoCount;
             totalAmmoCount = 0;
         }
+        sendToGun("rb"); // "rb" for reloading, "b" for bullet update/shot 
         Debug.Log("Reload complete! Ammo refilled.");
         isReloading = false;
+    }
+
+    private void sendToGun(string type)
+    {
+        //fromat "b/15/10"
+        if (type == "rb" || type == "b")
+        {
+            string message = type + "/" + maxAmmoCountInMag + "/" + currentAmmoCount;
+            SerialManager.Instance.SendDataToESP32(message);
+        }
+        else
+        {
+            Debug.Log("Invalid message type");
+        }
+
     }
 
     public void AddAmmo(int amount)
     {
         currentAmmoCount += amount;
         Debug.Log("Ammo: " + currentAmmoCount);
+
+        sendToGun("b"); // "rb" for reloading, "b" for bullet update/shot 
     }
 
     private void OnDestroy()

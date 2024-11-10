@@ -32,7 +32,7 @@ public class SerialManager : MonoBehaviour
 
     //make the IMU data recieved available to other scripts to subscribe to
     public event Action<string> OnDataReceivedIMU;
-    public void DatarecievedIMU(string data) //TODO move to GameEvents script
+    public void DatarecievedIMU(string data) //#TODO move to GameEvents script
     {
         if (OnDataReceivedIMU != null)
         {
@@ -41,7 +41,7 @@ public class SerialManager : MonoBehaviour
     }
 
     //make the Trigger data recieved available to other scripts to subscribe to
-    public event Action<string> OnDataReceivedTrigger;
+    public event Action<string> OnDataReceivedTrigger; //#TODO  move to GameEvents script
     public void DatarecievedTrigger(string data)
     {
         if (OnDataReceivedTrigger != null)
@@ -51,7 +51,7 @@ public class SerialManager : MonoBehaviour
     }
 
     //make the RFID data recieved available to other scripts to subscribe to
-    public event Action<string> OnDataReceivedRFID;
+    public event Action<string> OnDataReceivedRFID; //#TODO  move to GameEvents script
     public void DatarecievedRFID(string data)
     {
         if (OnDataReceivedRFID != null)

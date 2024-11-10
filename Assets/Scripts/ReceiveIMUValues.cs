@@ -42,7 +42,7 @@ public class ReceiveIMUValues : MonoBehaviour
                 return;
             }
             else
-            {
+            {   
                 //A * B * iB = C
                 //Quaternion A = new Quaternion(-y, -z, x, w);
                 //Quaternion A = new Quaternion(x, -z, -y, w); // The one from Uduino tests
