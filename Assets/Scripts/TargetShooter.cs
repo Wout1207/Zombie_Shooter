@@ -110,6 +110,7 @@ public class TargetShooter : MonoBehaviour
 
             if (target != null && currentAmmoCount > 0) // waarom alleen ammo verliezen als je raakt?
             {
+                Debug.Log("target hit");
                 //AddAmmo(-1);
                 target.Hit();
             }
@@ -118,6 +119,7 @@ public class TargetShooter : MonoBehaviour
                 DoorController controller = hit.collider.gameObject.GetComponent<DoorController>();
                 if (controller)
                 {
+                    AddAmmo(1);
                     controller.hit();
                 }
                 else

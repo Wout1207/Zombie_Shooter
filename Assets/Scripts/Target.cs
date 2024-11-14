@@ -8,6 +8,7 @@ public class Target : MonoBehaviour
     //public static Action OnTargetHit;
     private GameObject player;
     private NavMeshAgent agent;
+    public int hp;
     // Start is called before the first frame update
     void Start()
     {
@@ -29,7 +30,12 @@ public class Target : MonoBehaviour
     }
     public void Hit()
     {
-        RandomizePosition();
+        hp -= 10;
+        if(hp <= 0)
+        {
+            Destroy(this.gameObject);
+        }
+        //RandomizePosition();
         //OnTargetHit?.Invoke();
     }
 

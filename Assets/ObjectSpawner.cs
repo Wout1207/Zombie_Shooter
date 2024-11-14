@@ -23,10 +23,9 @@ public class ObjectSpawner : MonoBehaviour
                 Random.Range(-spawnAreaSize.y / 2, spawnAreaSize.y / 2) + spawnOffset.y,
                 Random.Range(-spawnAreaSize.z / 2, spawnAreaSize.z / 2) + spawnOffset.z
             );
-            Debug.Log(spawnPosition);
             GameObject obj = Instantiate(objectToSpawn, spawnPosition, Quaternion.identity);
-            obj.transform.localScale = new Vector3(3, 3, 3);
-            obj.AddComponent<Target>();
+            //obj.transform.localScale = new Vector3(3, 3, 3);
+            //obj.AddComponent<Target>();
             amountToSpawn--;
             yield return new WaitForSeconds(10f);
         }
