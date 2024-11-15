@@ -1,3 +1,4 @@
+using System.Globalization;
 using UnityEngine;
 //using Uduino;
 
@@ -18,7 +19,7 @@ public class ReceiveIMUValues : MonoBehaviour
         //  Note that here, we don't use the delegate but the Events, assigned in the Inpsector Panel
         if (SerialManager.Instance != null)
         {
-            SerialManager.Instance.OnDataReceivedIMU += ReadIMU    ;
+            SerialManager.Instance.OnDataReceivedIMU += ReadIMU;
         }
     }
 
@@ -29,11 +30,10 @@ public class ReceiveIMUValues : MonoBehaviour
         string[] values = data.Split('/');
         if (values.Length == 5 && values[0] == "r") // Rotation of the first one 
         {
-            float w = float.Parse(values[1]);
-            float x = float.Parse(values[2]);
-            float y = float.Parse(values[3]);
-            float z = float.Parse(values[4]);
-
+            float w = float.Parse(values[1], CultureInfo.InvariantCulture.NumberFormat);
+            float x = float.Parse(values[2], CultureInfo.InvariantCulture.NumberFormat);
+            float y = float.Parse(values[3], CultureInfo.InvariantCulture.NumberFormat);
+            float z = float.Parse(values[4], CultureInfo.InvariantCulture.NumberFormat);
             if (firstTime)
             {
                 firstTime = false;

@@ -9,7 +9,7 @@ public class SerialManager : MonoBehaviour
 {
     private SerialPort serialPort;
 
-    public string portName = "COM12"; // change depending on your system!!!
+    public string portName = "COM6"; // change depending on your system!!!
     private int baudRate = 115200;
     //private Queue<string> receivedDataQueue = new Queue<string>(); // to store received data
 

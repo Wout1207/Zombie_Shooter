@@ -32,7 +32,6 @@ public class Target : MonoBehaviour
         }
         if (playerInCollider && Time.time-hitTimerDelay > 3)
         {
-            Debug.Log(Time.time);
             player.GetComponent<Player>().TakeDamage(10);
             hitTimerDelay = Time.time;
         }
@@ -55,7 +54,6 @@ public class Target : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log("in the collider");
         if (other.gameObject == player)
         {
             playerInCollider = true;
