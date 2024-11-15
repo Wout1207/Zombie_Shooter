@@ -38,7 +38,8 @@ public class ReceiveIMUValues : MonoBehaviour
             {
                 firstTime = false;
                 //firstPos = new Quaternion(-y, -z, x, w);
-                firstPos = new Quaternion(x, -z, -y, w);
+                //firstPos = new Quaternion(x, -z, -y, w);
+                firstPos = new Quaternion(-y, -x, z, w);
                 return;
             }
             else
