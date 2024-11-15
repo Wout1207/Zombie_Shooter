@@ -9,7 +9,7 @@ public class TargetShooter : MonoBehaviour
 
     [SerializeField] Camera cam;
     [SerializeField] public int currentAmmoCount = 0;
-    [SerializeField] public int maxAmmoCountInMag = 10;
+    [SerializeField] public int maxAmmoCountInMag = 0;
     [SerializeField] public int totalAmmoCount = 100;
     [SerializeField] public float reloadTime = 2f;
 
@@ -26,6 +26,8 @@ public class TargetShooter : MonoBehaviour
         SerialManager.Instance.OnDataReceivedIMU += ReadIMU;
         SerialManager.Instance.OnDataReceivedTrigger += Shoot;
         SerialManager.Instance.OnDataReceivedRFID += readMag;
+
+        sendToGun("rb"); // make sure start everything is empty displayed on the gun
     }
 
     // Update is called once per frame
@@ -41,9 +43,6 @@ public class TargetShooter : MonoBehaviour
         if (Input.GetKeyDown("b") && !isReloading)
         {
             SerialManager.Instance.DatarecievedTrigger("0");
-            //Shoot("0");
-            //currentAmmoCount--;
-            //sendToGun("b");
         }
     }
 
