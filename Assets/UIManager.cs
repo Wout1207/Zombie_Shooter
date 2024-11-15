@@ -7,11 +7,13 @@ public class UIManager : MonoBehaviour
 {
     public TMP_Text textCurrentAmmoCount;
     public TMP_Text textTotalAmmoCount;
+    public TMP_Text textHealth;
 
     public TargetShooter TargetShooter;
     private int currentAmmo;
     private int totalAmmo;
     private int prevTotalAmmoCount;
+    public Player player;
 
     // Start is called before the first frame update
     void Start()
@@ -25,14 +27,15 @@ public class UIManager : MonoBehaviour
     {
         if (currentAmmo >= 0)
         {
-            textCurrentAmmoCount.text = "currentAmmo: " + TargetShooter.currentAmmoCount.ToString();
+            textCurrentAmmoCount.text = "Ammo mag: " + TargetShooter.currentAmmoCount.ToString();
         }
         
         //if (totalAmmo != prevTotalAmmoCount)
         //{
             //prevTotalAmmoCount = totalAmmo;
-            textTotalAmmoCount.text = "totalAmmo: " + TargetShooter.totalAmmoCount.ToString();
+        textTotalAmmoCount.text = "Ammo: " + TargetShooter.totalAmmoCount.ToString();
         //}
+        textHealth.text = "Health: " + player.currentHP.ToString();
     }
 
     void UpdateAmmoCount()

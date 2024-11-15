@@ -5,6 +5,7 @@ public class Player : MonoBehaviour
     public int maxHP = 100;
     public int currentHP;
     public float speed;
+    public GameObject gameOverText;
 
     void Start()
     {
@@ -29,6 +30,10 @@ public class Player : MonoBehaviour
         currentHP = Mathf.Clamp(currentHP, 0, maxHP);
         SendHealthData();
         Debug.Log("Current HP: " + currentHP);
+        if (currentHP <= 0)
+        {
+            gameOverText.SetActive(true);
+        }
     }
 
     public void SendHealthData()

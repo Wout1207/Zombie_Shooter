@@ -84,12 +84,12 @@ public class TargetShooter : MonoBehaviour
             lastClickTime = currentTime;
 
             int shot = System.Convert.ToInt32(data);
-            if (currentAmmoCount > 0 && shot == 0)
+            if (shot == 0)
             {
                 Debug.Log("Shooting...");
                 ShootRay();
             }
-            else if (currentAmmoCount == 0)
+            if (currentAmmoCount == 0)
             {
                 Debug.Log("Out of ammo!");
             }
@@ -106,6 +106,13 @@ public class TargetShooter : MonoBehaviour
 
         if (Physics.Raycast(ray, out RaycastHit hit))
         {
+            DoorController controller = hit.collider.gameObject.GetComponent<DoorController>();
+            if (controller)
+            {
+                AddAmmo(1);
+                controller.hit();
+                return;
+            }
             Target target = hit.collider.gameObject.GetComponent<Target>();
 
             if (target != null && currentAmmoCount > 0) // waarom alleen ammo verliezen als je raakt?
@@ -114,19 +121,18 @@ public class TargetShooter : MonoBehaviour
                 //AddAmmo(-1);
                 target.Hit();
             }
+            else if(currentAmmoCount <= 0)
+            {
+                AddAmmo(1);
+            }
             else
             {
-                DoorController controller = hit.collider.gameObject.GetComponent<DoorController>();
-                if (controller)
-                {
-                    AddAmmo(1);
-                    controller.hit();
-                }
-                else
-                {
-                    //OnTargetMissed?.Invoke();
-                }
+                //OnTargetMissed?.Invoke();
             }
+        }
+        else if (currentAmmoCount <= 0)
+        {
+            AddAmmo(1);
         }
         else
         {
