@@ -30,6 +30,7 @@ public class Target : MonoBehaviour
         {
             agent.SetDestination(player.transform.position);
         }
+        agent.isStopped = (((transform.position - player.transform.position).magnitude) <= 2.5f) || agent.pathStatus == NavMeshPathStatus.PathPartial || !agent.hasPath;
         if (playerInCollider && Time.time-hitTimerDelay > 3)
         {
             player.GetComponent<Player>().TakeDamage(10);
