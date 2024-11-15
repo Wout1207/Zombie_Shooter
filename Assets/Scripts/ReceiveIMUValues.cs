@@ -25,8 +25,11 @@ public class ReceiveIMUValues : MonoBehaviour
 
     void Update() { }
 
+
+
     public void ReadIMU(string data)
     {
+        Debug.Log(data);
         string[] values = data.Split('/');
         if (values.Length == 5 && values[0] == "r") // Rotation of the first one 
         {
@@ -39,27 +42,27 @@ public class ReceiveIMUValues : MonoBehaviour
                 firstTime = false;
                 //firstPos = new Quaternion(-y, -z, x, w);
                 //firstPos = new Quaternion(x, -z, -y, w);
-                firstPos = new Quaternion(-y, -x, z, w);
+                firstPos = new Quaternion(y, x, z, w);
                 return;
             }
             else
-            {   
+            {
                 //A * B * iB = C
                 //Quaternion A = new Quaternion(-y, -z, x, w);
                 //Quaternion A = new Quaternion(x, -z, -y, w); // The one from Uduino tests
-                Quaternion A = new Quaternion(-x, -z, -y, w);
+                //Quaternion A = new Quaternion(-x, -z, -y, w);
+                Quaternion A = new Quaternion(y, x, z, w);
                 Quaternion B = firstPos;
-                Quaternion iB = Quaternion.Inverse(firstPos);
+                Quaternion iB = Quaternion.Inverse(B);
                 Quaternion C = A * iB;
 
                 //this.transform.localRotation = Quaternion.Lerp(this.transform.localRotation, new Quaternion(w, y, x, z), Time.deltaTime * speedFactor);
                 //this.transform.localRotation = Quaternion.Lerp(this.transform.localRotation, new Quaternion(-y, -z, x, w), Time.deltaTime * speedFactor);
-                this.transform.localRotation = Quaternion.Lerp(this.transform.localRotation, C, Time.deltaTime * speedFactor);
+
+
+                this.transform.localRotation = Quaternion.Slerp(this.transform.localRotation, C, Time.deltaTime * speedFactor);
+
             }
-
-
-
-
         }
         else if (values.Length != 5)
         {
