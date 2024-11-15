@@ -50,13 +50,23 @@ public class SerialManager : MonoBehaviour
         }
     }
 
-    //make the RFID data recieved available to other scripts to subscribe to
+    //  make the RFID data recieved available to other scripts to subscribe to
     public event Action<string> OnDataReceivedRFID; //#TODO  move to GameEvents script
     public void DatarecievedRFID(string data)
     {
         if (OnDataReceivedRFID != null)
         {
             OnDataReceivedRFID?.Invoke(data);
+        }
+    }
+
+    //make the movement data recieved available to other scripts to subscribe to
+    public event Action<string> OnDataReceivedMovement; //#TODO  move to GameEvents script
+    public void DatarecievedMovement(string data)
+    {
+        if (OnDataReceivedMovement != null)
+        {
+            OnDataReceivedMovement?.Invoke(data);
         }
     }
 
@@ -88,6 +98,10 @@ public class SerialManager : MonoBehaviour
                 {
                     //Debug.Log("RFID data received");
                     SerialManager.Instance.DatarecievedRFID(data); // Trigger event for RFID data
+                }
+                else if (values[0] == "m" && values.Length == 3)
+                { // Trigger event for movement data
+                    SerialManager.Instance.DatarecievedMovement(data); // format: "m/pin/state"
                 }
             }
             catch (System.Exception ex)
