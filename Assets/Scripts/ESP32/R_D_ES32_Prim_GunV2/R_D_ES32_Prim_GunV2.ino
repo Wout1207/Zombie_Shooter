@@ -7,11 +7,12 @@
 MPU6050 mpu;
 
 #define INTERRUPT_PIN 47  // W Set the interrupt pin
-const int trigger_pin = 48;
+const int trigger_pin = 4;
 int lastTriggerState = 1;
 
 //ESP now 
-uint8_t broadcastAddress[] = {0xDC, 0xDA, 0x0C, 0x63, 0xCC, 0x9C}; // send to esp32s3 divice 2
+//uint8_t broadcastAddress[] = {0xDC, 0xDA, 0x0C, 0x63, 0xCC, 0x9C}; // send to esp32s3 divice 2
+uint8_t broadcastAddress[] = {0x24, 0xEC, 0x4A, 0x01, 0x32, 0xA0}; // send to esp32s3 device 3 (24:ec:4a:01:32:a0)
 String success;
 
 esp_now_peer_info_t peerInfo;
@@ -131,7 +132,7 @@ void loop() {
     mpu.getFIFOBytes(fifoBuffer, packetSize);
     fifoCount -= packetSize;
 
-    // SendQuaternion();
+    //SendQuaternion();
     SendQuaternionEspNow();
     //SendEuler();
     //SendYawPitchRoll();

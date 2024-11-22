@@ -1,24 +1,26 @@
 using System.IO.Ports;
+using System.Threading;
 using UnityEngine;
-using System.Collections.Generic;
-using UnityEditor.Experimental.GraphView;
-using Unity.VisualScripting;
 using System;
 
 public class SerialManager : MonoBehaviour
 {
     private SerialPort serialPort;
+    private Thread serialThread;
+    private bool isRunning = true;
 
-    public string portName = "COM16"; // change depending on your system!!!
+<<<<<<<<< Temporary merge branch 1
+    public string portName = "COM6"; // change depending on your system!!!
     private int baudRate = 115200;
-    //private Queue<string> receivedDataQueue = new Queue<string>(); // to store received data
-
-    
-    //public delegate void DataReceivedEventHandler(string data);
 
     private static SerialManager instance;
 
-    public static SerialManager Instance //TODO move to GameEvents script
+    // Buffers for thread-safe communication
+    private string imuData;
+    private string triggerData;
+    private string rfidData;
+
+    public static SerialManager Instance
     {
         get
         {
@@ -30,70 +32,41 @@ public class SerialManager : MonoBehaviour
         }
     }
 
-    //make the IMU data recieved available to other scripts to subscribe to
+    // Events to broadcast received data
     public event Action<string> OnDataReceivedIMU;
-    public void DatarecievedIMU(string data) //#TODO move to GameEvents script
-    {
-        if (OnDataReceivedIMU != null)
-        {
-            OnDataReceivedIMU?.Invoke(data);
-        }
-    }
-
-    //make the Trigger data recieved available to other scripts to subscribe to
-    public event Action<string> OnDataReceivedTrigger; //#TODO  move to GameEvents script
-    public void DatarecievedTrigger(string data)
-    {
-        if (OnDataReceivedTrigger != null)
-        {
-            OnDataReceivedTrigger?.Invoke(data);
-        }
-    }
-
-    //make the RFID data recieved available to other scripts to subscribe to
-    public event Action<string> OnDataReceivedRFID; //#TODO  move to GameEvents script
-    public void DatarecievedRFID(string data)
-    {
-        if (OnDataReceivedRFID != null)
-        {
-            OnDataReceivedRFID?.Invoke(data);
-        }
-    }
+    public event Action<string> OnDataReceivedTrigger;
+    public event Action<string> OnDataReceivedRFID;
 
     void Awake()
     {
         instance = this;
         OpenSerialPort();
+
+        // Start the serial reading thread
+        serialThread = new Thread(ReadSerialPort);
+        serialThread.IsBackground = true; // Allow the thread to exit with the app
+        serialThread.Start();
     }
 
     void Update()
     {
-        if (serialPort != null && serialPort.IsOpen && serialPort.BytesToRead > 0)
+        // Check thread-safe buffers for new data and trigger corresponding events
+        if (imuData != null)
         {
-            try
-            {
-                string data = serialPort.ReadLine();
-                //Debug.Log("Data received: " + data);
+            OnDataReceivedIMU?.Invoke(imuData);
+            imuData = null; // Clear the buffer
+        }
 
-                string[] values = data.Split('/'); // format : "r/0.1/0.2/0.3/0.4"
-                if (values[0] == "r" && values.Length == 5)
-                {
-                    //Debug.Log("IMU data received");
-                    SerialManager.Instance.DatarecievedIMU(data); // Trigger event for IMU data
-                }else if (values[0] == "tr" && values.Length == 2) // format : "tr/1"
-                {
-                    //Debug.Log("Trigger data received");
-                    SerialManager.Instance.DatarecievedTrigger(values[1]); // Trigger event for Trigger data
-                }else if (values[0] == "mg" && values.Length == 4) // format : "mg/G1/M1/10"
-                {
-                    //Debug.Log("RFID data received");
-                    SerialManager.Instance.DatarecievedRFID(data); // Trigger event for RFID data
-                }
-            }
-            catch (System.Exception ex)
-            {
-                Debug.LogError("Error reading from serial port in Update: " + ex.Message);
-            }
+        if (triggerData != null)
+        {
+            OnDataReceivedTrigger?.Invoke(triggerData);
+            triggerData = null; // Clear the buffer
+        }
+
+        if (rfidData != null)
+        {
+            OnDataReceivedRFID?.Invoke(rfidData);
+            rfidData = null; // Clear the buffer
         }
     }
 
@@ -104,10 +77,8 @@ public class SerialManager : MonoBehaviour
             serialPort = new SerialPort(portName, baudRate);
             serialPort.Open();
 
-
             if (serialPort.IsOpen)
             {
-                //Debug.Log("Serial port opened successfully.");
                 Debug.Log("Serial port opened successfully on " + portName);
             }
             else
@@ -115,9 +86,52 @@ public class SerialManager : MonoBehaviour
                 Debug.LogError("Failed to open serial port.");
             }
         }
-        catch (System.Exception ex)
+        catch (Exception ex)
         {
             Debug.LogError("Error opening serial port: " + ex.Message);
+        }
+    }
+
+    void ReadSerialPort()
+    {
+        while (isRunning)
+        {
+            if (serialPort != null && serialPort.IsOpen)
+            {
+                try
+                {
+                    string data = serialPort.ReadLine(); // Blocking call
+                    ParseAndStoreData(data); // Process and store data in thread-safe buffers
+                }
+                catch (TimeoutException)
+                {
+                    // Ignore timeout errors, keep reading
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError("Error reading serial port: " + ex.Message);
+                }
+            }
+        }
+    }
+
+    private void ParseAndStoreData(string data)
+    {
+        string[] values = data.Split('/'); // Assuming format: "r/0.1/0.2/0.3/0.4"
+        lock (this) // Ensure thread safety
+        {
+            if (values[0] == "r" && values.Length == 5)
+            {
+                imuData = data; // Store IMU data
+            }
+            else if (values[0] == "tr" && values.Length == 2) // Format: "tr/1"
+            {
+                triggerData = values[1]; // Store Trigger data
+            }
+            else if (values[0] == "mg" && values.Length == 4) // Format: "mg/G1/M1/10"
+            {
+                rfidData = data; // Store RFID data
+            }
         }
     }
 
@@ -130,7 +144,7 @@ public class SerialManager : MonoBehaviour
                 serialPort.WriteLine(message);
                 Debug.Log("Sent to ESP32: " + message);
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 Debug.LogError("Error writing to serial port: " + ex.Message);
             }
@@ -143,6 +157,13 @@ public class SerialManager : MonoBehaviour
 
     void OnApplicationQuit()
     {
+        isRunning = false; // Stop the thread
+
+        if (serialThread != null && serialThread.IsAlive)
+        {
+            serialThread.Join(); // Wait for the thread to exit
+        }
+
         if (serialPort != null && serialPort.IsOpen)
         {
             try
@@ -150,7 +171,7 @@ public class SerialManager : MonoBehaviour
                 serialPort.Close();
                 Debug.Log("Serial port closed.");
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 Debug.LogError("Error closing serial port: " + ex.Message);
             }

@@ -9,7 +9,7 @@ public class TargetShooter : MonoBehaviour
 
     [SerializeField] Camera cam;
     [SerializeField] public int currentAmmoCount = 0;
-    [SerializeField] public int maxAmmoCountInMag = 0;
+    [SerializeField] public int maxAmmoCountInMag = 10;
     [SerializeField] public int totalAmmoCount = 100;
     [SerializeField] public float reloadTime = 2f;
 
@@ -26,8 +26,6 @@ public class TargetShooter : MonoBehaviour
         SerialManager.Instance.OnDataReceivedIMU += ReadIMU;
         SerialManager.Instance.OnDataReceivedTrigger += Shoot;
         SerialManager.Instance.OnDataReceivedRFID += readMag;
-
-        sendToGun("rb"); // make sure start everything is empty displayed on the gun
     }
 
     // Update is called once per frame
@@ -42,9 +40,15 @@ public class TargetShooter : MonoBehaviour
         // Check for shooting input
         if (Input.GetKeyDown("b") && !isReloading)
         {
-            SerialManager.Instance.DatarecievedTrigger("0");
+            // Option 1: Directly send trigger to ESP32 and simulate locally
+            SerialManager.Instance.SendDataToESP32("tr/0");
+            Shoot("0"); // Simulate the shoot locally
+
+            // Option 2: Invoke the trigger event (if DatarecievedTrigger exists)
+            // SerialManager.Instance.DatarecievedTrigger("0");
         }
     }
+
 
     public void readMag(string data) // The data is in the format "G1/M1/10" where G1: gun 1, M1: magazine 1 and 10: the capacity of the mag
     {
