@@ -40,12 +40,15 @@ public class TargetShooter : MonoBehaviour
         // Check for shooting input
         if (Input.GetKeyDown("b") && !isReloading)
         {
-            SerialManager.Instance.DatarecievedTrigger("0");
-            //Shoot("0");
-            //currentAmmoCount--;
-            //sendToGun("b");
+            // Option 1: Directly send trigger to ESP32 and simulate locally
+            SerialManager.Instance.SendDataToESP32("tr/0");
+            Shoot("0"); // Simulate the shoot locally
+
+            // Option 2: Invoke the trigger event (if DatarecievedTrigger exists)
+            // SerialManager.Instance.DatarecievedTrigger("0");
         }
     }
+
 
     public void readMag(string data) // The data is in the format "G1/M1/10" where G1: gun 1, M1: magazine 1 and 10: the capacity of the mag
     {

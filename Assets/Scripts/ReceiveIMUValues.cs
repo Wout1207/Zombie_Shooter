@@ -38,7 +38,7 @@ public class ReceiveIMUValues : MonoBehaviour
             {
                 firstTime = false;
                 //firstPos = new Quaternion(-y, -z, x, w);
-                firstPos = new Quaternion(x, -z, -y, w);
+                firstPos = new Quaternion(y, x, z, w);
                 return;
             }
             else
@@ -46,7 +46,7 @@ public class ReceiveIMUValues : MonoBehaviour
                 //A * B * iB = C
                 //Quaternion A = new Quaternion(-y, -z, x, w);
                 //Quaternion A = new Quaternion(x, -z, -y, w); // The one from Uduino tests
-                Quaternion A = new Quaternion(-x, -z, -y, w);
+                Quaternion A = new Quaternion(y, x, z, w);
                 Quaternion B = firstPos;
                 Quaternion iB = Quaternion.Inverse(firstPos);
                 Quaternion C = A * iB;
