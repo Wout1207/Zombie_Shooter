@@ -9,7 +9,7 @@ public class SerialManager : MonoBehaviour
     private Thread serialThread;
     private bool isRunning = true;
 
-    public string portName = "COM6"; // change depending on your system!!!
+    public string portName = "COM17"; // change depending on your system!!!
     private int baudRate = 115200;
 
     private static SerialManager instance;
@@ -69,12 +69,39 @@ public class SerialManager : MonoBehaviour
         }
     }
 
+    //void OpenSerialPort()
+    //{
+    //    try
+    //    {
+    //        serialPort = new SerialPort(portName, baudRate);
+    //        serialPort.Open();
+
+    //        if (serialPort.IsOpen)
+    //        {
+    //            Debug.Log("Serial port opened successfully on " + portName);
+    //        }
+    //        else
+    //        {
+    //            Debug.LogError("Failed to open serial port.");
+    //        }
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        Debug.LogError("Error opening serial port: " + ex.Message);
+    //    }
+    //}
+
     void OpenSerialPort()
     {
         try
         {
             serialPort = new SerialPort(portName, baudRate);
+            serialPort.DtrEnable = true; // Ensure DTR is enabled for USB CDC
+            serialPort.RtsEnable = true; // Ensure RTS is enabled for USB CDC
             serialPort.Open();
+
+            // Add delay for initialization
+            System.Threading.Thread.Sleep(1000);
 
             if (serialPort.IsOpen)
             {
@@ -85,11 +112,12 @@ public class SerialManager : MonoBehaviour
                 Debug.LogError("Failed to open serial port.");
             }
         }
-        catch (Exception ex)
+        catch (System.Exception ex)
         {
             Debug.LogError("Error opening serial port: " + ex.Message);
         }
     }
+
 
     void ReadSerialPort()
     {
@@ -117,6 +145,7 @@ public class SerialManager : MonoBehaviour
     private void ParseAndStoreData(string data)
     {
         string[] values = data.Split('/'); // Assuming format: "r/0.1/0.2/0.3/0.4"
+        //Debug.Log("Data received: " + data);
         lock (this) // Ensure thread safety
         {
             if (values[0] == "r" && values.Length == 5)
