@@ -66,7 +66,8 @@ public class Crosshair : MonoBehaviour
             alignment = TextAnchor.MiddleCenter
         };
 
-        GUI.Label(new Rect(screenPos.x - 20, (Screen.height - screenPos.y - 20), 40, 40), "+", style);
+        //GUI.Label(new Rect(screenPos.x - 20, (Screen.height - screenPos.y - 20), 40, 40), "+", style);
+        GUI.Label(new Rect(screenPos.x, (Screen.height - screenPos.y), 40, 40), "+", style);
 
     }
 
