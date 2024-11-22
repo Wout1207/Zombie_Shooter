@@ -17,7 +17,7 @@ public class Crosshair : MonoBehaviour
     private Vector3 screenPos;
     public float speedFactor = 15.0f;
     public GameObject player;
-    public float rotationSpeed;
+    public float rotationSpeed = 1f;
 
     void Start()
     {
@@ -31,7 +31,7 @@ public class Crosshair : MonoBehaviour
 
     void Update()
     {
-
+        imuObject.parent.rotation = player.transform.rotation;
     }
 
     public void ReadIMU(string data)
@@ -41,11 +41,11 @@ public class Crosshair : MonoBehaviour
             screenPos = cam.WorldToScreenPoint(target.position);
             screenPos.x = Mathf.Clamp(screenPos.x, 0, Screen.width);
             screenPos.y = Mathf.Clamp(screenPos.y, 0, Screen.height);
-            if (screenPos.x < 0.1*Screen.width)
+            if (screenPos.x < 0.2*Screen.width)
             {
                 player.transform.Rotate(new Vector3(0,-rotationSpeed));
             }
-            else if (screenPos.x > Screen.width - 0.1 * Screen.width)
+            else if (screenPos.x > Screen.width - 0.2 * Screen.width)
             {
                 player.transform.Rotate(new Vector3(0, rotationSpeed));
             }
