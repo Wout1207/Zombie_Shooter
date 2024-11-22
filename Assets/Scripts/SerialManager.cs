@@ -39,7 +39,7 @@ public class SerialManager : MonoBehaviour
     void Awake()
     {
         instance = this;
-        OpenSerialPort();
+        OpenSerialPortUSB();
 
         // Start the serial reading thread
         serialThread = new Thread(ReadSerialPort);
@@ -69,29 +69,31 @@ public class SerialManager : MonoBehaviour
         }
     }
 
-    //void OpenSerialPort()
-    //{
-    //    try
-    //    {
-    //        serialPort = new SerialPort(portName, baudRate);
-    //        serialPort.Open();
+    //use this function if you use the UART connection
+    void OpenSerialPortUART()
+    {
+        try
+        {
+            serialPort = new SerialPort(portName, baudRate);
+            serialPort.Open();
 
-    //        if (serialPort.IsOpen)
-    //        {
-    //            Debug.Log("Serial port opened successfully on " + portName);
-    //        }
-    //        else
-    //        {
-    //            Debug.LogError("Failed to open serial port.");
-    //        }
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        Debug.LogError("Error opening serial port: " + ex.Message);
-    //    }
-    //}
+            if (serialPort.IsOpen)
+            {
+                Debug.Log("Serial port opened successfully on " + portName);
+            }
+            else
+            {
+                Debug.LogError("Failed to open serial port.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError("Error opening serial port: " + ex.Message);
+        }
+    }
 
-    void OpenSerialPort()
+    //use this function if you use a USB CDC connection
+    void OpenSerialPortUSB()
     {
         try
         {
