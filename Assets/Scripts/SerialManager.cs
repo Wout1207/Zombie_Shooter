@@ -9,7 +9,6 @@ public class SerialManager : MonoBehaviour
     private Thread serialThread;
     private bool isRunning = true;
 
-<<<<<<<<< Temporary merge branch 1
     public string portName = "COM6"; // change depending on your system!!!
     private int baudRate = 115200;
 

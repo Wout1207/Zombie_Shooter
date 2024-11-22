@@ -13,7 +13,7 @@ public class Player : MonoBehaviour
     {
         currentHP = maxHP;
         //SendHealthData();
-        SerialManager.Instance.OnDataReceivedMovement += readMovement;
+        //SerialManager.Instance.OnDataReceivedMovement += readMovement;
     }
 
     void FixedUpdate()
@@ -89,7 +89,7 @@ public class Player : MonoBehaviour
     {
         if (SerialManager.Instance != null)
         {
-            SerialManager.Instance.OnDataReceivedMovement -= readMovement;
+            //SerialManager.Instance.OnDataReceivedMovement -= readMovement;
         }
     }
 }
