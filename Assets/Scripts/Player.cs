@@ -2,18 +2,29 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    public int maxHP = 100;
-    public int currentHP;
+    public float maxHP = 100;
+    public float currentHP;
     public float speed;
     public GameObject gameOverText;
+    public GameObject grenadePrefab;
+    public int currentGrenadeAmount;
+    public int maxGrenadeAmount;
 
     private Vector3 movementDirection = Vector3.zero;
 
     void Start()
     {
         currentHP = maxHP;
+        currentGrenadeAmount = maxGrenadeAmount;
         //SendHealthData();
         //SerialManager.Instance.OnDataReceivedMovement += readMovement;
+    }
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.G))
+        {
+            throwGrenade();
+        }
     }
 
     void FixedUpdate()
@@ -28,7 +39,7 @@ public class Player : MonoBehaviour
         transform.Translate(movementDirection * speed * Time.deltaTime);
     }
 
-    public void TakeDamage(int damage)
+    public void TakeDamage(float damage)
     {
         currentHP -= damage;
         currentHP = Mathf.Clamp(currentHP, 0, maxHP);
@@ -82,6 +93,19 @@ public class Player : MonoBehaviour
                         break;
                 }
             }
+        }
+    }
+
+    public void throwGrenade()
+    {
+        if (currentGrenadeAmount>0)
+        {
+            currentGrenadeAmount -= 1;
+            GameObject grenade = Instantiate(grenadePrefab,transform);
+            grenade.transform.position += new Vector3(0,1,transform.forward.z * 2);
+            grenade.GetComponent<Rigidbody>().velocity = transform.forward * 20;
+            grenade.transform.SetParent(transform.parent);
+            grenade.transform.localScale = new Vector3(4, 4, 4);
         }
     }
 

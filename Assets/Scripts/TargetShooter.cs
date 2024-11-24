@@ -118,7 +118,7 @@ public class TargetShooter : MonoBehaviour
             {
                 Debug.Log("target hit");
                 //AddAmmo(-1);
-                target.Hit();
+                target.Hit(10);
             }
             else if(currentAmmoCount <= 0)
             {

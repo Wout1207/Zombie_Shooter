@@ -8,6 +8,7 @@ public class UIManager : MonoBehaviour
     public TMP_Text textCurrentAmmoCount;
     public TMP_Text textTotalAmmoCount;
     public TMP_Text textHealth;
+    public TMP_Text textGameOver;
 
     public TargetShooter TargetShooter;
     private int currentAmmo;
@@ -36,6 +37,10 @@ public class UIManager : MonoBehaviour
         textTotalAmmoCount.text = "Ammo: " + TargetShooter.totalAmmoCount.ToString();
         //}
         textHealth.text = "Health: " + player.currentHP.ToString();
+        if (player.currentHP <= 0)
+        {
+            textGameOver.enabled = true;
+        }
     }
 
     void UpdateAmmoCount()

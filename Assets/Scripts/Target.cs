@@ -8,7 +8,7 @@ public class Target : MonoBehaviour
     //public static Action OnTargetHit;
     private GameObject player;
     private NavMeshAgent agent;
-    public int hp;
+    public float hp;
     private bool playerInCollider = false;
     private float hitTimerDelay;
     // Start is called before the first frame update
@@ -37,9 +37,9 @@ public class Target : MonoBehaviour
             hitTimerDelay = Time.time;
         }
     }
-    public void Hit()
+    public void Hit(float damage)
     {
-        hp -= 10;
+        hp -= damage;
         if(hp <= 0)
         {
             Destroy(this.gameObject);
