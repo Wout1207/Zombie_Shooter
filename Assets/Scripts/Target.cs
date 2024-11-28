@@ -6,11 +6,12 @@ using UnityEngine.AI;
 public class Target : MonoBehaviour
 {
     //public static Action OnTargetHit;
-    private GameObject player;
-    private NavMeshAgent agent;
+    protected private GameObject player;
+    protected private NavMeshAgent agent;
     public float hp;
-    private bool playerInCollider = false;
-    private float hitTimerDelay;
+    public float damage;
+    protected private bool playerInCollider = false;
+    protected private float hitTimerDelay;
     // Start is called before the first frame update
     void Start()
     {
@@ -24,7 +25,7 @@ public class Target : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    protected void Update()
     {
         if ((transform.position-player.transform.position).magnitude < 30)
         {
@@ -33,7 +34,7 @@ public class Target : MonoBehaviour
         agent.isStopped = (((transform.position - player.transform.position).magnitude) <= 2.5f) || agent.pathStatus == NavMeshPathStatus.PathPartial || !agent.hasPath;
         if (playerInCollider && Time.time-hitTimerDelay > 3)
         {
-            player.GetComponent<Player>().TakeDamage(10);
+            player.GetComponent<Player>().TakeDamage(damage);
             hitTimerDelay = Time.time;
         }
     }
