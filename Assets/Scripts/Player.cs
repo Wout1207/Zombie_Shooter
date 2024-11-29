@@ -14,6 +14,8 @@ public class Player : MonoBehaviour
     private Vector3 movementDirection = Vector3.zero;
     private bool grenadeToBeThrown = false;
 
+    private bool alive = true;
+
     void Start()
     {
         currentHP = maxHP;
@@ -47,8 +49,11 @@ public class Player : MonoBehaviour
         }
         float horizontalMovement = Input.GetAxis("Horizontal");
         float verticalMovement = Input.GetAxis("Vertical");
-        transform.Translate(new Vector3(horizontalMovement * Time.deltaTime * speed, 0, verticalMovement * Time.deltaTime * speed));
-        transform.Translate(movementDirection * speed * Time.deltaTime);
+        if(alive)
+        {
+            transform.Translate(new Vector3(horizontalMovement * Time.deltaTime * speed, 0, verticalMovement * Time.deltaTime * speed));
+            transform.Translate(movementDirection * speed * Time.deltaTime);
+        }
     }
 
     public void TakeDamage(float damage)
@@ -65,6 +70,7 @@ public class Player : MonoBehaviour
 
     public void PlayerDied()
     {
+        alive = false;
         GameEvents.current.playerDead();
         gameOverText.SetActive(true);
     }
