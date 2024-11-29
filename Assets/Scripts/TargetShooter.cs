@@ -98,7 +98,11 @@ public class TargetShooter : MonoBehaviour
     public void ShootRay()
     {
         Debug.Log("I am in ShootRay()");
-        Ray ray = new Ray(imuObject.position, imuObject.forward);
+        Vector3 screenPos = cam.WorldToScreenPoint(imuObject.GetChild(0).position);
+        screenPos.x = Mathf.Clamp(screenPos.x, 0, Screen.width);
+        screenPos.y = Mathf.Clamp(screenPos.y, 0, Screen.height);
+        screenPos = new Vector3(screenPos.x, (Screen.height - screenPos.y));
+        Ray ray = cam.ScreenPointToRay(screenPos);
         
         GameEvents.current.ShotFired();
         AddAmmo(-1);
