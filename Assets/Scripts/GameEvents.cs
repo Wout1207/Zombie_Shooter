@@ -59,4 +59,13 @@ public class GameEvents : MonoBehaviour
             onToggleCloseDoorText(id);
         }
     }
+
+    public event System.Action onPlayerDead;
+    public void playerDead()
+    {
+        if (onPlayerDead != null)
+        {
+            onPlayerDead();
+        }
+    }
 }

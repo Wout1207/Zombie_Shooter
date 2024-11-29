@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -47,8 +48,14 @@ public class Player : MonoBehaviour
         Debug.Log("Current HP: " + currentHP);
         if (currentHP <= 0)
         {
-            gameOverText.SetActive(true);
+            PlayerDied();
         }
+    }
+
+    public void PlayerDied()
+    {
+        gameOverText.SetActive(true);
+        GameEvents.current.playerDead();
     }
 
     public void SendHealthData()
