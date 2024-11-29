@@ -121,7 +121,10 @@ public class Target : MonoBehaviour
     {
         playerDeadInvoked = true;
         print("Player died");
-        agent.isStopped = true;
+        if (agent != null)
+        {
+            agent.isStopped = true;
+        }
         animator.SetBool("zombie_isWalking", false);
         animator.SetTrigger("player_died");
     }

@@ -37,7 +37,7 @@ public class TargetShooter : MonoBehaviour
             return;
         }
 
-        if (Input.GetKeyDown("b") && !isReloading)
+        if ((Input.GetKeyDown("b") || Input.GetMouseButtonDown(0)) && !isReloading)
         {
             SerialManager.Instance.SendDataToESP32("tr/0");
             Shoot("0"); // Simulate the shoot locally
