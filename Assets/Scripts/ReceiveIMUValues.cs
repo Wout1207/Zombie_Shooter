@@ -35,7 +35,8 @@ public class ReceiveIMUValues : MonoBehaviour
                 return;
             }
 
-            Quaternion currentIMURotation = new Quaternion(y, x, -z, w);
+            Quaternion currentIMURotation = new Quaternion(y, x, -z, w); //version in gun
+            //Quaternion currentIMURotation = new Quaternion(x, -z, -y, w); //Version breadboard Wout.C
 
             if (firstTime)
             {

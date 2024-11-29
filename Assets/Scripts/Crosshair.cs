@@ -18,8 +18,8 @@ public class Crosshair : MonoBehaviour
     private Vector3 screenPos;
     public float speedFactor = 15.0f;
     public GameObject player;
-    public float rotationSpeed = 2f;
-    public float rotationBoarder = 0.15f;
+    public float rotationSpeed = 4f;
+    public float rotationBoarder = 0.4f;
 
     void Start()
     {

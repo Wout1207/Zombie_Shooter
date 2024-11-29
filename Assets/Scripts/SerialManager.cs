@@ -9,7 +9,7 @@ public class SerialManager : MonoBehaviour
     private Thread serialThread;
     private bool isRunning = true;
 
-    public string portName = "COM17"; // change depending on your system!!!
+    public string portName = "COM16"; // change depending on your system!!!
     private int baudRate = 115200;
 
     private static SerialManager instance;
