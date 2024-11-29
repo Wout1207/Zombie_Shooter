@@ -1,10 +1,8 @@
 using UnityEngine;
 using System.Globalization;
-//using Uduino;
 
 public class ReceiveIMUValues : MonoBehaviour
 {
-
     Vector3 position;
     Vector3 rotation;
     public Vector3 rotationOffset;
@@ -15,11 +13,9 @@ public class ReceiveIMUValues : MonoBehaviour
 
     void Start()
     {
-        //UduinoManager.Instance.OnDataReceived += ReadIMU;
-        //  Note that here, we don't use the delegate but the Events, assigned in the Inpsector Panel
         if (SerialManager.Instance != null)
         {
-            SerialManager.Instance.OnDataReceivedIMU += ReadIMU    ;
+            SerialManager.Instance.OnDataReceivedIMU += ReadIMU;
         }
     }
 
@@ -28,7 +24,7 @@ public class ReceiveIMUValues : MonoBehaviour
     public void ReadIMU(string data)
     {
         string[] values = data.Split('/');
-        if (values.Length == 5 && values[0] == "r") // Valid IMU data
+        if (values.Length == 5 && values[0] == "r")
         {
             if (!float.TryParse(values[1], NumberStyles.Float, CultureInfo.InvariantCulture, out float w) ||
                 !float.TryParse(values[2], NumberStyles.Float, CultureInfo.InvariantCulture, out float x) ||
@@ -39,35 +35,29 @@ public class ReceiveIMUValues : MonoBehaviour
                 return;
             }
 
-            Quaternion currentIMURotation = new Quaternion(y, z, x, w); // Adjust axes as needed
+            Quaternion currentIMURotation = new Quaternion(y, x, -z, w);
 
             if (firstTime)
             {
                 firstTime = false;
-                firstPos = currentIMURotation; // Save the initial orientation
+                firstPos = currentIMURotation;
             }
 
             // Calculate absolute rotation relative to the initial offset
             Quaternion absoluteRotation = Quaternion.Inverse(firstPos) * currentIMURotation;
+            //Quaternion offsetRotation = Quaternion.Euler(rotationOffset);
+            //Quaternion finalRotation = absoluteRotation * offsetRotation;
 
-            // Smoothly apply the rotation
             this.transform.localRotation = Quaternion.Lerp(this.transform.localRotation, absoluteRotation, Time.deltaTime * speedFactor);
         }
         else if (values.Length != 5)
         {
             Debug.LogWarning($"Unexpected data format: {data}");
         }
-
-        // Apply rotation offset to parent transform
-        if (this.transform.parent != null)
-        {
-            this.transform.parent.transform.eulerAngles = rotationOffset;
-        }
     }
 
     void OnDestroy()
     {
-        //UduinoManager.Instance.OnDataReceived -= ReadIMU;
         if (SerialManager.Instance != null)
         {
             SerialManager.Instance.OnDataReceivedIMU -= ReadIMU;

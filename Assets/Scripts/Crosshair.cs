@@ -19,6 +19,7 @@ public class Crosshair : MonoBehaviour
     public float speedFactor = 15.0f;
     public GameObject player;
     public float rotationSpeed = 2f;
+    public float rotationBoarder = 0.15f;
 
     void Start()
     {
@@ -46,11 +47,11 @@ public class Crosshair : MonoBehaviour
             screenPos = cam.WorldToScreenPoint(target.position);
             screenPos.x = Mathf.Clamp(screenPos.x, 0, Screen.width);
             screenPos.y = Mathf.Clamp(screenPos.y, 0, Screen.height);
-            if (screenPos.x < 0.4*Screen.width)
+            if (screenPos.x < rotationBoarder * Screen.width)
             {
                 player.transform.Rotate(new Vector3(0,-rotationSpeed));
             }
-            else if (screenPos.x > Screen.width - 0.4 * Screen.width)
+            else if (screenPos.x > Screen.width - rotationBoarder * Screen.width)
             {
                 player.transform.Rotate(new Vector3(0, rotationSpeed));
             }
