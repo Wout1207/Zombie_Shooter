@@ -11,13 +11,14 @@ public class Crosshair : MonoBehaviour
     public float sensitivity = 1.0f; // Control sensitivity for cursor movement
 
     private float cursorX, cursorY; // Cursor screen coordinates
+    private Vector3 imuOffset;
 
     public Camera cam;
     public Transform target;
     private Vector3 screenPos;
     public float speedFactor = 15.0f;
     public GameObject player;
-    public float rotationSpeed = 1f;
+    public float rotationSpeed = 2f;
 
     void Start()
     {
@@ -26,7 +27,10 @@ public class Crosshair : MonoBehaviour
 
         SerialManager.Instance.OnDataReceivedIMU += ReadIMU;
 
-        target.transform.position = new Vector3(0, 0, speedFactor);
+        imuOffset = imuObject.localEulerAngles;
+
+
+        target.transform.position = new Vector3(0, 2.43f, speedFactor);
     }
 
     void Update()
@@ -38,14 +42,15 @@ public class Crosshair : MonoBehaviour
     {
         if (imuObject != null)
         {
+            imuEulerAngles = imuObject.localEulerAngles - imuOffset;
             screenPos = cam.WorldToScreenPoint(target.position);
             screenPos.x = Mathf.Clamp(screenPos.x, 0, Screen.width);
             screenPos.y = Mathf.Clamp(screenPos.y, 0, Screen.height);
-            if (screenPos.x < 0.2*Screen.width)
+            if (screenPos.x < 0.4*Screen.width)
             {
                 player.transform.Rotate(new Vector3(0,-rotationSpeed));
             }
-            else if (screenPos.x > Screen.width - 0.2 * Screen.width)
+            else if (screenPos.x > Screen.width - 0.4 * Screen.width)
             {
                 player.transform.Rotate(new Vector3(0, rotationSpeed));
             }
@@ -67,7 +72,7 @@ public class Crosshair : MonoBehaviour
         };
 
         //GUI.Label(new Rect(screenPos.x - 20, (Screen.height - screenPos.y - 20), 40, 40), "+", style);
-        GUI.Label(new Rect(screenPos.x, (Screen.height - screenPos.y), 40, 40), "+", style);
+        GUI.Label(new Rect(screenPos.x -20, (Screen.height - screenPos.y -20), 40, 40), "+", style);
 
     }
 

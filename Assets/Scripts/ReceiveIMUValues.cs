@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Globalization;
 //using Uduino;
 
 public class ReceiveIMUValues : MonoBehaviour
@@ -27,45 +28,41 @@ public class ReceiveIMUValues : MonoBehaviour
     public void ReadIMU(string data)
     {
         string[] values = data.Split('/');
-        if (values.Length == 5 && values[0] == "r") // Rotation of the first one 
+        if (values.Length == 5 && values[0] == "r") // Valid IMU data
         {
-            float w = float.Parse(values[1]);
-            float x = float.Parse(values[2]);
-            float y = float.Parse(values[3]);
-            float z = float.Parse(values[4]);
+            if (!float.TryParse(values[1], NumberStyles.Float, CultureInfo.InvariantCulture, out float w) ||
+                !float.TryParse(values[2], NumberStyles.Float, CultureInfo.InvariantCulture, out float x) ||
+                !float.TryParse(values[3], NumberStyles.Float, CultureInfo.InvariantCulture, out float y) ||
+                !float.TryParse(values[4], NumberStyles.Float, CultureInfo.InvariantCulture, out float z))
+            {
+                Debug.LogWarning($"Invalid quaternion values in data: {data}");
+                return;
+            }
+
+            Quaternion currentIMURotation = new Quaternion(y, z, x, w); // Adjust axes as needed
 
             if (firstTime)
             {
                 firstTime = false;
-                //firstPos = new Quaternion(-y, -z, x, w);
-                firstPos = new Quaternion(y, x, z, w);
-                return;
-            }
-            else
-            {   
-                //A * B * iB = C
-                //Quaternion A = new Quaternion(-y, -z, x, w);
-                //Quaternion A = new Quaternion(x, -z, -y, w); // The one from Uduino tests
-                Quaternion A = new Quaternion(y, x, z, w);
-                Quaternion B = firstPos;
-                Quaternion iB = Quaternion.Inverse(firstPos);
-                Quaternion C = A * iB;
-
-                //this.transform.localRotation = Quaternion.Lerp(this.transform.localRotation, new Quaternion(w, y, x, z), Time.deltaTime * speedFactor);
-                //this.transform.localRotation = Quaternion.Lerp(this.transform.localRotation, new Quaternion(-y, -z, x, w), Time.deltaTime * speedFactor);
-                this.transform.localRotation = Quaternion.Lerp(this.transform.localRotation, C, Time.deltaTime * speedFactor);
+                firstPos = currentIMURotation; // Save the initial orientation
             }
 
+            // Calculate absolute rotation relative to the initial offset
+            Quaternion absoluteRotation = Quaternion.Inverse(firstPos) * currentIMURotation;
 
-
-
+            // Smoothly apply the rotation
+            this.transform.localRotation = Quaternion.Lerp(this.transform.localRotation, absoluteRotation, Time.deltaTime * speedFactor);
         }
         else if (values.Length != 5)
         {
-           Debug.LogWarning(data);
+            Debug.LogWarning($"Unexpected data format: {data}");
         }
-        this.transform.parent.transform.eulerAngles = rotationOffset;
-        
+
+        // Apply rotation offset to parent transform
+        if (this.transform.parent != null)
+        {
+            this.transform.parent.transform.eulerAngles = rotationOffset;
+        }
     }
 
     void OnDestroy()
