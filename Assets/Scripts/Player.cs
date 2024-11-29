@@ -12,6 +12,7 @@ public class Player : MonoBehaviour
     public int maxGrenadeAmount;
 
     private Vector3 movementDirection = Vector3.zero;
+    private bool grenadeToBeThrown = false;
 
     void Start()
     {
@@ -19,12 +20,22 @@ public class Player : MonoBehaviour
         currentGrenadeAmount = maxGrenadeAmount;
         //SendHealthData();
         //SerialManager.Instance.OnDataReceivedMovement += readMovement;
+        if (SerialManager.Instance != null)
+        {
+            SerialManager.Instance.OnDataReceivedMovement += readMovement;
+            SerialManager.Instance.OnDataReceivedGrenade += readGrenadeData;
+        }
     }
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.G))
         {
             throwGrenade();
+        }
+        if (grenadeToBeThrown)
+        {
+            throwGrenade();
+            grenadeToBeThrown = false;
         }
     }
 
@@ -54,8 +65,8 @@ public class Player : MonoBehaviour
 
     public void PlayerDied()
     {
-        gameOverText.SetActive(true);
         GameEvents.current.playerDead();
+        gameOverText.SetActive(true);
     }
 
     public void SendHealthData()
@@ -103,9 +114,18 @@ public class Player : MonoBehaviour
         }
     }
 
+    public void readGrenadeData(string data)
+    {
+        string[] values = data.Split("/");
+        if (values[0] == "g")
+        {
+            grenadeToBeThrown = true;
+        }
+    }
+
     public void throwGrenade()
     {
-        if (currentGrenadeAmount>0)
+        if (currentGrenadeAmount>0) 
         {
             currentGrenadeAmount -= 1;
             GameObject grenade = Instantiate(grenadePrefab,transform);

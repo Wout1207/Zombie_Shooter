@@ -99,7 +99,7 @@ public class Target : MonoBehaviour
         if (hp <= 0)
         {
             animator.SetTrigger("zombie_death");
-            Destroy(this.gameObject);
+            //Destroy(this.gameObject);
         }
         //RandomizePosition();
         //OnTargetHit?.Invoke();
@@ -110,6 +110,11 @@ public class Target : MonoBehaviour
         Debug.Log("Animation event triggered: Animation ended.");
         player.GetComponent<Player>().TakeDamage(damage);
         // Add your logic here, such as transitioning to the next state
+    }
+
+    private void TargetDestroy()
+    {
+        Destroy(this.gameObject);
     }
 
     private void playerDied()

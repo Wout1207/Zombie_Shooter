@@ -18,6 +18,8 @@ public class SerialManager : MonoBehaviour
     private string imuData;
     private string triggerData;
     private string rfidData;
+    private string movementData;
+    private string grenadeData;
 
     public static SerialManager Instance
     {
@@ -35,6 +37,8 @@ public class SerialManager : MonoBehaviour
     public event Action<string> OnDataReceivedIMU;
     public event Action<string> OnDataReceivedTrigger;
     public event Action<string> OnDataReceivedRFID;
+    public event Action<string> OnDataReceivedMovement;
+    public event Action<string> OnDataReceivedGrenade;
 
     void Awake()
     {
@@ -65,6 +69,18 @@ public class SerialManager : MonoBehaviour
         {
             OnDataReceivedRFID?.Invoke(rfidData);
             rfidData = null; // Clear the buffer
+        }
+
+        if (movementData != null)
+        {
+            OnDataReceivedMovement?.Invoke(movementData);
+            movementData = null; // Clear the buffer
+        }
+
+        if (grenadeData != null)
+        {
+            OnDataReceivedGrenade?.Invoke(grenadeData);
+            grenadeData = null; // Clear the buffer
         }
     }
 
@@ -160,6 +176,14 @@ public class SerialManager : MonoBehaviour
             else if (values[0] == "mg" && values.Length == 4) // Format: "mg/G1/M1/10"
             {
                 rfidData = data; // Store RFID data
+            }
+            else if (values[0] == "m" && values.Length == 3)
+            {
+                movementData = data;
+            }
+            else if (values[0] == "g" && values.Length == 1)
+            {
+                grenadeData = data;
             }
         }
     }
