@@ -9,12 +9,14 @@ public class UIManager : MonoBehaviour
     public TMP_Text textTotalAmmoCount;
     public TMP_Text textHealth;
     public TMP_Text textGameOver;
+    public TMP_Text textRound;
 
     public TargetShooter TargetShooter;
     private int currentAmmo;
     private int totalAmmo;
     private int prevTotalAmmoCount;
     public Player player;
+    public SpawnManager spawnManager;
 
     // Start is called before the first frame update
     void Start()
@@ -37,6 +39,7 @@ public class UIManager : MonoBehaviour
         textTotalAmmoCount.text = "Ammo: " + TargetShooter.totalAmmoCount.ToString();
         //}
         textHealth.text = "Health: " + player.currentHP.ToString();
+        textRound.text = "Round: " + spawnManager.round.ToString();
         if (player.currentHP <= 0)
         {
             textGameOver.enabled = true;
