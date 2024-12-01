@@ -11,7 +11,7 @@ public class TargetShooter : MonoBehaviour
     [SerializeField] public int currentAmmoCount = 0;
     [SerializeField] public int maxAmmoCountInMag = 10;
     [SerializeField] public int totalAmmoCount = 100;
-    [SerializeField] public float reloadTime = 2f;
+    [SerializeField] public float reloadTime = 3f;
 
     public Transform imuObject; // Reference to the object that provides the IMU's rotation
     private Vector3 imuEulerAngles; // Stores IMU Euler angles
@@ -19,6 +19,11 @@ public class TargetShooter : MonoBehaviour
     private float lastClickTime = 0f;  // Time of the last valid button press
     public float clickCooldown = 0.2f; // Time (in seconds) to wait between clicks
     private bool isReloading = false;
+
+    public AudioClip shootingSound;
+    public AudioClip reloadSound;
+    public AudioClip emptyGunSound;
+    public AudioSource audioSource;
 
     // Start is called before the first frame update
     void Start()
@@ -121,19 +126,25 @@ public class TargetShooter : MonoBehaviour
             if (target != null && currentAmmoCount > 0) // waarom alleen ammo verliezen als je raakt?
             {
                 Debug.Log("target hit");
+                audioSource.clip = shootingSound;
+                audioSource.Play();
                 //AddAmmo(-1);
                 target.Hit(10);
             }
-            else if(currentAmmoCount <= 0)
+            else if(currentAmmoCount < 0)
             {
                 AddAmmo(1);
+                audioSource.clip = emptyGunSound;
+                audioSource.Play();
             }
             else
             {
+                audioSource.clip = shootingSound;
+                audioSource.Play();
                 //OnTargetMissed?.Invoke();
             }
         }
-        else if (currentAmmoCount <= 0)
+        else if (currentAmmoCount < 0)
         {
             AddAmmo(1);
         }
@@ -147,7 +158,8 @@ public class TargetShooter : MonoBehaviour
     {
         isReloading = true;
         Debug.Log("Reloading...");
-
+        audioSource.clip = reloadSound;
+        audioSource.Play();
         yield return new WaitForSeconds(reloadTime); // Wait for reload time
         if (totalAmmoCount >= maxAmmoCountInMag)
         {
