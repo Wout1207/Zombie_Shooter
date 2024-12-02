@@ -130,13 +130,14 @@ public class Player : MonoBehaviour
         }
     }
 
-    public void readGrenadeData(string data)
+    public void readGrenadeData()
     {
-        string[] values = data.Split("/");
-        if (values[0] == "g")
-        {
-            grenadeToBeThrown = true;
-        }
+        grenadeToBeThrown = true;
+        //string[] values = data.Split("/");
+        //if (values[0] == "g")
+        //{
+        //    grenadeToBeThrown = true;
+        //}
     }
 
     public void throwGrenade()

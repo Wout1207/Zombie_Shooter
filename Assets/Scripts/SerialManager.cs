@@ -38,7 +38,7 @@ public class SerialManager : MonoBehaviour
     public event Action<string> OnDataReceivedTrigger;
     public event Action<string> OnDataReceivedRFID;
     public event Action<string> OnDataReceivedMovement;
-    public event Action<string> OnDataReceivedGrenade;
+    public event Action OnDataReceivedGrenade;
 
     void Awake()
     {
@@ -79,7 +79,7 @@ public class SerialManager : MonoBehaviour
 
         if (grenadeData != null)
         {
-            OnDataReceivedGrenade?.Invoke(grenadeData);
+            OnDataReceivedGrenade?.Invoke();
             grenadeData = null; // Clear the buffer
         }
     }
