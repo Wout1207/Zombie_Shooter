@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Globalization;
 
 public class CrosshairMouseControl : MonoBehaviour
 {
@@ -15,6 +16,9 @@ public class CrosshairMouseControl : MonoBehaviour
     public float rotationBorder = 0.3f; // Screen border percentage for rotation triggers
 
     public GameObject player; // Reference to the player object
+    private bool firstTime = true;
+    private Quaternion firstPos;
+    public Quaternion absoluteRotation; // Set this quaternion dynamically
 
     private void Start()
     {
@@ -53,17 +57,43 @@ public class CrosshairMouseControl : MonoBehaviour
         }
     }
 
-    private void OnGUI()
+    public void convertIMUData(string data)
     {
-        // Draw crosshair at the cursor position
-        GUIStyle style = new GUIStyle
+        string[] values = data.Split('/');
+        if (values.Length == 5 && values[0] == "r")
         {
-            fontSize = 50,
-            fontStyle = FontStyle.Bold,
-            alignment = TextAnchor.MiddleCenter
-        };
+            if (!float.TryParse(values[1], NumberStyles.Float, CultureInfo.InvariantCulture, out float w) ||
+                !float.TryParse(values[2], NumberStyles.Float, CultureInfo.InvariantCulture, out float x) ||
+                !float.TryParse(values[3], NumberStyles.Float, CultureInfo.InvariantCulture, out float y) ||
+                !float.TryParse(values[4], NumberStyles.Float, CultureInfo.InvariantCulture, out float z))
+            {
+                Debug.LogWarning($"Invalid quaternion values in data: {data}");
+                return;
+            }
 
-        GUI.Label(new Rect(cursorPosition.x - 20, (Screen.height - cursorPosition.y - 20), 40, 40), "+", style);
+            //Quaternion currentIMURotation = new Quaternion(y, x, -z, w); //version in gun
+            //Quaternion currentIMURotation = new Quaternion(x, -z, -y, w); //Version breadboard Wout.C
+            Quaternion currentIMURotation = new Quaternion(x, -z, -y, w); //Version breadboard Wout.C Experimental
+            Debug.Log($"Current IMU Rotation: {currentIMURotation}");
+
+            if (firstTime)
+            {
+                firstTime = false;
+                firstPos = currentIMURotation;
+            }
+
+            // Calculate absolute rotation relative to the initial offset
+            //absoluteRotation = Quaternion.Inverse(firstPos) * currentIMURotation;
+            absoluteRotation = currentIMURotation;
+            //Quaternion offsetRotation = Quaternion.Euler(rotationOffset);
+            //Quaternion finalRotation = absoluteRotation * offsetRotation;
+
+            //this.transform.localRotation = Quaternion.Lerp(this.transform.localRotation, absoluteRotation, Time.deltaTime * speedFactor);
+        }
+        else if (values.Length != 5)
+        {
+            Debug.LogWarning($"Unexpected data format: {data}");
+        }
     }
 }
 
