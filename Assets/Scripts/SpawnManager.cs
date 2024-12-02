@@ -65,10 +65,10 @@ public class SpawnManager : MonoBehaviour
                         spawner.amountToSpawn[1]++;
                     }
                 }
-                spawner.amountToSpawn[2] = round / 3 / transform.childCount;
-                if (round > 5)
+                spawner.amountToSpawn[2] = round / 3;
+                if (round >= 5)
                 {
-                    spawner.amountToSpawn[3] = round;
+                    spawner.amountToSpawn[3] = round - 4;
                 }
                 spawner.spawnObjects = true;
                 inactiveAreas --;

@@ -19,6 +19,10 @@ public class Target : MonoBehaviour
     static private float distanceToAttackThreshold = 2.5f;
     protected private bool firstWithinRange = true;
     protected private bool playerDeadInvoked = false;
+
+    public AudioSource audioSource;
+    public AudioClip hitPlayer;
+    public List<AudioClip> groans;
     // Start is called before the first frame update
     void Start()
     {
@@ -41,6 +45,11 @@ public class Target : MonoBehaviour
         if (!playerDeadInvoked)
         {
             targetAnimations();
+        }
+        if(!audioSource.isPlaying && Vector3.Distance(transform.position, player.transform.position) < distanceToPlayerThreshold)
+        {
+            audioSource.clip = groans[Random.Range(0, groans.Count - 1)];
+            audioSource.Play();
         }
     }
 
@@ -106,8 +115,9 @@ public class Target : MonoBehaviour
     }
     public void OnAttackAnimationEnd()
     {
-
         Debug.Log("Animation event triggered: Animation ended.");
+        audioSource.clip = hitPlayer;
+        audioSource.Play();
         player.GetComponent<Player>().TakeDamage(damage);
         // Add your logic here, such as transitioning to the next state
     }

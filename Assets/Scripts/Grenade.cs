@@ -11,10 +11,16 @@ public class Grenade : MonoBehaviour
     public float damage;
     public GameObject explosionVFXPrefab;
     private GameObject explosionVFX;
+
+    public AudioSource audioSource;
+    public AudioClip pinAudio;
+    public AudioClip explosionAudio;
     // Start is called before the first frame update
     private void Start()
     {
         time = Time.time;
+        audioSource.clip = pinAudio;
+        audioSource.Play();
     }
 
     private void Update()
@@ -37,6 +43,8 @@ public class Grenade : MonoBehaviour
             explosionVFX = Instantiate(explosionVFXPrefab);
             explosionVFX.transform.position = transform.position;
             explode = true;
+            audioSource.clip = explosionAudio;
+            audioSource.Play();
             foreach (MeshRenderer mesh in GetComponentsInChildren<MeshRenderer>())
             {
                 mesh.enabled = false;

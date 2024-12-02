@@ -16,6 +16,8 @@ public class Player : MonoBehaviour
 
     private bool alive = true;
 
+    public WalkingSoundScript walkingSoundScript;
+
     void Start()
     {
         currentHP = maxHP;
@@ -51,6 +53,14 @@ public class Player : MonoBehaviour
         float verticalMovement = Input.GetAxis("Vertical");
         if(alive)
         {
+            if(horizontalMovement != 0 || verticalMovement != 0 || movementDirection != Vector3.zero)
+            {
+                walkingSoundScript.isWalking = true;
+            }
+            else
+            {
+                walkingSoundScript.isWalking = false;
+            }
             transform.Translate(new Vector3(horizontalMovement * Time.deltaTime * speed, 0, verticalMovement * Time.deltaTime * speed));
             transform.Translate(movementDirection * speed * Time.deltaTime);
         }
