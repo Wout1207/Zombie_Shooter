@@ -78,6 +78,16 @@ MonoBehaviour:
   damage: 10
   audioSource: {fileID: -4721072929677808291}
   hitPlayer: {fileID: 8300000, guid: 4c319ed171b6fd3408916bc589291b6d, type: 3}
+  groans:
+  - {fileID: 8300000, guid: 67ea2d77f8ddd1943ba51f1d42e80d8b, type: 3}
+  - {fileID: 8300000, guid: d369b2bca08a9df49b84471cc107bc31, type: 3}
+  - {fileID: 8300000, guid: b51ed49e60b4cef4a894edb2d44907bf, type: 3}
+  - {fileID: 8300000, guid: 4b4b47ce7cd066247b90756097ae4a1c, type: 3}
+  - {fileID: 8300000, guid: 1dfc80250cc886d4ba390a9831e6d376, type: 3}
+  - {fileID: 8300000, guid: 7ab928cb99d03524096f1d99af726f1a, type: 3}
+  - {fileID: 8300000, guid: 6a72ca10257204c4385faa137f101f6d, type: 3}
+  - {fileID: 8300000, guid: 9054413e3d3df7a40b4ddb9a9886c154, type: 3}
+  - {fileID: 8300000, guid: 309d8e65ce177284797e5cd79f2a0bd8, type: 3}
 --- !u!195 &3956500483479747868
 NavMeshAgent:
   m_ObjectHideFlags: 0

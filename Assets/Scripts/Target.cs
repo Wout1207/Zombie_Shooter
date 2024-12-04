@@ -103,15 +103,40 @@ public class Target : MonoBehaviour
     }
     public void Hit(float damage)
     {
-        animator.SetTrigger("zombie_hit");
         hp -= damage;
         if (hp <= 0)
         {
             animator.SetTrigger("zombie_death");
+            animator.SetBool("zombie_isDead", true);
             //Destroy(this.gameObject);
+        }
+        else
+        {
+            animator.SetTrigger("zombie_hit");
         }
         //RandomizePosition();
         //OnTargetHit?.Invoke();
+    }
+
+    public void fireHit(float damage)
+    {
+        hp -= damage;
+        if (hp <= 0)
+        {
+            animator.SetTrigger("zombie_death");
+            
+            //Destroy(this.gameObject);
+        }
+    }
+
+    public void onTargetDeath()
+    {
+        animator.SetBool("zombie_isDead", true);
+    }
+
+    public void destroyTarget()
+    {
+        Destroy(gameObject);
     }
     public void OnAttackAnimationEnd()
     {
