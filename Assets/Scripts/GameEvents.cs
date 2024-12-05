@@ -68,4 +68,22 @@ public class GameEvents : MonoBehaviour
             onPlayerDead();
         }
     }
+
+    public event System.Action onGunJammed;
+    public void GunJammed()
+    {
+        if (onGunJammed != null)
+        {
+            onGunJammed();
+        }
+    }
+
+    public event System.Action onGunDejammed;
+    public void GunDejammed()
+    {
+        if (onGunDejammed != null)
+        {
+            onGunDejammed();
+        }
+    }
 }

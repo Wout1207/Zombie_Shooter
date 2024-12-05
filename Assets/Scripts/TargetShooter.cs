@@ -13,6 +13,13 @@ public class TargetShooter : MonoBehaviour
     [SerializeField] public int totalAmmoCount = 100;
     [SerializeField] public float reloadTime = 3f;
 
+    [SerializeField] private bool isJammed = false; 
+    [SerializeField] private int shakesRequiredToDejam = 3; 
+    [SerializeField] private float shakeThreshold = 1.5f; 
+    private int shakeCount = 0; 
+    private Vector3 lastIMUReading = Vector3.zero;
+
+
     public Transform imuObject; // Reference to the object that provides the IMU's rotation
     private Vector3 imuEulerAngles; // Stores IMU Euler angles
 
@@ -68,19 +75,71 @@ public class TargetShooter : MonoBehaviour
 
     public void ReadIMU(string data)
     {
-        if (imuObject != null)
+        Debug.Log($"Received IMU data: {data}");
+
+        string[] values = data.Split('/');
+        if (values[0] != "r" || values.Length < 4)
         {
-            // Get the IMU Euler angles
-            imuEulerAngles = imuObject.eulerAngles;
+            Debug.LogWarning("Invalid IMU data format.");
+            return;
         }
-        else
+
+        Vector3 currentIMUReading = new Vector3(
+            float.Parse(values[1]),
+            float.Parse(values[2]),
+            float.Parse(values[3])
+        );
+
+        Debug.Log($"Parsed IMU data: {currentIMUReading}");
+
+        if (isJammed)
         {
-            Debug.LogWarning("IMU_Object not assigned!");
+            float imuDelta = Vector3.Distance(currentIMUReading, lastIMUReading);
+            Debug.Log($"IMU delta: {imuDelta}, Threshold: {shakeThreshold}");
+
+            if (imuDelta > shakeThreshold)
+            {
+                shakeCount++;
+                Debug.Log($"Shake detected! Shake count: {shakeCount}/{shakesRequiredToDejam}");
+
+                if (shakeCount >= shakesRequiredToDejam)
+                {
+                    ClearJam();
+                }
+            }
         }
+
+        lastIMUReading = currentIMUReading;
     }
+
+
+    public void TriggerJam()
+    {
+        if (isJammed) return;
+
+        isJammed = true;
+        shakeCount = 0;
+        Debug.Log("Gun jammed! Shake to clear.");
+        GameEvents.current.GunJammed();
+    }
+
+    private void ClearJam()
+    {
+        isJammed = false;
+        shakeCount = 0;
+        Debug.Log("Gun de-jammed!");
+        GameEvents.current.GunDejammed(); 
+    }
+
 
     public void Shoot(string data)
     {
+        if (isJammed)
+        {
+            Debug.Log("Gun is jammed! Cannot shoot.");
+            return;
+        }
+
         float currentTime = Time.time;
         
         if (currentTime - lastClickTime >= clickCooldown && !isReloading) // Check if enough time has passed since the last click
@@ -102,13 +161,25 @@ public class TargetShooter : MonoBehaviour
 
     public void ShootRay()
     {
+        if (isJammed)
+        {
+            Debug.Log("Cannot fire; gun is jammed.");
+            return;
+        }
+
         Debug.Log("I am in ShootRay()");
         Vector3 screenPos = cam.WorldToScreenPoint(imuObject.GetChild(0).position);
         screenPos.x = Mathf.Clamp(screenPos.x, 0, Screen.width);
         screenPos.y = Mathf.Clamp(screenPos.y, 0, Screen.height);
         screenPos = new Vector3(screenPos.x, (Screen.height - screenPos.y));
         Ray ray = cam.ScreenPointToRay(screenPos);
-        
+
+        if (Random.value < 0.1f)
+        {
+            TriggerJam();
+            return;
+        }
+
         GameEvents.current.ShotFired();
         AddAmmo(-1);
 

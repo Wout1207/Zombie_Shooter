@@ -10,6 +10,8 @@ public class UIManager : MonoBehaviour
     public TMP_Text textHealth;
     public TMP_Text textGameOver;
     public TMP_Text textRound;
+    public TMP_Text textJamWarning;
+
 
     public TargetShooter TargetShooter;
     private int currentAmmo;
@@ -22,27 +24,32 @@ public class UIManager : MonoBehaviour
     void Start()
     {
         GameEvents.current.onShotFired += UpdateAmmoCount;
+        GameEvents.current.onGunJammed += ShowJamWarning;
+        GameEvents.current.onGunDejammed += HideJamWarning;
+
         UpdateAmmoCount();
+        textJamWarning.enabled = false; 
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (currentAmmo >= 0)
         {
             textCurrentAmmoCount.text = "Ammo mag: " + TargetShooter.currentAmmoCount.ToString();
         }
-        
-        //if (totalAmmo != prevTotalAmmoCount)
-        //{
-            //prevTotalAmmoCount = totalAmmo;
+
         textTotalAmmoCount.text = "Ammo: " + TargetShooter.totalAmmoCount.ToString();
-        //}
         textHealth.text = "Health: " + player.currentHP.ToString();
         textRound.text = "Round: " + spawnManager.round.ToString();
+
         if (player.currentHP <= 0)
         {
             textGameOver.enabled = true;
+        }
+
+        if (textJamWarning.enabled)
+        {
+            textJamWarning.alpha = Mathf.PingPong(Time.time, 1.0f); 
         }
     }
 
@@ -51,5 +58,16 @@ public class UIManager : MonoBehaviour
         //currentAmmo = TargetShooter.currentAmmoCount;
         //totalAmmo = TargetShooter.tottalAmmoCount;
 
+    }
+
+    void ShowJamWarning()
+    {
+        textJamWarning.text = "Gun Jammed! Shake to clear.";
+        textJamWarning.enabled = true;
+    }
+
+    void HideJamWarning()
+    {
+        textJamWarning.enabled = false;
     }
 }

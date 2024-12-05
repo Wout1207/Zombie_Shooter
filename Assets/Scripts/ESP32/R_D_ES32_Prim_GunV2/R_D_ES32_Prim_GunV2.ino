@@ -1,9 +1,13 @@
 #include "I2Cdev.h"
+//#include "USB.h"
 #include "MPU6050_6Axis_MotionApps20.h"
 #include "Wire.h"
 #include <esp_now.h>
 #include <WiFi.h>
-
+#include <SPI.h>
+//#include <MFRC522.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SH110X.h>
 MPU6050 mpu;
 
 #define INTERRUPT_PIN 47  // W Set the interrupt pin
@@ -16,6 +20,29 @@ uint8_t broadcastAddress[] = {0x24, 0xEC, 0x4A, 0x01, 0x32, 0xA0}; // send to es
 String success;
 
 esp_now_peer_info_t peerInfo;
+
+//-------------OLED------------
+#define SCREEN_WIDTH 128
+#define SCREEN_HEIGHT 64
+#define OLED_RESET -1
+#define oled_i2c_Address 0x3c
+
+Adafruit_SH1106G display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+int magCapacity = 10;
+int bulletsLeft = 0;
+
+#define bulletIcon_width 30
+#define bulletIcon_height 29
+const unsigned char bulletIcon[] PROGMEM = {
+	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x05, 0x20, 
+	0x00, 0x00, 0x17, 0x80, 0x00, 0x00, 0x2e, 0x00, 0x00, 0x00, 0xfc, 0x00, 0x00, 0x01, 0x18, 0x20, 
+	0x00, 0x02, 0xc8, 0x00, 0x00, 0x05, 0xe0, 0x40, 0x00, 0x0b, 0xc0, 0x00, 0x00, 0x07, 0x81, 0x80, 
+	0x00, 0x0f, 0x03, 0x00, 0x00, 0x1e, 0x02, 0x00, 0x00, 0x3c, 0x04, 0x00, 0x00, 0x78, 0x08, 0x00, 
+	0x00, 0xf0, 0x10, 0x00, 0x05, 0xe0, 0x20, 0x00, 0x07, 0x80, 0x40, 0x00, 0x1f, 0x80, 0x00, 0x00, 
+	0x07, 0x80, 0x00, 0x00, 0x03, 0xc0, 0x00, 0x00, 0x00, 0xe0, 0x00, 0x00, 0x00, 0x70, 0x00, 0x00, 
+	0x00, 0x40, 0x00, 0x00, 0x00, 0x40, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
+	0x00, 0x00, 0x00, 0x00
+};
 
 
 // ================================================================
@@ -106,6 +133,18 @@ void setup() {
 
   //for button functionality
   pinMode(trigger_pin, INPUT_PULLUP);
+
+  //-------------------OLED-----------------
+  if (display.begin(oled_i2c_Address, true)) {  // Try to initialize the display
+    display.setRotation(2);
+    Serial.println("OLED display initialized successfully.");
+    display.clearDisplay();            // Clear any previous data from the display buffer
+    initializingAnimation();           
+    updateDisplay();
+  } else {
+    Serial.println("Failed to initialize OLED display.");
+    // Handle the failure case, like displaying an error or retrying
+  }
 }
 
 
@@ -145,6 +184,129 @@ void loop() {
     lastTriggerState = triggerState;
     SendTriggerStateEspNow(triggerState);
   }
+}
+
+// ================================================================
+// ===                     OLED FUNCTIONS                       ===
+// ================================================================
+
+
+void initializingAnimation() {
+  display.setTextSize(1);
+  display.setTextColor(SH110X_WHITE);
+  display.setCursor(0, 0);
+  display.print("Initializing...");
+
+  // Animation loop
+  for (int i = 0; i < SCREEN_WIDTH; i += 4) {
+    display.drawLine(0, SCREEN_HEIGHT - 1, i, 0, SH110X_WHITE);
+    display.display();
+    delay(50);
+  }
+
+  display.clearDisplay();
+  display.setCursor(0, 0);
+  display.println("Ready to Fire!");
+  display.display();
+  delay(1000);
+  display.clearDisplay();
+}
+
+void updateDisplay() {
+  display.clearDisplay();
+
+  int bulletX = 6; 
+  int bulletY = (SCREEN_HEIGHT - 6) - 4; 
+  int bulletWidth = 3;
+  int bulletHeight = 10;
+
+  // Display bullets left with icons
+  for (int i = 0; i < bulletsLeft; i++) {
+    display.fillRoundRect(bulletX + (i*4), bulletY, bulletWidth, bulletHeight, 1, SH110X_WHITE);
+    // display.drawBitmap(bulletX, bulletY - (i * 10), bulletIcon, 8, 8, SH110X_WHITE);
+  }
+
+  //Display bullet
+  display.drawBitmap(10, (SCREEN_HEIGHT/2)-14, bulletIcon, bulletIcon_width, bulletIcon_height, SH110X_WHITE);
+
+  // Display bullet count as a number below icons
+  display.setTextSize(3);
+  display.setTextColor(SH110X_WHITE);
+  if(bulletsLeft > 9){
+    display.setCursor((SCREEN_WIDTH - 30) / 2, (SCREEN_HEIGHT/2)-10);
+  }else{
+    display.setCursor((SCREEN_WIDTH - 15) / 2, (SCREEN_HEIGHT/2)-10);
+  }
+  display.print(bulletsLeft);
+  display.setTextSize(1);
+  display.print("/" + String(magCapacity));
+
+  display.display();
+}
+
+void reload(const uint8_t *incomingData, int len) {
+  String dataStr = "";
+  for (int i = 0; i < len; i++) {
+    dataStr += (char)incomingData[i];
+  }
+  // Split dataStr by '/' and store in an array
+  String values[3];  // Array to hold split parts: ["b", "15", "10"]
+  splitString(dataStr, '/', values, 3);
+
+  if(values[0] == "b"){
+    bulletsLeft = values[2].toInt();
+    Serial.print("Parsed bulletsLeft: ");
+    Serial.println(bulletsLeft);
+    updateDisplay();
+  }
+  else if (values[0] == "rb") {  // Check that it's the correct type
+    magCapacity = values[1].toInt();
+    bulletsLeft = values[2].toInt();
+
+    Serial.print("Parsed magCapacity: ");
+    Serial.println(magCapacity);
+    Serial.print("Parsed bulletsLeft: ");
+    Serial.println(bulletsLeft);
+    reloadingAnimation();
+    updateDisplay();
+  } else {
+    Serial.println("Error: Unsupported data type");
+  }  
+}
+
+// Function to split a string by a delimiter and store results in an array
+void splitString(String str, char delimiter, String* result, int maxParts) {
+  int start = 0;
+  int partIndex = 0;
+  
+  for (int i = 0; i < str.length() && partIndex < maxParts; i++) {
+    if (str[i] == delimiter) {
+      result[partIndex++] = str.substring(start, i);
+      start = i + 1;
+    }
+  }
+  result[partIndex] = str.substring(start);
+}
+
+void reloadingAnimation() {
+  display.clearDisplay();
+  display.setTextSize(1);
+  display.setCursor(0, 0);
+  display.println("Reloading...");
+
+  // Simple reloading bar animation
+  for (int i = 0; i <= SCREEN_WIDTH; i += 8) {
+    display.fillRect(0, SCREEN_HEIGHT - 8, i, 8, SH110X_WHITE);
+    display.display();
+    delay(100);
+  }
+
+  display.clearDisplay();
+  display.setCursor(0, 0);
+  display.println("Reload Complete!");
+  display.display();
+  delay(1000);
+  display.clearDisplay();
 }
 
 
@@ -196,6 +358,8 @@ void OnDataRecv(const esp_now_recv_info* recv_info, const uint8_t *incomingData,
     Serial.print((char)incomingData[i]);
   }
   Serial.println();
+
+  reload(incomingData, len);
 }
 
 

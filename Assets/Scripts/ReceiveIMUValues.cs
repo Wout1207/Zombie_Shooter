@@ -49,7 +49,7 @@ public class ReceiveIMUValues : MonoBehaviour
             //Quaternion offsetRotation = Quaternion.Euler(rotationOffset);
             //Quaternion finalRotation = absoluteRotation * offsetRotation;
 
-            //this.transform.localRotation = Quaternion.Lerp(this.transform.localRotation, absoluteRotation, Time.deltaTime * speedFactor);
+            this.transform.localRotation = Quaternion.Lerp(this.transform.localRotation, absoluteRotation, Time.deltaTime * speedFactor);
         }
         else if (values.Length != 5)
         {

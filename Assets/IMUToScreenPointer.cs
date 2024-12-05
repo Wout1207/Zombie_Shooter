@@ -81,7 +81,8 @@ public class IMUToScreenPointer : MonoBehaviour
             Vector2 currentPos = pointerUIElement.anchoredPosition;
             Vector2 smoothedPos = Vector2.Lerp(currentPos, screenPos, Time.deltaTime * 10f);
 
-            pointerUIElement.anchoredPosition = screenPoint;         
+            pointerUIElement.anchoredPosition = screenPoint;
+            screenPoint.y = screenPoint.y + 1.63f;
         }
 
         // Debug: Draw a point where the IMU points on the screen
@@ -212,9 +213,9 @@ public class IMUToScreenPointer : MonoBehaviour
                 return;
             }
 
-            //Quaternion currentIMURotation = new Quaternion(y, x, -z, w); //version in gun
+            Quaternion currentIMURotation = new Quaternion(y, x, -z, w); //version in gun
             //Quaternion currentIMURotation = new Quaternion(x, -z, -y, w); //Version breadboard Wout.C
-            Quaternion currentIMURotation = new Quaternion(x, -z, y, w); //Version breadboard Wout.C Experimental
+            //Quaternion currentIMURotation = new Quaternion(x, -z, y, w); //Version breadboard Wout.C Experimental
             Debug.Log($"Current IMU Rotation: {currentIMURotation}");
 
             if (firstTime)
