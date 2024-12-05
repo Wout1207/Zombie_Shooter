@@ -9,11 +9,7 @@ public class TargetThrowing : Target
     // Update is called once per frame
     protected new void Update()
     {
-        if ((transform.position - player.transform.position).magnitude < 30)
-        {
-            agent.SetDestination(player.transform.position);
-        }
-        agent.isStopped = (((transform.position - player.transform.position).magnitude) <= 20f) || agent.pathStatus == NavMeshPathStatus.PathPartial || !agent.hasPath;
+        base.Update();
         if (agent.isStopped && agent.hasPath)
         {
             Vector3 directionToPlayer = (player.transform.position - transform.position).normalized;
@@ -21,14 +17,18 @@ public class TargetThrowing : Target
             Quaternion lookRotation = Quaternion.LookRotation(directionToPlayer);
             transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 5);
         }
-        if (playerInCollider && Time.time - hitTimerDelay > 3)
-        {
-            if (castRayToPlayer())
-            {
-                throwItem();
-            }
-        }
     }
+    public new void OnAttackAnimationEnd()
+    {
+        Debug.Log("Animation event triggered: Animation ended.");
+        if (castRayToPlayer())
+        {
+            throwItem();
+        }
+        audioSource.clip = hitPlayer;
+        audioSource.Play();
+    }
+
     private bool castRayToPlayer()
     {
         Vector3 directionToPlayer = player.transform.position - transform.position + transform.forward;

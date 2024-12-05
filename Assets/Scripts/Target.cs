@@ -15,7 +15,7 @@ public class Target : MonoBehaviour
     protected private bool playerInCollider = false;
     protected private float hitTimerDelay;
     protected private float distanceToPlayer;
-    static private float distanceToPlayerThreshold = 30;
+    static protected private float distanceToPlayerThreshold = 30;
     static private float distanceToAttackThreshold = 2.5f;
     protected private bool firstWithinRange = true;
     protected private bool playerDeadInvoked = false;
@@ -61,6 +61,11 @@ public class Target : MonoBehaviour
 
         if (distanceToPlayer < distanceToPlayerThreshold)
         {
+            if ((transform.position - player.transform.position).magnitude < 30)
+            {
+                agent.SetDestination(player.transform.position);
+            }
+            agent.isStopped = (((transform.position - player.transform.position).magnitude) <= 20f) || agent.pathStatus == NavMeshPathStatus.PathPartial || !agent.hasPath;
             if (firstWithinRange)
             {
                 agent.isStopped = true;
@@ -80,10 +85,6 @@ public class Target : MonoBehaviour
             }
             else
             {
-                //agent.SetDestination(player.transform.position);
-                agent.isStopped = false;
-                //agent.destination = player.transform.position; // wout.c : changed to destination instead of SetDestination (later is for error handling)
-                agent.destination = player.transform.position;
                 setPosAndDest(false, true);
                 animator.SetBool("zombie_isWalking", true);
             }
@@ -123,15 +124,11 @@ public class Target : MonoBehaviour
         hp -= damage;
         if (hp <= 0)
         {
+            animator.SetBool("zombie_isDead", true);
             animator.SetTrigger("zombie_death");
             
             //Destroy(this.gameObject);
         }
-    }
-
-    public void onTargetDeath()
-    {
-        animator.SetBool("zombie_isDead", true);
     }
 
     public void destroyTarget()
