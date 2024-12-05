@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Player : MonoBehaviour
 {
@@ -83,6 +84,7 @@ public class Player : MonoBehaviour
         alive = false;
         GameEvents.current.playerDead();
         gameOverText.SetActive(true);
+        SceneManager.LoadScene("GameOverScene");
     }
 
     public void SendHealthData()
