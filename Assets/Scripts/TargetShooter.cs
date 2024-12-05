@@ -104,7 +104,6 @@ public class TargetShooter : MonoBehaviour
 
     public void ShootRay()
     {
-        Debug.Log("I am in ShootRay()");
         Vector3 screenPos = cam.WorldToScreenPoint(imuObject.GetChild(0).position);
         screenPos.x = Mathf.Clamp(screenPos.x, 0, Screen.width);
         screenPos.y = Mathf.Clamp(screenPos.y, 0, Screen.height);
@@ -208,8 +207,6 @@ public class TargetShooter : MonoBehaviour
     public void AddAmmo(int amount)
     {
         currentAmmoCount += amount;
-        Debug.Log("Ammo: " + currentAmmoCount);
-
         sendToGun("b"); // "rb" for reloading, "b" for bullet update/shot 
     }
 

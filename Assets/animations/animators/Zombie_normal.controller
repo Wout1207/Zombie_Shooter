@@ -189,7 +189,7 @@ AnimatorStateTransition:
   m_TransitionDuration: 0.25
   m_TransitionOffset: 0
   m_ExitTime: 0.9
-  m_HasExitTime: 0
+  m_HasExitTime: 1
   m_HasFixedDuration: 1
   m_InterruptionSource: 0
   m_OrderedInterruption: 1
@@ -414,6 +414,9 @@ AnimatorStateTransition:
   - m_ConditionMode: 1
     m_ConditionEvent: zombie_attack
     m_EventTreshold: 0
+  - m_ConditionMode: 2
+    m_ConditionEvent: zombie_isDead
+    m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 7131759376407268015}
   m_Solo: 0
@@ -538,7 +541,7 @@ AnimatorStateMachine:
     m_Position: {x: 70, y: 230, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 7260331379580082065}
-    m_Position: {x: 220, y: 300, z: 0}
+    m_Position: {x: 300, y: 310, z: 0}
   m_ChildStateMachines: []
   m_AnyStateTransitions:
   - {fileID: 6178085039519621116}

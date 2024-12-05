@@ -17,7 +17,6 @@ public class Target : MonoBehaviour
     protected private float distanceToPlayer;
     static protected private float distanceToPlayerThreshold = 30;
     public float distanceToAttackThreshold;
-    public float minDistanceToAttackThreshold;
     protected private bool firstWithinRange = true;
     protected private bool playerDeadInvoked = false;
 
@@ -70,7 +69,7 @@ public class Target : MonoBehaviour
             {
                 agent.SetDestination(player.transform.position);
             }
-            agent.isStopped = (((transform.position - player.transform.position).magnitude) <= distanceToAttackThreshold) || agent.pathStatus == NavMeshPathStatus.PathPartial || !agent.hasPath && player.GetComponent<Player>().currentHP > 0;
+            agent.isStopped = distanceToPlayer <= distanceToAttackThreshold || agent.pathStatus == NavMeshPathStatus.PathPartial || !agent.hasPath && player.GetComponent<Player>().currentHP > 0;
             if (firstWithinRange)
             {
                 agent.isStopped = true;
@@ -88,15 +87,16 @@ public class Target : MonoBehaviour
                 setPosAndDest();
                 hitTimerDelay = Time.time;
             }
+            else if (distanceToPlayer < distanceToAttackThreshold)
+            {
+                animator.SetBool("zombie_isWalking", false);
+            }
             else if (!agent.isStopped)
             {
                 setPosAndDest(false, true);
                 animator.SetBool("zombie_isWalking", true);
             }
-            else
-            {
-                animator.SetBool("zombie_isWalking", false);
-            }
+            
         }
         else
         {
@@ -146,7 +146,6 @@ public class Target : MonoBehaviour
     }
     public void OnAttackAnimationEnd()
     {
-        Debug.Log("Animation event triggered: Animation ended.");
         audioSource.clip = hitPlayer;
         audioSource.Play();
         player.GetComponent<Player>().TakeDamage(damage);
