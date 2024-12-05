@@ -19,7 +19,8 @@ ModelImporter:
     rigImportErrors: 
     rigImportWarnings: 
     animationImportErrors: 
-    animationImportWarnings: 
+    animationImportWarnings: Event destroyTarget has a time (2.946029) outside the
+      clip's valid range (0.000000..2.800000). It will never be fired
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
     importAnimatedCustomProperties: 0
@@ -57,8 +58,8 @@ ModelImporter:
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
       events:
-      - time: 0.9120196
-        functionName: TargetDestroy
+      - time: 0.9930434
+        functionName: destroyTarget
         data: 
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0

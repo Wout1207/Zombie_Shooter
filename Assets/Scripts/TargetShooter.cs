@@ -26,6 +26,8 @@ public class TargetShooter : MonoBehaviour
     private float lastClickTime = 0f;  // Time of the last valid button press
     public float clickCooldown = 0.2f; // Time (in seconds) to wait between clicks
     private bool isReloading = false;
+    public bool isFireAmmo = true;
+    public GameObject fireEffect;
 
     public AudioClip shootingSound;
     public AudioClip reloadSound;
@@ -201,6 +203,18 @@ public class TargetShooter : MonoBehaviour
                 audioSource.Play();
                 //AddAmmo(-1);
                 target.Hit(10);
+                if(isFireAmmo)
+                {
+                    FireEffect fire = target.transform.GetComponentInChildren<FireEffect>();
+                    if (fire)
+                    {
+                        fire.duration += fireEffect.GetComponent<FireEffect>().duration;
+                    }
+                    else
+                    {
+                        Instantiate(fireEffect, target.transform);
+                    }
+                }
             }
             else if(currentAmmoCount < 0)
             {
@@ -265,8 +279,6 @@ public class TargetShooter : MonoBehaviour
     public void AddAmmo(int amount)
     {
         currentAmmoCount += amount;
-        Debug.Log("Ammo: " + currentAmmoCount);
-
         sendToGun("b"); // "rb" for reloading, "b" for bullet update/shot 
     }
 

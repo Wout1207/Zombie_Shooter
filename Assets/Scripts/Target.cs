@@ -15,8 +15,8 @@ public class Target : MonoBehaviour
     protected private bool playerInCollider = false;
     protected private float hitTimerDelay;
     protected private float distanceToPlayer;
-    static private float distanceToPlayerThreshold = 30;
-    static private float distanceToAttackThreshold = 2.5f;
+    static protected private float distanceToPlayerThreshold = 30;
+    public float distanceToAttackThreshold;
     protected private bool firstWithinRange = true;
     protected private bool playerDeadInvoked = false;
 
@@ -36,7 +36,7 @@ public class Target : MonoBehaviour
         }
 
         animator = GetComponent<Animator>();
-
+        
         GameEvents.current.onPlayerDead += playerDied;
     }
 
@@ -59,9 +59,18 @@ public class Target : MonoBehaviour
         distanceToPlayer = Vector3.Distance(transform.position, player.transform.position); // wout.c : think better way to calculate distance?
 
         //if ((transform.position-player.transform.position).magnitude < 30) // wout.c : changed value to variable "distanceToPlayerThreshold"
-
-        if (distanceToPlayer < distanceToPlayerThreshold)
+        if (player.GetComponent<Player>().currentHP <= 0)
         {
+            animator.SetTrigger("player_died");
+        }
+
+        else if (distanceToPlayer < distanceToPlayerThreshold)
+        {
+            if ((transform.position - player.transform.position).magnitude < 30)
+            {
+                agent.SetDestination(player.transform.position);
+            }
+            agent.isStopped = distanceToPlayer <= distanceToAttackThreshold || agent.pathStatus == NavMeshPathStatus.PathPartial || !agent.hasPath && player.GetComponent<Player>().currentHP > 0;
             if (firstWithinRange)
             {
                 agent.isStopped = true;
@@ -79,15 +88,16 @@ public class Target : MonoBehaviour
                 setPosAndDest();
                 hitTimerDelay = Time.time;
             }
-            else
+            else if (distanceToPlayer < distanceToAttackThreshold)
             {
-                //agent.SetDestination(player.transform.position);
-                agent.isStopped = false;
-                //agent.destination = player.transform.position; // wout.c : changed to destination instead of SetDestination (later is for error handling)
-                agent.destination = player.transform.position;
+                animator.SetBool("zombie_isWalking", false);
+            }
+            else if (!agent.isStopped)
+            {
                 setPosAndDest(false, true);
                 animator.SetBool("zombie_isWalking", true);
             }
+            
         }
         else
         {
@@ -104,19 +114,39 @@ public class Target : MonoBehaviour
     }
     public void Hit(float damage)
     {
-        animator.SetTrigger("zombie_hit");
         hp -= damage;
         if (hp <= 0)
         {
             animator.SetTrigger("zombie_death");
+            animator.SetBool("zombie_isDead", true);
             //Destroy(this.gameObject);
+        }
+        else
+        {
+            animator.SetTrigger("zombie_hit");
         }
         //RandomizePosition();
         //OnTargetHit?.Invoke();
     }
+
+    public void fireHit(float damage)
+    {
+        hp -= damage;
+        if (hp <= 0)
+        {
+            animator.SetBool("zombie_isDead", true);
+            animator.SetTrigger("zombie_death");
+            
+            //Destroy(this.gameObject);
+        }
+    }
+
+    public void destroyTarget()
+    {
+        Destroy(gameObject);
+    }
     public void OnAttackAnimationEnd()
     {
-        Debug.Log("Animation event triggered: Animation ended.");
         audioSource.clip = hitPlayer;
         audioSource.Play();
         player.GetComponent<Player>().TakeDamage(damage);
@@ -136,8 +166,12 @@ public class Target : MonoBehaviour
         {
             agent.isStopped = true;
         }
+        if (!animator)
+        {
+            Debug.Log(name) ;
+        }
         animator.SetBool("zombie_isWalking", false);
-        animator.SetTrigger("player_died");
+        animator.SetBool("player_died", true);
     }
 
     void RandomizePosition()
