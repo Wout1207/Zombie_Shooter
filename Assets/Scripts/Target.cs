@@ -16,7 +16,8 @@ public class Target : MonoBehaviour
     protected private float hitTimerDelay;
     protected private float distanceToPlayer;
     static protected private float distanceToPlayerThreshold = 30;
-    static private float distanceToAttackThreshold = 2.5f;
+    public float distanceToAttackThreshold;
+    public float minDistanceToAttackThreshold;
     protected private bool firstWithinRange = true;
     protected private bool playerDeadInvoked = false;
 
@@ -35,7 +36,7 @@ public class Target : MonoBehaviour
         }
 
         animator = GetComponent<Animator>();
-
+        
         GameEvents.current.onPlayerDead += playerDied;
     }
 
@@ -58,14 +59,18 @@ public class Target : MonoBehaviour
         distanceToPlayer = Vector3.Distance(transform.position, player.transform.position); // wout.c : think better way to calculate distance?
 
         //if ((transform.position-player.transform.position).magnitude < 30) // wout.c : changed value to variable "distanceToPlayerThreshold"
+        if (player.GetComponent<Player>().currentHP <= 0)
+        {
+            animator.SetTrigger("player_died");
+        }
 
-        if (distanceToPlayer < distanceToPlayerThreshold)
+        else if (distanceToPlayer < distanceToPlayerThreshold)
         {
             if ((transform.position - player.transform.position).magnitude < 30)
             {
                 agent.SetDestination(player.transform.position);
             }
-            agent.isStopped = (((transform.position - player.transform.position).magnitude) <= 20f) || agent.pathStatus == NavMeshPathStatus.PathPartial || !agent.hasPath;
+            agent.isStopped = (((transform.position - player.transform.position).magnitude) <= distanceToAttackThreshold) || agent.pathStatus == NavMeshPathStatus.PathPartial || !agent.hasPath && player.GetComponent<Player>().currentHP > 0;
             if (firstWithinRange)
             {
                 agent.isStopped = true;
@@ -83,10 +88,14 @@ public class Target : MonoBehaviour
                 setPosAndDest();
                 hitTimerDelay = Time.time;
             }
-            else
+            else if (!agent.isStopped)
             {
                 setPosAndDest(false, true);
                 animator.SetBool("zombie_isWalking", true);
+            }
+            else
+            {
+                animator.SetBool("zombie_isWalking", false);
             }
         }
         else
@@ -157,8 +166,12 @@ public class Target : MonoBehaviour
         {
             agent.isStopped = true;
         }
+        if (!animator)
+        {
+            Debug.Log(name) ;
+        }
         animator.SetBool("zombie_isWalking", false);
-        animator.SetTrigger("player_died");
+        animator.SetBool("player_died", true);
     }
 
     void RandomizePosition()

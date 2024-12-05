@@ -81,8 +81,8 @@ public class Player : MonoBehaviour
     public void PlayerDied()
     {
         alive = false;
-        GameEvents.current.playerDead();
         gameOverText.SetActive(true);
+        GameEvents.current.playerDead();
     }
 
     public void SendHealthData()
