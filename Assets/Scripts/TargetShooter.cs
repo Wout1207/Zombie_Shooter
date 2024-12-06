@@ -168,7 +168,6 @@ public class TargetShooter : MonoBehaviour
 
 
         //Debug.Log("I am in ShootRay()");
-		faster_response
         Vector3 screenPos = cam.WorldToScreenPoint(imuObject.GetChild(0).position);
         screenPos.x = Mathf.Clamp(screenPos.x, 0, Screen.width);
         screenPos.y = Mathf.Clamp(screenPos.y, 0, Screen.height);
