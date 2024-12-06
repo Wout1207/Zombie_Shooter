@@ -3,11 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class GameOverManager : MonoBehaviour
+public class StartManager : MonoBehaviour
 {
-    // Method to restart the game
-    public void RestartGame()
+    public void StartGame()
     {
         SceneManager.LoadScene("SampleScene");
+    }
+
+    public void GoToMenu()
+    {
+        SceneManager.LoadScene("MenuScene");
     }
 }
