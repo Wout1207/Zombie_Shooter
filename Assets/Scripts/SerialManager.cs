@@ -1,25 +1,30 @@
-using System.IO.Ports;
-using System.Threading;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using UnityEngine;
+using System.IO.Ports;
 using System;
+using System.Threading;
+using Unity.VisualScripting;
 
 public class SerialManager : MonoBehaviour
 {
+    public float speedFactor = 15.0f; // Speed factor for rotation interpolation
+
     private SerialPort serialPort;
     private Thread serialThread;
     private bool isRunning = true;
+    private ConcurrentQueue<string> dataQueue = new ConcurrentQueue<string>(); // Thread-safe queue for serial data
+    private ConcurrentQueue<Quaternion> rotationQueue = new ConcurrentQueue<Quaternion>(); // Thread-safe queue for rotations
 
-    public string portName = "COM16"; // change depending on your system!!!
-    private int baudRate = 115200;
+    [Header("Serial Port Settings")]
+    public string portName = "COM16"; // Change depending on your system
+    //public int baudRate = 115200;
+    public int baudRate = 1000000;
+
+    private bool firstTime = true;
+    private Quaternion firstPos;
 
     private static SerialManager instance;
-
-    // Buffers for thread-safe communication
-    private string imuData;
-    private string triggerData;
-    private string rfidData;
-    private string movementData;
-    private string grenadeData;
 
     public static SerialManager Instance
     {
@@ -34,17 +39,40 @@ public class SerialManager : MonoBehaviour
     }
 
     // Events to broadcast received data
-    public event Action<string> OnDataReceivedIMU;
-    public event Action<string> OnDataReceivedTrigger;
-    public event Action<string> OnDataReceivedRFID;
-    public event Action<string> OnDataReceivedMovement;
+    public event Action<Quaternion> OnDataReceivedIMU;
+    public event Action<bool> OnDataReceivedTrigger;
+    public event Action<string[]> OnDataReceivedRFID;
+    public event Action<string[]> OnDataReceivedMovement;
     public event Action OnDataReceivedGrenade;
+
+    // Dictionary to map data type prefixes to handlers
+    private Dictionary<string, Action<string[]>> dataHandlers;
+    private static readonly ConcurrentQueue<Action> mainThreadActions = new ConcurrentQueue<Action>();
 
     void Awake()
     {
-        instance = this;
-        OpenSerialPortUART();
-        // Start the serial reading thread
+        if (instance == null)
+        {
+            instance = this;
+            OpenSerialPort();
+        }
+        else
+        {
+            Destroy(gameObject); // Ensure only one instance exists
+        }
+
+        // Initialize the data handlers
+        dataHandlers = new Dictionary<string, Action<string[]>>
+        {
+            { "r", HandleIMUData },
+            { "tr", HandleTriggerData },
+            { "mg", HandleRFIDData },
+            { "m", HandleMovementData },
+            { "g", HandleGrenadeData }
+        };
+
+        Debug.Log("SerialManager Awake");
+
         serialThread = new Thread(ReadSerialPort);
         serialThread.IsBackground = true; // Allow the thread to exit with the app
         serialThread.Start();
@@ -52,89 +80,44 @@ public class SerialManager : MonoBehaviour
 
     void Update()
     {
-        // Check thread-safe buffers for new data and trigger corresponding events
-        if (imuData != null)
+        // Check if there is a new rotation in the queue
+        if (rotationQueue.TryDequeue(out Quaternion rotation))
         {
-            OnDataReceivedIMU?.Invoke(imuData);
-            imuData = null; // Clear the buffer
+            Debug.Log("Rotation: " + rotation);
+            transform.rotation = Quaternion.Slerp(transform.rotation, rotation, Time.deltaTime * speedFactor);
+            OnDataReceivedIMU?.Invoke(rotation);
         }
 
-        if (triggerData != null)
+        Debug.Log($"Rotation queue count: {rotationQueue.Count}");
+        if (rotationQueue.Count > 100)
         {
-            OnDataReceivedTrigger?.Invoke(triggerData);
-            triggerData = null; // Clear the buffer
-        }
-
-        if (rfidData != null)
-        {
-            OnDataReceivedRFID?.Invoke(rfidData);
-            rfidData = null; // Clear the buffer
-        }
-
-        if (movementData != null)
-        {
-            OnDataReceivedMovement?.Invoke(movementData);
-            movementData = null; // Clear the buffer
-        }
-
-        if (grenadeData != null)
-        {
-            OnDataReceivedGrenade?.Invoke();
-            grenadeData = null; // Clear the buffer
+            Debug.LogWarning("rotationque exeded 100 values --> Clearing rotation queue");
+            rotationQueue.Clear();
         }
     }
 
-    //use this function if you use the UART connection
-    void OpenSerialPortUART()
+    public static void EnqueueToMainThread(Action action)
+    {
+        if (action != null)
+        {
+            mainThreadActions.Enqueue(action);
+        }
+    }
+
+    private void OpenSerialPort()
     {
         try
         {
             serialPort = new SerialPort(portName, baudRate);
             serialPort.Open();
 
-            if (serialPort.IsOpen)
-            {
-                Debug.Log("Serial port opened successfully on " + portName);
-            }
-            else
-            {
-                Debug.LogError("Failed to open serial port.");
-            }
+            Debug.Log($"Serial port opened successfully on {portName}");
         }
-        catch (Exception ex)
+        catch (System.Exception ex)
         {
             Debug.LogError("Error opening serial port: " + ex.Message);
         }
     }
-
-    //use this function if you use a USB CDC connection
-    /*void OpenSerialPortUSB()
-    {
-        try
-        {
-            serialPort = new SerialPort(portName, baudRate);
-            serialPort.DtrEnable = true; // Ensure DTR is enabled for USB CDC
-            serialPort.RtsEnable = true; // Ensure RTS is enabled for USB CDC
-            serialPort.Open();
-
-            // Add delay for initialization
-            System.Threading.Thread.Sleep(1000);
-
-            if (serialPort.IsOpen)
-            {
-                Debug.Log("USBSerial port opened successfully on " + portName);
-            }
-            else
-            {
-                Debug.LogError("Failed to open USBSerial port.");
-            }
-        }
-        catch (System.Exception ex)
-        {
-            Debug.LogError("Error opening USBSerial port: " + ex.Message);
-        }
-    }*/
-
 
     void ReadSerialPort()
     {
@@ -145,7 +128,7 @@ public class SerialManager : MonoBehaviour
                 try
                 {
                     string data = serialPort.ReadLine(); // Blocking call
-                    ParseAndStoreData(data); // Process and store data in thread-safe buffers
+                    ParseAndStoreData(data);
                 }
                 catch (TimeoutException)
                 {
@@ -159,32 +142,96 @@ public class SerialManager : MonoBehaviour
         }
     }
 
-    private void ParseAndStoreData(string data)
+    public void ParseAndStoreData(string data)
     {
-        string[] values = data.Split('/'); // Assuming format: "r/0.1/0.2/0.3/0.4"
-        //Debug.Log("Data received: " + data);
-        lock (this) // Ensure thread safety
+        if (string.IsNullOrWhiteSpace(data)) return;
+
+        string[] values = data.Split('/');
+        if (values.Length == 0) return;
+
+        string dataType = values[0];
+        if (dataHandlers.TryGetValue(dataType, out Action<string[]> handler))
         {
-            if (values[0] == "r" && values.Length == 5)
+            try
             {
-                imuData = data; // Store IMU data
+                handler.Invoke(values); // Call the appropriate handler
             }
-            else if (values[0] == "tr" && values.Length == 2) // Format: "tr/1"
+            catch (Exception ex)
             {
-                triggerData = values[1]; // Store Trigger data
+                Debug.LogError($"Error processing data of type '{dataType}': {ex.Message}");
             }
-            else if (values[0] == "mg" && values.Length == 4) // Format: "mg/G1/M1/10"
+        }
+        else
+        {
+            Debug.LogWarning($"Unknown data type received: {dataType}");
+        }
+    }
+
+    private void HandleIMUData(string[] values)
+    {
+        //if (values[0] == "r" && values.Length == 5)
+        if (values.Length == 5)
+        {
+            if (float.TryParse(values[1], out float x) &&
+                float.TryParse(values[2], out float y) &&
+                float.TryParse(values[3], out float z) &&
+                float.TryParse(values[4], out float w))
             {
-                rfidData = data; // Store RFID data
+                Quaternion rotation = new Quaternion(z, x, -y, w); //ESP32 test project
+                if (firstTime)
+                {
+                    firstTime = false;
+                    firstPos = rotation;
+                }
+
+                // Calculate absolute rotation relative to the initial offset
+                rotation = Quaternion.Inverse(firstPos) * rotation;
+
+                rotationQueue.Enqueue(rotation); // Enqueue rotation for Update
             }
-            else if (values[0] == "m" && values.Length == 3)
+        }
+
+    }
+
+    private void HandleTriggerData(string[] values)
+    {
+        if (values.Length == 2)
+        {
+            //OnDataReceivedTrigger?.Invoke(values);
+            SerialManager.EnqueueToMainThread(() =>
             {
-                movementData = data;
-            }
-            else if (values[0] == "g" && values.Length == 1)
-            {
-                grenadeData = data;
-            }
+                OnDataReceivedTrigger?.Invoke(values);
+            });
+        }
+    }
+
+    private void HandleRFIDData(string[] values)
+    {
+        if (values.Length == 2)
+        {
+            SerialManager.EnqueueToMainThread(() => {
+                OnDataReceivedRFID?.Invoke(values);
+            });
+        }
+    }
+
+    private void HandleMovementData(string[] values)
+    {
+        if (values.Length == 2)
+        {
+            SerialManager.EnqueueToMainThread(() => {
+                OnDataReceivedMovement?.Invoke(values);
+            });
+        }
+    }
+
+    private void HandleGrenadeData(string[] values)
+    {
+        if (values.Length == 2)
+        {
+            SerialManager.EnqueueToMainThread(() => {
+                OnDataReceivedGrenade?.Invoke();
+            });
         }
     }
 
@@ -208,6 +255,22 @@ public class SerialManager : MonoBehaviour
         }
     }
 
+    private void CloseSerialPort()
+    {
+        if (serialPort?.IsOpen == true)
+        {
+            try
+            {
+                serialPort.Close();
+                Debug.Log("Serial port closed.");
+            }
+            catch (System.Exception ex)
+            {
+                Debug.LogError("Error closing serial port: " + ex.Message);
+            }
+        }
+    }
+
     void OnApplicationQuit()
     {
         isRunning = false; // Stop the thread
@@ -217,17 +280,6 @@ public class SerialManager : MonoBehaviour
             serialThread.Join(); // Wait for the thread to exit
         }
 
-        if (serialPort != null && serialPort.IsOpen)
-        {
-            try
-            {
-                serialPort.Close();
-                Debug.Log("Serial port closed.");
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError("Error closing serial port: " + ex.Message);
-            }
-        }
+        CloseSerialPort();
     }
 }

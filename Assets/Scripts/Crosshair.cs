@@ -5,204 +5,109 @@ using System.Globalization;
 
 public class Crosshair : MonoBehaviour
 {
-    
-    public Transform imuObject; // Reference to the object that provides the IMU's rotation
-    private Vector3 imuEulerAngles; // Stores IMU Euler angles
+    // Stores the most recent IMU data
+    private string[] latestIMUData;
+    private readonly object dataLock = new object(); // Ensures thread safety
+    private Quaternion latestRotation;
 
-    public float sensitivity = 1.0f; // Control sensitivity for cursor movement
+    // Screen visualization point
+    public RectTransform pointerUIElement; // Assign a UI element (e.g., an Image) to this in the inspector
 
-    private float cursorX, cursorY; // Cursor screen coordinates
-    private Vector3 imuOffset;
-
-    public Camera cam;
-    public Transform target;
-    private Vector3 screenPos;
-    public float speedFactor = 15.0f;
-    public GameObject player;
-    public float rotationSpeed = 4f;
-    public float rotationBoarder = 0.4f;
-
-    public Quaternion absoluteRotation; // Set this quaternion dynamically
-    public Vector3 screenLocation;
-    private Quaternion firstPos;
+    // Screen boundaries for mapping
+    private float screenWidth;
+    private float screenHeight;
     private bool firstTime = true;
+    private Quaternion firstPos;
+    public Quaternion absoluteRotation; // Set this quaternion dynamically
+
+    public float rotationSpeed = 3f;
+    public float rotationBoarder = 0.1f;
+
+    private GameObject player;
+    public float speedFactor = 15.0f;
 
 
-    private void Start()
+    // Start is called before the first frame update
+    void Start()
     {
-        // Hide the system cursor
-        Cursor.visible = false;
-
-        SerialManager.Instance.OnDataReceivedIMU += ReadIMU;
-        if (cam == null)
+        if (player == null)
         {
-            cam = Camera.main;
+            player = GameObject.Find("Player");
         }
 
-        //imuOffset = imuObject.localEulerAngles;
+        // Get screen dimensions
+        screenWidth = Screen.width;
+        screenHeight = Screen.height;
 
-        //target.transform.position = new Vector3(0, 2.43f, speedFactor);
+        if (SerialManager.Instance != null)
+        {
+            SerialManager.Instance.OnDataReceivedIMU += ReceiveIMUData;
+        }
     }
 
+    // Update is called once per frame
     void Update()
     {
-        
-    }
+        Vector2 screenPoint = MapQuaternionToScreen(absoluteRotation);
 
-    private void Convert3DTo2D()
-    {
-        
-        // Convert quaternion to a forward vector
-        Vector3 forward = absoluteRotation * Vector3.forward;
-        Debug.Log($"Absolute rotation: {absoluteRotation}");
-        Debug.Log($"Forward: {forward}");
-
-        Vector3 screenPos = cam.WorldToScreenPoint(forward);
-        Debug.Log("target is " + screenPos.x + " pixels from the left");
-        Debug.Log("target is " + screenPos.y + " pixels from the bottom");
-
-        // Assume the object's origin is the rotation pivot
-        Vector3 worldPosition = firstPos * Vector3.forward;
-
-        // Calculate the world space point in front of the object
-        Vector3 targetWorldPosition = worldPosition + forward;
-
-        // Project the target point onto the screen
-        Vector3 screenPoint = cam.WorldToScreenPoint(targetWorldPosition);
-
-        // Flip the Y-coordinate for OnGUI
-        //screenPoint.y = Screen.height + screenPoint.y;
-
-        // Store as a 2D screen location
-        //screenLocation = new Vector2(screenPoint.x, screenPoint.y);
-
-        // make sure the crosshair stays within the screen
+        Vector2 screenPos = new Vector2();
         screenPos.x = Mathf.Clamp(screenPoint.x, 0, Screen.width);
-        screenPos.y = screenPoint.y;
-        //screenPos.y = Mathf.Clamp(screenPoint.y, -Screen.height, 0);
+        screenPos.y = Mathf.Clamp(screenPoint.y, 0, Screen.height);
 
-        Debug.Log($"Screen Location unclamped: {screenPoint}");
-        Debug.Log($"Screen Pos clamped: {screenPos}");
-    }
-
-
-    private void ReadIMU(string data)
-    {
-        convertIMUData(data);
-        Convert3DTo2D();
-        if (screenPos.x < rotationBoarder * Screen.width)
+        // Update the position of the UI element
+        if (pointerUIElement != null)
         {
-            player.transform.Rotate(new Vector3(0, -rotationSpeed));
-        }
-        else if (screenPos.x > Screen.width - rotationBoarder * Screen.width)
-        {
-            player.transform.Rotate(new Vector3(0, rotationSpeed));
-        }
-    }
-
-    public void convertIMUData(string data)
-    {
-        string[] values = data.Split('/');
-        if (values.Length == 5 && values[0] == "r")
-        {
-            if (!float.TryParse(values[1], NumberStyles.Float, CultureInfo.InvariantCulture, out float w) ||
-                !float.TryParse(values[2], NumberStyles.Float, CultureInfo.InvariantCulture, out float x) ||
-                !float.TryParse(values[3], NumberStyles.Float, CultureInfo.InvariantCulture, out float y) ||
-                !float.TryParse(values[4], NumberStyles.Float, CultureInfo.InvariantCulture, out float z))
+            if (screenPos.x < rotationBoarder * Screen.width)
             {
-                Debug.LogWarning($"Invalid quaternion values in data: {data}");
-                return;
+                player.transform.Rotate(new Vector3(0, -rotationSpeed));
+            }
+            else if (screenPos.x > Screen.width - rotationBoarder * Screen.width)
+            {
+                player.transform.Rotate(new Vector3(0, rotationSpeed));
             }
 
-            //Quaternion currentIMURotation = new Quaternion(y, x, -z, w); //version in gun
-            //Quaternion currentIMURotation = new Quaternion(x, -z, -y, w); //Version breadboard Wout.C
-            Quaternion currentIMURotation = new Quaternion(x, -z, -y, w); //Version breadboard Wout.C Experimental
-            Debug.Log($"Current IMU Rotation: {currentIMURotation}");
+            Vector2 currentPos = pointerUIElement.anchoredPosition;
+            Vector2 smoothedPos = Vector2.Lerp(currentPos, screenPos, Time.deltaTime * speedFactor);
 
-            if (firstTime)
-            {
-                firstTime = false;
-                firstPos = currentIMURotation;
-            }
-
-            // Calculate absolute rotation relative to the initial offset
-            //absoluteRotation = Quaternion.Inverse(firstPos) * currentIMURotation;
-            absoluteRotation = currentIMURotation;
-            //Quaternion offsetRotation = Quaternion.Euler(rotationOffset);
-            //Quaternion finalRotation = absoluteRotation * offsetRotation;
-
-            //this.transform.localRotation = Quaternion.Lerp(this.transform.localRotation, absoluteRotation, Time.deltaTime * speedFactor);
+            pointerUIElement.anchoredPosition = screenPoint;
         }
-        else if (values.Length != 5)
-        {
-            Debug.LogWarning($"Unexpected data format: {data}");
-        }
+
+        // Debug: Draw a point where the IMU points on the screen
+        Debug.DrawLine(Camera.main.transform.position, Camera.main.ScreenToWorldPoint(new Vector3(screenPoint.x, screenPoint.y, 10)), Color.red);
+        Debug.Log($"Screen point: {screenPoint}");
     }
 
-    void OnGUI()
+
+    Vector2 MapQuaternionToScreen(Quaternion rotation)
     {
-        // Create a custom GUIStyle for the label
-        GUIStyle style = new GUIStyle
-        {
-            fontSize = 25,
-            fontStyle = FontStyle.Bold,
-            alignment = TextAnchor.MiddleCenter
-        };
+        ////Vector3 direction = rotation * Vector3.forward;
+        //Vector3 screenPoint = Camera.main.WorldToScreenPoint(direction);
 
-        //GUI.Label(new Rect(screenPos.x - 20, (Screen.height - screenPos.y - 20), 40, 40), "+", style);
-        //GUI.Label(new Rect(screenPos.x -20, (Screen.height - screenPos.y -20), 40, 40), "+", style);
-        
-        GUI.Label(new Rect(screenPos.x - 20, (Screen.height - screenPos.y - 20), 40, 40), "+", style);
+        Vector3 localDirection = Camera.main.transform.TransformDirection(rotation * Vector3.forward); // to solve the ofset created by the camera
 
+        // Map to screen space
+        Vector3 screenPoint = Camera.main.WorldToScreenPoint(Camera.main.transform.position + localDirection);
+
+        // Map the screen point to the UI space (if the UI element is inside the canvas)
+        Vector2 uiPoint = new Vector2(screenPoint.x, screenPoint.y);
+
+        // Clamp to screen boundaries
+        uiPoint.x = Mathf.Clamp(uiPoint.x, 0, screenWidth);
+        uiPoint.y = Mathf.Clamp(uiPoint.y, 0, screenHeight);
+
+        return uiPoint;
     }
 
-    private void OnDestroy()
+    void ReceiveIMUData(Quaternion rotation)
+    {
+        absoluteRotation = rotation;
+    }
+
+    void OnDestroy()
     {
         if (SerialManager.Instance != null)
         {
-            SerialManager.Instance.OnDataReceivedIMU -= ReadIMU;
+            SerialManager.Instance.OnDataReceivedIMU -= ReceiveIMUData;
         }
     }
-
-    //void Start()
-    //{
-    //    // Hide the system cursor
-    //    Cursor.visible = false;
-
-    //    //SerialManager.Instance.OnDataReceivedIMU += ReadIMU;
-    //    SerialManager.Instance.OnDataReceivedIMU += translateImuDataTo2D;
-
-    //    imuOffset = imuObject.localEulerAngles;
-
-
-    //    target.transform.position = new Vector3(0, 2.43f, speedFactor);
-    //}
-
-    //void Update()
-    //{
-    //    imuObject.parent.rotation = player.transform.rotation;
-    //}
-
-    //public void ReadIMU(string data)
-    //{
-    //    if (imuObject != null)
-    //    {
-    //        imuEulerAngles = imuObject.localEulerAngles - imuOffset;
-    //        screenPos = cam.WorldToScreenPoint(target.position);
-    //        screenPos.x = Mathf.Clamp(screenPos.x, 0, Screen.width);
-    //        screenPos.y = Mathf.Clamp(screenPos.y, 0, Screen.height);
-    //        if (screenPos.x < rotationBoarder * Screen.width)
-    //        {
-    //            player.transform.Rotate(new Vector3(0,-rotationSpeed));
-    //        }
-    //        else if (screenPos.x > Screen.width - rotationBoarder * Screen.width)
-    //        {
-    //            player.transform.Rotate(new Vector3(0, rotationSpeed));
-    //        }
-    //    }
-    //    else
-    //    {
-    //        Debug.LogWarning("IMU_Object not assigned!");
-    //    }
-    //}
 }

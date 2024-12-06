@@ -47,28 +47,26 @@ public class TargetShooter : MonoBehaviour
         if ((Input.GetKeyDown("b") || Input.GetMouseButtonDown(0)) && !isReloading)
         {
             SerialManager.Instance.SendDataToESP32("tr/0");
-            Shoot("0"); // Simulate the shoot locally
+            Shoot(false); // Simulate the shoot locally
         }
     }
 
 
 
-    public void readMag(string data) // The data is in the format "G1/M1/10" where G1: gun 1, M1: magazine 1 and 10: the capacity of the mag
+    public void readMag(string[] data) // The data is in the format "G1/M1/10" where G1: gun 1, M1: magazine 1 and 10: the capacity of the mag
     {
-        string[] values = data.Split('/');
-
         Debug.Log("Reading mag data: " + data);
 
-        if (values.Length == 4)
+        if (data.Length == 4)
         {
-            maxAmmoCountInMag = System.Convert.ToInt32(values[3]);
+            maxAmmoCountInMag = System.Convert.ToInt32(data[3]);
             Debug.Log("Magazine capacity: " + maxAmmoCountInMag);
         }
         StartCoroutine(Reload());
     }
 
 
-    public void ReadIMU(string data)
+    public void ReadIMU(Quaternion data)
     {
         if (imuObject != null)
         {
@@ -81,7 +79,7 @@ public class TargetShooter : MonoBehaviour
         }
     }
 
-    public void Shoot(string data)
+    public void Shoot(bool shot)
     {
         float currentTime = Time.time;
         
@@ -89,8 +87,7 @@ public class TargetShooter : MonoBehaviour
         {
             lastClickTime = currentTime;
 
-            int shot = System.Convert.ToInt32(data);
-            if (shot == 0)
+            if (!shot) // if shot is false, it means the trigger is pressed
             {
                 Debug.Log("Shooting...");
                 ShootRay();
