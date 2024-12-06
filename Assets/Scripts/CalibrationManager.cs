@@ -4,15 +4,24 @@ using UnityEngine;
 
 public class CalibrationManager : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    [SerializeField]
+    private SerialManager serialManager; // Reference to SerialManager
 
-    // Update is called once per frame
-    void Update()
+    public void CalibrateIMU()
     {
-        
+        if (serialManager != null)
+        {
+            // Get the most recent rotation from the queue
+            Quaternion currentRotation = serialManager.GetLastRotation();
+
+            // Set the new calibration point (adjust firstPos)
+            serialManager.SetFirstPos(currentRotation);
+
+            Debug.Log("IMU calibrated. New firstPos set to: " + currentRotation);
+        }
+        else
+        {
+            Debug.LogError("SerialManager reference is not set in CalibrationManager!");
+        }
     }
 }
