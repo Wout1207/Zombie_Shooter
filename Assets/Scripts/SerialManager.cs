@@ -54,6 +54,7 @@ public class SerialManager : MonoBehaviour
         if (instance == null)
         {
             instance = this;
+            DontDestroyOnLoad(gameObject);
             OpenSerialPort();
         }
         else
@@ -94,9 +95,10 @@ public class SerialManager : MonoBehaviour
         }
 
         //Debug.Log($"Rotation queue count: {rotationQueue.Count}");
-        if (rotationQueue.Count > 20)
+        int tresholdToClear = 10;
+        if (rotationQueue.Count > tresholdToClear)
         {
-            Debug.LogWarning("rotationque exeded 20 values --> Clearing rotation queue");
+            Debug.LogWarning($"rotationQueue count: {tresholdToClear} --> Clearing rotation queue");
             rotationQueue.Clear();
         }
     }
