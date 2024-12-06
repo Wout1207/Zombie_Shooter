@@ -75,22 +75,25 @@ public class TargetShooter : MonoBehaviour
 
     public void ReadIMU(Quaternion data)
     {
-        Debug.Log($"Received IMU data: {data}");
-
-        string[] values = data.Split('/');
-        if (values[0] != "r" || values.Length < 4)
+        if (imuObject != null)
         {
-            Debug.LogWarning("Invalid IMU data format.");
-            return;
+            // Get the IMU Euler angles
+            imuEulerAngles = imuObject.eulerAngles;
+        }
+        else
+        {
+            Debug.LogWarning("IMU_Object not assigned!");
         }
 
-        Vector3 currentIMUReading = new Vector3(
-            float.Parse(values[1]),
-            float.Parse(values[2]),
-            float.Parse(values[3])
-        );
+        Vector3 currentIMUReading = imuEulerAngles;
 
-        Debug.Log($"Parsed IMU data: {currentIMUReading}");
+        //Vector3 currentIMUReading = new Vector3(
+        //    float.Parse(values[1]),
+        //    float.Parse(values[2]),
+        //    float.Parse(values[3])
+        //);
+
+        //Debug.Log($"Parsed IMU data: {currentIMUReading}");
 
         if (isJammed)
         {
