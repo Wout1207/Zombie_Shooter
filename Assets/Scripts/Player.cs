@@ -94,9 +94,9 @@ public class Player : MonoBehaviour
         SerialManager.Instance.SendDataToESP32(message);
     }
 
-    public void readMovement(string data) // The data is in the format "m/pin/state"
+    public void readMovement(string[] data) // The data is in the format "m/pin/state"
     {
-        string[] values = data.Split('/');
+        string[] values = data;
 
         Debug.Log("Reading movement data: " + data);
 

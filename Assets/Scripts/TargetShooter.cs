@@ -54,28 +54,26 @@ public class TargetShooter : MonoBehaviour
         if ((Input.GetKeyDown("b") || Input.GetMouseButtonDown(0)) && !isReloading)
         {
             SerialManager.Instance.SendDataToESP32("tr/0");
-            Shoot("0"); // Simulate the shoot locally
+            Shoot(); // Simulate the shoot locally
         }
     }
 
 
 
-    public void readMag(string data) // The data is in the format "G1/M1/10" where G1: gun 1, M1: magazine 1 and 10: the capacity of the mag
+    public void readMag(string[] data) // The data is in the format "G1/M1/10" where G1: gun 1, M1: magazine 1 and 10: the capacity of the mag
     {
-        string[] values = data.Split('/');
-
         Debug.Log("Reading mag data: " + data);
 
-        if (values.Length == 4)
+        if (data.Length == 4)
         {
-            maxAmmoCountInMag = System.Convert.ToInt32(values[3]);
+            maxAmmoCountInMag = System.Convert.ToInt32(data[3]);
             Debug.Log("Magazine capacity: " + maxAmmoCountInMag);
         }
         StartCoroutine(Reload());
     }
 
 
-    public void ReadIMU(string data)
+    public void ReadIMU(Quaternion data)
     {
         Debug.Log($"Received IMU data: {data}");
 
@@ -114,7 +112,6 @@ public class TargetShooter : MonoBehaviour
         lastIMUReading = currentIMUReading;
     }
 
-
     public void TriggerJam()
     {
         if (isJammed) return;
@@ -134,7 +131,9 @@ public class TargetShooter : MonoBehaviour
     }
 
 
-    public void Shoot(string data)
+
+
+    public void Shoot()
     {
         if (isJammed)
         {
@@ -148,12 +147,8 @@ public class TargetShooter : MonoBehaviour
         {
             lastClickTime = currentTime;
 
-            int shot = System.Convert.ToInt32(data);
-            if (shot == 0)
-            {
-                Debug.Log("Shooting...");
+            Debug.Log("Shooting...");
                 ShootRay();
-            }
             if (currentAmmoCount == 0)
             {
                 Debug.Log("Out of ammo!");
@@ -163,13 +158,17 @@ public class TargetShooter : MonoBehaviour
 
     public void ShootRay()
     {
+
         if (isJammed)
         {
             Debug.Log("Cannot fire; gun is jammed.");
             return;
         }
 
-        Debug.Log("I am in ShootRay()");
+
+
+        //Debug.Log("I am in ShootRay()");
+		faster_response
         Vector3 screenPos = cam.WorldToScreenPoint(imuObject.GetChild(0).position);
         screenPos.x = Mathf.Clamp(screenPos.x, 0, Screen.width);
         screenPos.y = Mathf.Clamp(screenPos.y, 0, Screen.height);
