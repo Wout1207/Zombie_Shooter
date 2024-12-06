@@ -71,10 +71,11 @@ public class Grenade : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.gameObject.name.Equals("Player") || other.gameObject.name.Contains("Target"))
+        if (other.gameObject.tag.Equals("Player") || other.gameObject.tag.Contains("Target"))
         {
             if (objectsToHit.Contains(other.gameObject))
             {
+                Debug.Log(other.gameObject.name + " out of the grenade area");
                 objectsToHit.Remove(other.gameObject);
             }
         }

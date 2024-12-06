@@ -123,6 +123,7 @@ public class Target : MonoBehaviour
         }
         else
         {
+            agent.isStopped = true;
             animator.SetTrigger("zombie_hit");
         }
         //RandomizePosition();

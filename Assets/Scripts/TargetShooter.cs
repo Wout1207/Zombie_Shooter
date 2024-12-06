@@ -32,6 +32,7 @@ public class TargetShooter : MonoBehaviour
     public AudioClip shootingSound;
     public AudioClip reloadSound;
     public AudioClip emptyGunSound;
+    public AudioClip jammedGunSound;
     public AudioSource audioSource;
 
     // Start is called before the first frame update
@@ -138,6 +139,8 @@ public class TargetShooter : MonoBehaviour
     {
         if (isJammed)
         {
+            audioSource.clip = jammedGunSound;
+            audioSource.Play();
             Debug.Log("Gun is jammed! Cannot shoot.");
             return;
         }
@@ -165,6 +168,8 @@ public class TargetShooter : MonoBehaviour
     {
         if (isJammed)
         {
+            audioSource.clip = jammedGunSound;
+            audioSource.Play();
             Debug.Log("Cannot fire; gun is jammed.");
             return;
         }
@@ -179,6 +184,12 @@ public class TargetShooter : MonoBehaviour
         if (Random.value < 0.1f)
         {
             TriggerJam();
+            audioSource.clip = emptyGunSound;
+            float volume = audioSource.volume;
+            audioSource.volume = 1;
+            audioSource.Play();
+            audioSource.volume = volume;
+
             return;
         }
 

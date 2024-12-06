@@ -7,6 +7,10 @@ public class BackgroundMusicPlayer : MonoBehaviour
     public List<AudioClip> audioClips = new List<AudioClip>();
     public AudioSource audioSource;
     private int lastSongIndex = -1;
+    private void Start()
+    {
+        audioSource.volume = 0.5f;
+    }
     private void Update()
     {
         if (!audioSource.isPlaying)
