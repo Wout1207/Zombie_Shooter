@@ -182,7 +182,8 @@ public class SerialManager : MonoBehaviour
                 float.TryParse(values[3], out float z) &&
                 float.TryParse(values[4], out float w))
             {
-                Quaternion rotation = new Quaternion(z, x, -y, w); //ESP32 test project
+                Quaternion rotation = new Quaternion(z, x, -y, w); //ESP32 bread board
+                //Quaternion rotation = new Quaternion(y, x, -z, w); //ESP32 actual gun
                 if (firstTime)
                 {
                     firstTime = false;
@@ -222,7 +223,7 @@ public class SerialManager : MonoBehaviour
 
     private void HandleMovementData(string[] values)
     {
-        if (values.Length == 2)
+        if (values.Length == 3)
         {
             SerialManager.EnqueueToMainThread(() => {
                 OnDataReceivedMovement?.Invoke(values);
@@ -232,7 +233,7 @@ public class SerialManager : MonoBehaviour
 
     private void HandleGrenadeData(string[] values)
     {
-        if (values.Length == 2)
+        if (values.Length == 1)
         {
             SerialManager.EnqueueToMainThread(() => {
                 OnDataReceivedGrenade?.Invoke();
