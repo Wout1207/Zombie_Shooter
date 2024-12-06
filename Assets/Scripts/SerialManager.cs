@@ -281,4 +281,31 @@ public class SerialManager : MonoBehaviour
 
         CloseSerialPort();
     }
+
+    public void SetFirstPos(Quaternion newFirstPos)
+    {
+        firstPos = newFirstPos;
+        firstTime = false; // Prevent reinitializing
+    }
+
+    public Quaternion GetLastRotation()
+    {
+        if (rotationQueue.Count > 0)
+        {
+            Quaternion lastRotation = Quaternion.identity;
+
+            // Iterate through the queue to get the last element
+            foreach (Quaternion rotation in rotationQueue)
+            {
+                lastRotation = rotation;
+            }
+
+            return lastRotation;
+        }
+        else
+        {
+            Debug.LogWarning("No rotation data available in the queue.");
+            return Quaternion.identity; // Return a default value if the queue is empty
+        }
+    }
 }
