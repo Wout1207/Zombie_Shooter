@@ -7,6 +7,7 @@ public class SpawnManager : MonoBehaviour
     private List<GameObject> spawnLocations = new List<GameObject>();
     public int round = 0;
     public int inactiveAreas;
+    public TargetShooter targetShooter;
     private float time;
     private bool waitNewRound;
     // Start is called before the first frame update
@@ -73,6 +74,10 @@ public class SpawnManager : MonoBehaviour
                 spawner.spawnObjects = true;
                 inactiveAreas --;
             }
+        }
+        if (round > 1)
+        {
+            targetShooter.totalAmmoCount += round * 5;
         }
     }
 

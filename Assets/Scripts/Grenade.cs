@@ -29,15 +29,18 @@ public class Grenade : MonoBehaviour
         {
             foreach (GameObject obj in objectsToHit)
             {
-                Player player = obj.GetComponent<Player>();
-                if (player)
+                if (obj)
                 {
-                    player.TakeDamage(damage);
-                }
-                Target target = obj.GetComponent<Target>();
-                if (target)
-                {
-                    target.Hit(damage);
+                    Player player = obj.GetComponent<Player>();
+                    if (player)
+                    {
+                        player.TakeDamage(damage);
+                    }
+                    Target target = obj.GetComponent<Target>();
+                    if (target)
+                    {
+                        target.Hit(damage);
+                    }
                 }
             }
             explosionVFX = Instantiate(explosionVFXPrefab);
