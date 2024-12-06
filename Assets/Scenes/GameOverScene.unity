@@ -753,6 +753,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 1990890429}
+        m_TargetAssemblyTypeName: TargetShooter, Assembly-CSharp
+        m_MethodName: Shoot
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1861054401
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -791,6 +803,66 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1861054398}
   m_CullTransparentMesh: 1
+--- !u!1 &1990890428
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1990890430}
+  - component: {fileID: 1990890429}
+  m_Layer: 0
+  m_Name: TargetShooterObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1990890429
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1990890428}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 537b6323ef73cb2419e3aeac415b2bb4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cam: {fileID: 0}
+  currentAmmoCount: 0
+  maxAmmoCountInMag: 10
+  totalAmmoCount: 100
+  reloadTime: 3
+  isJammed: 0
+  shakesRequiredToDejam: 3
+  shakeThreshold: 1.5
+  imuObject: {fileID: 0}
+  clickCooldown: 0.2
+  isFireAmmo: 1
+  fireEffect: {fileID: 0}
+  shootingSound: {fileID: 0}
+  reloadSound: {fileID: 0}
+  emptyGunSound: {fileID: 0}
+  audioSource: {fileID: 0}
+--- !u!4 &1990890430
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1990890428}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 489.52243, y: 285.8856, z: -33.197594}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1995764644
 GameObject:
   m_ObjectHideFlags: 0
@@ -1022,6 +1094,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 1990890429}
+        m_TargetAssemblyTypeName: TargetShooter, Assembly-CSharp
+        m_MethodName: Shoot
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &2039705134
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1203,3 +1287,4 @@ SceneRoots:
   - {fileID: 903907821}
   - {fileID: 1825310870}
   - {fileID: 930960354}
+  - {fileID: 1990890430}
