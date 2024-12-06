@@ -15,9 +15,10 @@ public class TargetShooter : MonoBehaviour
 
     [SerializeField] private bool isJammed = false; 
     [SerializeField] private int shakesRequiredToDejam = 3; 
-    [SerializeField] private float shakeThreshold = 1.5f; 
+    [SerializeField] private float shakeThreshold = 5f; 
     private int shakeCount = 0; 
     private Vector3 lastIMUReading = Vector3.zero;
+    [SerializeField] public float jamRandVal = 0.1f;
 
 
     public Transform imuObject; // Reference to the object that provides the IMU's rotation
@@ -47,6 +48,7 @@ public class TargetShooter : MonoBehaviour
     {
         if (Input.GetKeyDown("r") && totalAmmoCount != 0 && !isReloading)
         {
+            //if (isJammed) return;
             StartCoroutine(Reload());
             return;
         }
@@ -62,7 +64,8 @@ public class TargetShooter : MonoBehaviour
 
     public void readMag(string[] data) // The data is in the format "G1/M1/10" where G1: gun 1, M1: magazine 1 and 10: the capacity of the mag
     {
-        Debug.Log("Reading mag data: " + data);
+        //Debug.Log("Reading mag data: " + data);
+        //if(isJammed)return;
 
         if (data.Length == 4)
         {
@@ -75,25 +78,7 @@ public class TargetShooter : MonoBehaviour
 
     public void ReadIMU(Quaternion data)
     {
-        if (imuObject != null)
-        {
-            // Get the IMU Euler angles
-            imuEulerAngles = imuObject.eulerAngles;
-        }
-        else
-        {
-            Debug.LogWarning("IMU_Object not assigned!");
-        }
-
-        Vector3 currentIMUReading = imuEulerAngles;
-
-        //Vector3 currentIMUReading = new Vector3(
-        //    float.Parse(values[1]),
-        //    float.Parse(values[2]),
-        //    float.Parse(values[3])
-        //);
-
-        //Debug.Log($"Parsed IMU data: {currentIMUReading}");
+        Vector3 currentIMUReading = data.eulerAngles;
 
         if (isJammed)
         {
@@ -134,10 +119,9 @@ public class TargetShooter : MonoBehaviour
     }
 
 
-
-
     public void Shoot()
     {
+        //Debug.Log("Shoot() called");
         if (isJammed)
         {
             Debug.Log("Gun is jammed! Cannot shoot.");
@@ -150,8 +134,9 @@ public class TargetShooter : MonoBehaviour
         {
             lastClickTime = currentTime;
 
-            Debug.Log("Shooting...");
-                ShootRay();
+            //Debug.Log("Shooting...");
+            ShootRay();
+            
             if (currentAmmoCount == 0)
             {
                 Debug.Log("Out of ammo!");
@@ -162,29 +147,35 @@ public class TargetShooter : MonoBehaviour
     public void ShootRay()
     {
 
-        if (isJammed)
-        {
-            Debug.Log("Cannot fire; gun is jammed.");
-            return;
-        }
-
-
+        //if (isJammed)
+        //{
+        //    Debug.Log("Cannot fire; gun is jammed.");
+        //    return;
+        //}
 
         //Debug.Log("I am in ShootRay()");
-        Vector3 screenPos = cam.WorldToScreenPoint(imuObject.GetChild(0).position);
-        screenPos.x = Mathf.Clamp(screenPos.x, 0, Screen.width);
-        screenPos.y = Mathf.Clamp(screenPos.y, 0, Screen.height);
-        screenPos = new Vector3(screenPos.x, (Screen.height - screenPos.y));
-        Ray ray = cam.ScreenPointToRay(screenPos);
-
-        if (Random.value < 0.1f)
-        {
-            TriggerJam();
-            return;
-        }
+        //Vector3 screenPos = cam.WorldToScreenPoint(imuObject.GetChild(0).position);
+        //screenPos.x = Mathf.Clamp(screenPos.x, 0, Screen.width);
+        //screenPos.y = Mathf.Clamp(screenPos.y, 0, Screen.height);
+        //screenPos = new Vector3(screenPos.x, (Screen.height - screenPos.y));
+        //Ray ray = cam.ScreenPointToRay(screenPos);
+        Ray ray = cam.ScreenPointToRay(lastIMUReading);
 
         GameEvents.current.ShotFired();
         AddAmmo(-1);
+
+        if (isJammed)
+        {
+            Debug.Log("Cannot fire; gun is jammed.");
+            AddAmmo(+1);
+            return;
+        }
+        else if (Random.value < jamRandVal && currentAmmoCount >= 0)
+        {
+            Debug.Log("rand val is below 10%");
+            TriggerJam();
+            return;
+        }
 
         if (Physics.Raycast(ray, out RaycastHit hit))
         {
@@ -195,6 +186,7 @@ public class TargetShooter : MonoBehaviour
                 controller.hit();
                 return;
             }
+
             Target target = hit.collider.gameObject.GetComponent<Target>();
 
             if (target != null && currentAmmoCount > 0) // waarom alleen ammo verliezen als je raakt?
@@ -216,6 +208,7 @@ public class TargetShooter : MonoBehaviour
                         Instantiate(fireEffect, target.transform);
                     }
                 }
+                
             }
             else if(currentAmmoCount < 0)
             {
@@ -242,6 +235,7 @@ public class TargetShooter : MonoBehaviour
 
     private IEnumerator Reload()
     {
+        if (isJammed) yield break; 
         isReloading = true;
         Debug.Log("Reloading...");
         audioSource.clip = reloadSound;

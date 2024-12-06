@@ -74,7 +74,7 @@ public class Crosshair : MonoBehaviour
 
         // Debug: Draw a point where the IMU points on the screen
         Debug.DrawLine(Camera.main.transform.position, Camera.main.ScreenToWorldPoint(new Vector3(screenPoint.x, screenPoint.y, 10)), Color.red);
-        Debug.Log($"Screen point: {screenPoint}");
+        //Debug.Log($"Screen point: {screenPoint}");
     }
 
 

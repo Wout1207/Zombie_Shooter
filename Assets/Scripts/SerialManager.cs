@@ -83,15 +83,20 @@ public class SerialManager : MonoBehaviour
         // Check if there is a new rotation in the queue
         if (rotationQueue.TryDequeue(out Quaternion rotation))
         {
-            Debug.Log("Rotation: " + rotation);
+            //Debug.Log("Rotation: " + rotation);
             transform.rotation = Quaternion.Slerp(transform.rotation, rotation, Time.deltaTime * speedFactor);
             OnDataReceivedIMU?.Invoke(rotation);
         }
 
-        Debug.Log($"Rotation queue count: {rotationQueue.Count}");
-        if (rotationQueue.Count > 50)
+        if (mainThreadActions.TryDequeue(out var action))
         {
-            Debug.LogWarning("rotationque exeded 100 values --> Clearing rotation queue");
+            action.Invoke();
+        }
+
+        //Debug.Log($"Rotation queue count: {rotationQueue.Count}");
+        if (rotationQueue.Count > 20)
+        {
+            Debug.LogWarning("rotationque exeded 20 values --> Clearing rotation queue");
             rotationQueue.Clear();
         }
     }
@@ -196,6 +201,7 @@ public class SerialManager : MonoBehaviour
     {
         if (values[1] == "0") //is inverted 
         {
+            //Debug.Log("Trigger pressed in handleTriggerData");
             //OnDataReceivedTrigger?.Invoke(values);
             SerialManager.EnqueueToMainThread(() =>
             {
@@ -241,7 +247,7 @@ public class SerialManager : MonoBehaviour
             try
             {
                 serialPort.WriteLine(message);
-                Debug.Log("Sent to ESP32: " + message);
+                //Debug.Log("Sent to ESP32: " + message);
             }
             catch (Exception ex)
             {
