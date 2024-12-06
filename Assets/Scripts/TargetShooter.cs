@@ -47,7 +47,7 @@ public class TargetShooter : MonoBehaviour
         if ((Input.GetKeyDown("b") || Input.GetMouseButtonDown(0)) && !isReloading)
         {
             SerialManager.Instance.SendDataToESP32("tr/0");
-            Shoot(false); // Simulate the shoot locally
+            Shoot(); // Simulate the shoot locally
         }
     }
 
@@ -79,7 +79,7 @@ public class TargetShooter : MonoBehaviour
         }
     }
 
-    public void Shoot(bool shot)
+    public void Shoot()
     {
         float currentTime = Time.time;
         
@@ -87,11 +87,8 @@ public class TargetShooter : MonoBehaviour
         {
             lastClickTime = currentTime;
 
-            if (!shot) // if shot is false, it means the trigger is pressed
-            {
-                Debug.Log("Shooting...");
+            Debug.Log("Shooting...");
                 ShootRay();
-            }
             if (currentAmmoCount == 0)
             {
                 Debug.Log("Out of ammo!");
@@ -101,7 +98,7 @@ public class TargetShooter : MonoBehaviour
 
     public void ShootRay()
     {
-        Debug.Log("I am in ShootRay()");
+        //Debug.Log("I am in ShootRay()");
         Vector3 screenPos = cam.WorldToScreenPoint(imuObject.GetChild(0).position);
         screenPos.x = Mathf.Clamp(screenPos.x, 0, Screen.width);
         screenPos.y = Mathf.Clamp(screenPos.y, 0, Screen.height);

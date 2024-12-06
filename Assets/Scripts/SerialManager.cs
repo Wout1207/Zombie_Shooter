@@ -21,7 +21,7 @@ public class SerialManager : MonoBehaviour
     //public int baudRate = 115200;
     public int baudRate = 1000000;
 
-    private bool firstTime = true;
+    public bool firstTime = true;
     private Quaternion firstPos;
 
     private static SerialManager instance;
@@ -40,7 +40,7 @@ public class SerialManager : MonoBehaviour
 
     // Events to broadcast received data
     public event Action<Quaternion> OnDataReceivedIMU;
-    public event Action<bool> OnDataReceivedTrigger;
+    public event Action OnDataReceivedTrigger;
     public event Action<string[]> OnDataReceivedRFID;
     public event Action<string[]> OnDataReceivedMovement;
     public event Action OnDataReceivedGrenade;
@@ -89,7 +89,7 @@ public class SerialManager : MonoBehaviour
         }
 
         Debug.Log($"Rotation queue count: {rotationQueue.Count}");
-        if (rotationQueue.Count > 100)
+        if (rotationQueue.Count > 50)
         {
             Debug.LogWarning("rotationque exeded 100 values --> Clearing rotation queue");
             rotationQueue.Clear();
@@ -190,17 +190,16 @@ public class SerialManager : MonoBehaviour
                 rotationQueue.Enqueue(rotation); // Enqueue rotation for Update
             }
         }
-
     }
 
-    private void HandleTriggerData(string[] values)
+    private void HandleTriggerData(String[] values)
     {
-        if (values.Length == 2)
+        if (values[1] == "0") //is inverted 
         {
             //OnDataReceivedTrigger?.Invoke(values);
             SerialManager.EnqueueToMainThread(() =>
             {
-                OnDataReceivedTrigger?.Invoke(values);
+                OnDataReceivedTrigger?.Invoke();
             });
         }
     }
