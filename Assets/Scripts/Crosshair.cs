@@ -16,7 +16,7 @@ public class Crosshair : MonoBehaviour
     // Screen boundaries for mapping
     private float screenWidth;
     private float screenHeight;
-    private bool firstTime = true;
+    //private bool firstTime = true;
     private Quaternion firstPos;
     public Quaternion absoluteRotation; // Set this quaternion dynamically
 
@@ -25,6 +25,8 @@ public class Crosshair : MonoBehaviour
 
     private GameObject player;
     public float speedFactor = 15.0f;
+
+    private Coroutine pointerUpdateCoroutine;
 
 
     // Start is called before the first frame update
@@ -43,20 +45,63 @@ public class Crosshair : MonoBehaviour
         {
             SerialManager.Instance.OnDataReceivedIMU += ReceiveIMUData;
         }
+
+        pointerUpdateCoroutine = StartCoroutine(UpdatePointerRoutine());
     }
 
     // Update is called once per frame
     void Update()
     {
-        Vector2 screenPoint = MapQuaternionToScreen(absoluteRotation);
-
-        Vector2 screenPos = new Vector2();
-        screenPos.x = Mathf.Clamp(screenPoint.x, 0, Screen.width);
-        screenPos.y = Mathf.Clamp(screenPoint.y, 0, Screen.height);
-
         // Update the position of the UI element
+        //if (pointerUIElement != null)
+        //{
+        //    Vector2 screenPoint = MapQuaternionToScreen(absoluteRotation);
+
+        //    Vector2 screenPos = new Vector2();
+        //    screenPos.x = Mathf.Clamp(screenPoint.x, 0, Screen.width);
+        //    screenPos.y = Mathf.Clamp(screenPoint.y, 0, Screen.height);
+
+        //    if (screenPos.x < rotationBoarder * Screen.width)
+        //    {
+        //        player.transform.Rotate(new Vector3(0, -rotationSpeed));
+        //    }
+        //    else if (screenPos.x > Screen.width - rotationBoarder * Screen.width)
+        //    {
+        //        player.transform.Rotate(new Vector3(0, rotationSpeed));
+        //    }
+
+        //    Vector2 currentPos = pointerUIElement.anchoredPosition;
+        //    Vector2 smoothedPos = Vector2.Lerp(currentPos, screenPos, Time.deltaTime * speedFactor);
+
+        //    //pointerUIElement.anchoredPosition = screenPoint;
+        //    pointerUIElement.anchoredPosition = smoothedPos;
+        //}
+
+        // Debug: Draw a point where the IMU points on the screen
+        //Debug.DrawLine(Camera.main.transform.position, Camera.main.ScreenToWorldPoint(new Vector3(screenPoint.x, screenPoint.y, 10)), Color.red);
+        //Debug.Log($"Screen point: {screenPoint}");
+    }
+
+
+    IEnumerator UpdatePointerRoutine()
+    {
+        while (true)
+        {
+            UpdatePointerPosition();
+            yield return null; // Run every frame
+        }
+    }
+
+    void UpdatePointerPosition()
+    {
         if (pointerUIElement != null)
         {
+            Vector2 screenPoint = MapQuaternionToScreen(absoluteRotation);
+
+            Vector2 screenPos = new Vector2();
+            screenPos.x = Mathf.Clamp(screenPoint.x, 0, Screen.width);
+            screenPos.y = Mathf.Clamp(screenPoint.y, 0, Screen.height);
+
             if (screenPos.x < rotationBoarder * Screen.width)
             {
                 player.transform.Rotate(new Vector3(0, -rotationSpeed));
@@ -69,12 +114,9 @@ public class Crosshair : MonoBehaviour
             Vector2 currentPos = pointerUIElement.anchoredPosition;
             Vector2 smoothedPos = Vector2.Lerp(currentPos, screenPos, Time.deltaTime * speedFactor);
 
-            pointerUIElement.anchoredPosition = screenPoint;
+            //pointerUIElement.anchoredPosition = screenPoint;
+            pointerUIElement.anchoredPosition = smoothedPos;
         }
-
-        // Debug: Draw a point where the IMU points on the screen
-        Debug.DrawLine(Camera.main.transform.position, Camera.main.ScreenToWorldPoint(new Vector3(screenPoint.x, screenPoint.y, 10)), Color.red);
-        //Debug.Log($"Screen point: {screenPoint}");
     }
 
 

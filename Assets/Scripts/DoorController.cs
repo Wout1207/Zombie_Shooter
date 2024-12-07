@@ -287,9 +287,12 @@ public class DoorController : MonoBehaviour
 
     private void OnDestroy()
     {
-        GameEvents.current.onOpenDoor -= onOpenDoor;
-        GameEvents.current.onCloseDoor -= onCloseDoor;
-        GameEvents.current.onToggleOpenDoorText -= onToggleOpenDoorText;
-        GameEvents.current.onToggleCloseDoorText -= onToggleCloseDoorText;
+        if(GameEvents.current != null)
+        {
+            GameEvents.current.onOpenDoor -= onOpenDoor;
+            GameEvents.current.onCloseDoor -= onCloseDoor;
+            GameEvents.current.onToggleOpenDoorText -= onToggleOpenDoorText;
+            GameEvents.current.onToggleCloseDoorText -= onToggleCloseDoorText;
+        }
     }
 }

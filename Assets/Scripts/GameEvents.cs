@@ -86,4 +86,13 @@ public class GameEvents : MonoBehaviour
             onGunDejammed();
         }
     }
+
+    public event System.Action<string[]> onOutofAmmo;
+    public void OutofAmmo(string[] values)
+    {
+        if (onOutofAmmo != null)
+        {
+            onOutofAmmo(values);
+        }
+    }
 }

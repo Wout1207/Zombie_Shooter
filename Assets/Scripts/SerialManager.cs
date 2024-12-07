@@ -54,6 +54,7 @@ public class SerialManager : MonoBehaviour
         if (instance == null)
         {
             instance = this;
+            DontDestroyOnLoad(gameObject);
             OpenSerialPort();
         }
         else
@@ -94,9 +95,10 @@ public class SerialManager : MonoBehaviour
         }
 
         //Debug.Log($"Rotation queue count: {rotationQueue.Count}");
-        if (rotationQueue.Count > 20)
+        int tresholdToClear = 10;
+        if (rotationQueue.Count > tresholdToClear)
         {
-            Debug.LogWarning("rotationque exeded 20 values --> Clearing rotation queue");
+            Debug.LogWarning($"rotationQueue count: {tresholdToClear} --> Clearing rotation queue");
             rotationQueue.Clear();
         }
     }
@@ -182,7 +184,8 @@ public class SerialManager : MonoBehaviour
                 float.TryParse(values[3], out float z) &&
                 float.TryParse(values[4], out float w))
             {
-                Quaternion rotation = new Quaternion(z, x, -y, w); //ESP32 test project
+                Quaternion rotation = new Quaternion(z, x, -y, w); //ESP32 bread board
+                //Quaternion rotation = new Quaternion(y, x, -z, w); //ESP32 actual gun
                 if (firstTime)
                 {
                     firstTime = false;
@@ -222,7 +225,7 @@ public class SerialManager : MonoBehaviour
 
     private void HandleMovementData(string[] values)
     {
-        if (values.Length == 2)
+        if (values.Length == 3)
         {
             SerialManager.EnqueueToMainThread(() => {
                 OnDataReceivedMovement?.Invoke(values);
@@ -232,7 +235,7 @@ public class SerialManager : MonoBehaviour
 
     private void HandleGrenadeData(string[] values)
     {
-        if (values.Length == 2)
+        if (values.Length == 1)
         {
             SerialManager.EnqueueToMainThread(() => {
                 OnDataReceivedGrenade?.Invoke();

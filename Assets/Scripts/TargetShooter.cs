@@ -13,16 +13,12 @@ public class TargetShooter : MonoBehaviour
     [SerializeField] public int totalAmmoCount = 100;
     [SerializeField] public float reloadTime = 3f;
 
-    [SerializeField] private bool isJammed = false; 
+    private bool isJammed = false; 
     [SerializeField] private int shakesRequiredToDejam = 3; 
     [SerializeField] private float shakeThreshold = 5f; 
     private int shakeCount = 0; 
     private Vector3 lastIMUReading = Vector3.zero;
     [SerializeField] public float jamRandVal = 0.1f;
-
-
-    public Transform imuObject; // Reference to the object that provides the IMU's rotation
-    private Vector3 imuEulerAngles; // Stores IMU Euler angles
 
     private float lastClickTime = 0f;  // Time of the last valid button press
     public float clickCooldown = 0.2f; // Time (in seconds) to wait between clicks
@@ -41,6 +37,8 @@ public class TargetShooter : MonoBehaviour
         SerialManager.Instance.OnDataReceivedIMU += ReadIMU;
         SerialManager.Instance.OnDataReceivedTrigger += Shoot;
         SerialManager.Instance.OnDataReceivedRFID += readMag;
+
+        audioSource = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -130,7 +128,8 @@ public class TargetShooter : MonoBehaviour
 
         float currentTime = Time.time;
         
-        if (currentTime - lastClickTime >= clickCooldown && !isReloading) // Check if enough time has passed since the last click
+        //if (currentTime - lastClickTime >= clickCooldown && !isReloading) // Check if enough time has passed since the last click
+        if (currentTime - lastClickTime >= clickCooldown) // Check if enough time has passed since the last click
         {
             lastClickTime = currentTime;
 
@@ -147,18 +146,22 @@ public class TargetShooter : MonoBehaviour
     public void ShootRay()
     {
 
-        //if (isJammed)
-        //{
-        //    Debug.Log("Cannot fire; gun is jammed.");
-        //    return;
-        //}
+        if (isReloading)
+        {
+            Debug.Log("Cannot shoot while reloading.");
+            string[] strings = { "still reloading", "0.5" };
+            GameEvents.current.OutofAmmo(strings);
+            return;
+        }
+        else if (currentAmmoCount <= 0)
+        {
+            audioSource.clip = emptyGunSound;
+            audioSource.Play();
+            string[] strings = { "out of ammo reload", "0.5" };
+            GameEvents.current.OutofAmmo(strings);
+            return;
+        }
 
-        //Debug.Log("I am in ShootRay()");
-        //Vector3 screenPos = cam.WorldToScreenPoint(imuObject.GetChild(0).position);
-        //screenPos.x = Mathf.Clamp(screenPos.x, 0, Screen.width);
-        //screenPos.y = Mathf.Clamp(screenPos.y, 0, Screen.height);
-        //screenPos = new Vector3(screenPos.x, (Screen.height - screenPos.y));
-        //Ray ray = cam.ScreenPointToRay(screenPos);
         Ray ray = cam.ScreenPointToRay(lastIMUReading);
 
         GameEvents.current.ShotFired();
@@ -170,7 +173,7 @@ public class TargetShooter : MonoBehaviour
             AddAmmo(+1);
             return;
         }
-        else if (Random.value < jamRandVal && currentAmmoCount >= 0)
+        else if (Random.value < jamRandVal && currentAmmoCount>= 0)
         {
             Debug.Log("rand val is below 10%");
             TriggerJam();
@@ -189,7 +192,7 @@ public class TargetShooter : MonoBehaviour
 
             Target target = hit.collider.gameObject.GetComponent<Target>();
 
-            if (target != null && currentAmmoCount > 0) // waarom alleen ammo verliezen als je raakt?
+            if (target != null && currentAmmoCount > 0)
             {
                 Debug.Log("target hit");
                 audioSource.clip = shootingSound;
@@ -210,12 +213,12 @@ public class TargetShooter : MonoBehaviour
                 }
                 
             }
-            else if(currentAmmoCount < 0)
-            {
-                AddAmmo(1);
-                audioSource.clip = emptyGunSound;
-                audioSource.Play();
-            }
+            //else if(currentAmmoCount < 0)
+            //{
+            //    AddAmmo(1);
+            //    audioSource.clip = emptyGunSound;
+            //    audioSource.Play();
+            //}
             else
             {
                 audioSource.clip = shootingSound;
@@ -226,10 +229,6 @@ public class TargetShooter : MonoBehaviour
         else if (currentAmmoCount < 0)
         {
             AddAmmo(1);
-        }
-        else
-        {
-            //OnTargetMissed?.Invoke();
         }
     }
 
@@ -282,14 +281,7 @@ public class TargetShooter : MonoBehaviour
         if (SerialManager.Instance != null)
         {
             SerialManager.Instance.OnDataReceivedIMU -= ReadIMU;
-        }
-
-        if (SerialManager.Instance != null)
-        {
             SerialManager.Instance.OnDataReceivedTrigger -= Shoot;
-        }
-        if (SerialManager.Instance != null)
-        {
             SerialManager.Instance.OnDataReceivedRFID -= readMag;
         }
     }
