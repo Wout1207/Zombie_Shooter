@@ -179,13 +179,13 @@ public class SerialManager : MonoBehaviour
         //if (values[0] == "r" && values.Length == 5)
         if (values.Length == 5)
         {
-            if (float.TryParse(values[1], out float x) &&
-                float.TryParse(values[2], out float y) &&
-                float.TryParse(values[3], out float z) &&
-                float.TryParse(values[4], out float w))
+            if (float.TryParse(values[1], out float w) &&
+                float.TryParse(values[2], out float x) &&
+                float.TryParse(values[3], out float y) &&
+                float.TryParse(values[4], out float z))
             {
-                Quaternion rotation = new Quaternion(z, x, -y, w); //ESP32 bread board
-                //Quaternion rotation = new Quaternion(y, x, -z, w); //ESP32 actual gun
+                //Quaternion rotation = new Quaternion(z, x, -y, w); //ESP32 bread board
+                Quaternion rotation = new Quaternion(y, x, -z, w); //ESP32 actual gun
                 if (firstTime)
                 {
                     firstTime = false;
