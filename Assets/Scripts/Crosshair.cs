@@ -108,6 +108,9 @@ public class Crosshair : MonoBehaviour
             screenPos.x = Mathf.Clamp(screenPoint.x, 0, Screen.width);
             screenPos.y = Mathf.Clamp(screenPoint.y, 0, Screen.height);
 
+            leftArrow.enabled = false;
+            rightArrow.enabled = false;
+
             if (screenPos.x < rotationBoarder * Screen.width)
             {
                 player.transform.Rotate(new Vector3(0, -rotationSpeed));
