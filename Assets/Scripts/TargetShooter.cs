@@ -58,15 +58,17 @@ public class TargetShooter : MonoBehaviour
         }
     }
 
-
+    int prevMag = -1;
 
     public void readMag(string[] data) // The data is in the format "G1/M1/10" where G1: gun 1, M1: magazine 1 and 10: the capacity of the mag
     {
         //Debug.Log("Reading mag data: " + data);
         //if(isJammed)return;
 
-        if (data.Length == 4)
+        int currentMag = System.Convert.ToInt32(data[0]);
+        if (currentMag !=prevMag)
         {
+            prevMag = currentMag;
             maxAmmoCountInMag = System.Convert.ToInt32(data[3]);
             Debug.Log("Magazine capacity: " + maxAmmoCountInMag);
         }

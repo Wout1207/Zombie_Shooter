@@ -5,6 +5,7 @@ using System.IO.Ports;
 using System;
 using System.Threading;
 using Unity.VisualScripting;
+using System.Linq;
 
 public class SerialManager : MonoBehaviour
 {
@@ -215,10 +216,11 @@ public class SerialManager : MonoBehaviour
 
     private void HandleRFIDData(string[] values)
     {
-        if (values.Length == 2)
+        if (values.Length == 4)
         {
+            string[] val = values.Skip(2).ToArray();
             SerialManager.EnqueueToMainThread(() => {
-                OnDataReceivedRFID?.Invoke(values);
+                OnDataReceivedRFID?.Invoke(val);
             });
         }
     }
