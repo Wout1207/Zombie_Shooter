@@ -12,6 +12,7 @@ public class UIManager : MonoBehaviour
     public TMP_Text textRound;
     public TMP_Text textJamWarning;
     public TMP_Text textOutOfAmmo;
+    public TMP_Text textScore;
 
 
     public TargetShooter TargetShooter;
@@ -20,6 +21,7 @@ public class UIManager : MonoBehaviour
     private int prevTotalAmmoCount;
     public Player player;
     public SpawnManager spawnManager;
+    public Exit exit;
 
     public float displayDurationOutOfAmmo = 1.5f;
     public float blinkingSpeedFactor = 2f;
@@ -47,10 +49,18 @@ public class UIManager : MonoBehaviour
         textTotalAmmoCount.text = "Ammo: " + TargetShooter.totalAmmoCount.ToString();
         textHealth.text = "Health: " + player.currentHP.ToString();
         textRound.text = "Round: " + spawnManager.round.ToString();
+        textScore.text = "Score: " + Score.score.ToString();
 
         if (player.currentHP <= 0)
         {
-            textGameOver.enabled = true;
+            textGameOver.gameObject.SetActive(true);
+            textGameOver.text = "YOU DIED";
+        }
+
+        if (exit.exit)
+        {
+            textGameOver.gameObject.SetActive(true);
+            textGameOver.text = "YOU HAVE ESCAPED";
         }
 
         if (textJamWarning.enabled)

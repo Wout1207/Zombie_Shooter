@@ -24,6 +24,8 @@ public class Target : MonoBehaviour
     public AudioClip hitPlayer;
     public List<AudioClip> groans;
 
+    public int score;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -144,6 +146,7 @@ public class Target : MonoBehaviour
     public void destroyTarget()
     {
         Destroy(gameObject);
+        Score.score += score;
     }
     public void OnAttackAnimationEnd()
     {
@@ -168,7 +171,7 @@ public class Target : MonoBehaviour
         }
         if (!animator)
         {
-            Debug.Log(name) ;
+            return;
         }
         animator.SetBool("zombie_isWalking", false);
         animator.SetBool("player_died", true);

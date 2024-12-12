@@ -19,6 +19,8 @@ public class Player : MonoBehaviour
 
     public WalkingSoundScript walkingSoundScript;
 
+    private float deadTime;
+
     void Start()
     {
         currentHP = maxHP;
@@ -30,6 +32,7 @@ public class Player : MonoBehaviour
             SerialManager.Instance.OnDataReceivedMovement += readMovement;
             SerialManager.Instance.OnDataReceivedGrenade += readGrenadeData;
         }
+        Score.score = 0;
     }
     private void Update()
     {
@@ -41,6 +44,10 @@ public class Player : MonoBehaviour
         {
             throwGrenade();
             grenadeToBeThrown = false;
+        }
+        if (!alive && Time.time - deadTime > 5)
+        {
+            SceneManager.LoadScene("GameOverScene");
         }
     }
 
@@ -73,7 +80,7 @@ public class Player : MonoBehaviour
         currentHP = Mathf.Clamp(currentHP, 0, maxHP);
         SendHealthData();
         Debug.Log("Current HP: " + currentHP);
-        if (currentHP <= 0)
+        if (currentHP <= 0 && alive)
         {
             PlayerDied();
         }
@@ -85,7 +92,7 @@ public class Player : MonoBehaviour
         gameOverText.SetActive(true);
         GameEvents.current.playerDead();
         gameOverText.SetActive(true);
-        SceneManager.LoadScene("GameOverScene");
+        deadTime = Time.time;
     }
 
     public void SendHealthData()
