@@ -32,6 +32,7 @@ public class TargetShooter : MonoBehaviour
     public AudioSource audioSource;
 
     public ParticleSystem shotParticles;
+    int prevMag = -1;
 
     // Start is called before the first frame update
     void Start()
@@ -60,18 +61,15 @@ public class TargetShooter : MonoBehaviour
         }
     }
 
-    int prevMag = -1;
-
+    
     public void readMag(string[] data) // The data is in the format "G1/1/10" where G1: gun 1, M1: magazine 1 and 10: the capacity of the mag
                                        // The data you receive here is in the format "mg/G1/1/10" the mg is a prefix to indicate that the data is for the magazine
     {
         int currentMag = System.Convert.ToInt32(data[2]);
-        Debug.Log("Current magazine: " + currentMag);
         if (currentMag != prevMag)
         {
             prevMag = currentMag;
             maxAmmoCountInMag = System.Convert.ToInt32(data[3]);
-            Debug.Log("Magazine capacity: " + maxAmmoCountInMag);
             StartCoroutine(Reload());
         }
     }

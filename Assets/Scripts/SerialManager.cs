@@ -216,7 +216,6 @@ public class SerialManager : MonoBehaviour
 
     private void HandleRFIDData(string[] values)
     {
-        Debug.Log("RFID data in handle: " + values);
         if (values.Length == 4)
         {
             SerialManager.EnqueueToMainThread(() => {
@@ -252,7 +251,6 @@ public class SerialManager : MonoBehaviour
             try
             {
                 serialPort.WriteLine(message);
-                //Debug.Log("Sent to ESP32: " + message);
             }
             catch (Exception ex)
             {
