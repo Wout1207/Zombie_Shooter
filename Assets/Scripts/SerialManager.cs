@@ -95,10 +95,10 @@ public class SerialManager : MonoBehaviour
         }
 
         //Debug.Log($"Rotation queue count: {rotationQueue.Count}");
-        int tresholdToClear = 10;
+        int tresholdToClear = 5;
         if (rotationQueue.Count > tresholdToClear)
         {
-            Debug.LogWarning($"rotationQueue count: {tresholdToClear} --> Clearing rotation queue");
+            Debug.Log($"rotationQueue count: {tresholdToClear} --> Clearing rotation queue");
             rotationQueue.Clear();
         }
     }
@@ -184,8 +184,8 @@ public class SerialManager : MonoBehaviour
                 float.TryParse(values[3], out float y) &&
                 float.TryParse(values[4], out float z))
             {
-                //Quaternion rotation = new Quaternion(z, x, -y, w); //ESP32 bread board
-                Quaternion rotation = new Quaternion(y, x, -z, w); //ESP32 actual gun
+                Quaternion rotation = new Quaternion(x, -z, y, w); //ESP32 bread board
+                //Quaternion rotation = new Quaternion(y, x, -z, w); //ESP32 actual gun
                 if (firstTime)
                 {
                     firstTime = false;
@@ -204,8 +204,6 @@ public class SerialManager : MonoBehaviour
     {
         if (values[1] == "0") //is inverted 
         {
-            //Debug.Log("Trigger pressed in handleTriggerData");
-            //OnDataReceivedTrigger?.Invoke(values);
             SerialManager.EnqueueToMainThread(() =>
             {
                 OnDataReceivedTrigger?.Invoke();
