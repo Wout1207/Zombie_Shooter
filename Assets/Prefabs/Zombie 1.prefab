@@ -77,7 +77,6 @@ MonoBehaviour:
   hp: 20
   damage: 10
   distanceToAttackThreshold: 3
-  minDistanceToAttackThreshold: 3
   audioSource: {fileID: -7656407860445494050}
   hitPlayer: {fileID: 8300000, guid: 4c319ed171b6fd3408916bc589291b6d, type: 3}
   groans:
@@ -90,6 +89,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 6a72ca10257204c4385faa137f101f6d, type: 3}
   - {fileID: 8300000, guid: 9054413e3d3df7a40b4ddb9a9886c154, type: 3}
   - {fileID: 8300000, guid: 309d8e65ce177284797e5cd79f2a0bd8, type: 3}
+  score: 10
 --- !u!195 &3956500483479747868
 NavMeshAgent:
   m_ObjectHideFlags: 0

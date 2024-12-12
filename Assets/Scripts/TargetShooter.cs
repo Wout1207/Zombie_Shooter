@@ -31,6 +31,8 @@ public class TargetShooter : MonoBehaviour
     public AudioClip emptyGunSound;
     public AudioSource audioSource;
 
+    public ParticleSystem shotParticles;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -122,11 +124,11 @@ public class TargetShooter : MonoBehaviour
     public void Shoot()
     {
         //Debug.Log("Shoot() called");
-        if (isJammed)
+/*        if (isJammed)
         {
             Debug.Log("Gun is jammed! Cannot shoot.");
             return;
-        }
+        }*/
 
         float currentTime = Time.time;
         
@@ -148,34 +150,17 @@ public class TargetShooter : MonoBehaviour
     public void ShootRay()
     {
 
-        if (isReloading)
-        {
-            Debug.Log("Cannot shoot while reloading.");
-            string[] strings = { "still reloading", "0.5" };
-            GameEvents.current.OutofAmmo(strings);
-            return;
-        }
-        else if (currentAmmoCount <= 0)
-        {
-            audioSource.clip = emptyGunSound;
-            audioSource.Play();
-            string[] strings = { "out of ammo reload", "0.5" };
-            GameEvents.current.OutofAmmo(strings);
-            return;
-        }
-
         Ray ray = cam.ScreenPointToRay(lastIMUReading);
 
         GameEvents.current.ShotFired();
-        AddAmmo(-1);
 
         if (isJammed)
         {
             Debug.Log("Cannot fire; gun is jammed.");
-            AddAmmo(+1);
+            AddAmmo(1);
             return;
         }
-        else if (Random.value < jamRandVal && currentAmmoCount>= 0)
+        if (Random.value < jamRandVal && currentAmmoCount>= 0)
         {
             Debug.Log("rand val is below 10%");
             TriggerJam();
@@ -187,18 +172,48 @@ public class TargetShooter : MonoBehaviour
             DoorController controller = hit.collider.gameObject.GetComponent<DoorController>();
             if (controller)
             {
-                AddAmmo(1);
                 controller.hit();
                 return;
             }
 
+            Exit exit = hit.collider.gameObject.GetComponent<Exit>();
+            if (exit)
+            {
+                if (exit.hit())
+                {
+                    Debug.Log("Congratulations. You have escaped");
+                }
+                else
+                {
+                    Debug.Log("Your score is not high enough");
+                }
+                return;
+            }
+            if (isReloading)
+            {
+                Debug.Log("Cannot shoot while reloading.");
+                string[] strings = { "still reloading", "0.5" };
+                GameEvents.current.OutofAmmo(strings);
+                return;
+            }
+            if (currentAmmoCount <= 0)
+            {
+                audioSource.clip = emptyGunSound;
+                audioSource.Play();
+                string[] strings = { "out of ammo reload", "0.5" };
+                GameEvents.current.OutofAmmo(strings);
+                return;
+            }
+            AddAmmo(-1);
             Target target = hit.collider.gameObject.GetComponent<Target>();
 
             if (target != null && currentAmmoCount > 0)
             {
+
                 Debug.Log("target hit");
                 audioSource.clip = shootingSound;
                 audioSource.Play();
+                shotParticles.Play();
                 //AddAmmo(-1);
                 target.Hit(10);
                 if(isFireAmmo)
@@ -225,6 +240,7 @@ public class TargetShooter : MonoBehaviour
             {
                 audioSource.clip = shootingSound;
                 audioSource.Play();
+                shotParticles.Play();
                 //OnTargetMissed?.Invoke();
             }
         }
