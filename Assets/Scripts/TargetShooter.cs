@@ -62,19 +62,18 @@ public class TargetShooter : MonoBehaviour
 
     int prevMag = -1;
 
-    public void readMag(string[] data) // The data is in the format "G1/M1/10" where G1: gun 1, M1: magazine 1 and 10: the capacity of the mag
+    public void readMag(string[] data) // The data is in the format "G1/1/10" where G1: gun 1, M1: magazine 1 and 10: the capacity of the mag
+                                       // The data you receive here is in the format "mg/G1/1/10" the mg is a prefix to indicate that the data is for the magazine
     {
-        //Debug.Log("Reading mag data: " + data);
-        //if(isJammed)return;
-
-        int currentMag = System.Convert.ToInt32(data[0]);
-        if (currentMag !=prevMag)
+        int currentMag = System.Convert.ToInt32(data[2]);
+        Debug.Log("Current magazine: " + currentMag);
+        if (currentMag != prevMag)
         {
             prevMag = currentMag;
             maxAmmoCountInMag = System.Convert.ToInt32(data[3]);
             Debug.Log("Magazine capacity: " + maxAmmoCountInMag);
+            StartCoroutine(Reload());
         }
-        StartCoroutine(Reload());
     }
 
 
@@ -130,6 +129,7 @@ public class TargetShooter : MonoBehaviour
             return;
         }*/
 
+        //Debug.Log("Shoot() called");
         float currentTime = Time.time;
         
         //if (currentTime - lastClickTime >= clickCooldown && !isReloading) // Check if enough time has passed since the last click
@@ -149,7 +149,7 @@ public class TargetShooter : MonoBehaviour
 
     public void ShootRay()
     {
-
+        //Debug.Log("ShootRay() called");
         Ray ray = cam.ScreenPointToRay(lastIMUReading);
 
         GameEvents.current.ShotFired();

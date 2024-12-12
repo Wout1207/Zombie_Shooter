@@ -216,11 +216,11 @@ public class SerialManager : MonoBehaviour
 
     private void HandleRFIDData(string[] values)
     {
+        Debug.Log("RFID data in handle: " + values);
         if (values.Length == 4)
         {
-            string[] val = values.Skip(2).ToArray();
             SerialManager.EnqueueToMainThread(() => {
-                OnDataReceivedRFID?.Invoke(val);
+                OnDataReceivedRFID?.Invoke(values);
             });
         }
     }
