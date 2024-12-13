@@ -157,7 +157,7 @@ public class Player : MonoBehaviour
             currentGrenadeAmount -= 1;
             GameObject grenade = Instantiate(grenadePrefab,transform);
             grenade.transform.position += new Vector3(0,2,transform.forward.z * 2);
-            grenade.GetComponent<Rigidbody>().velocity = transform.forward * 20;
+            grenade.GetComponent<Rigidbody>().velocity = transform.forward * 10;
             grenade.transform.SetParent(transform.parent);
             grenade.transform.localScale = new Vector3(4, 4, 4);
         }

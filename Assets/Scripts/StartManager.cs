@@ -5,13 +5,38 @@ using UnityEngine.SceneManagement;
 
 public class StartManager : MonoBehaviour
 {
+    //private CalibrationManager calibrationManager;
+    [SerializeField]
+    private SerialManager serialManager;
     public void StartGame()
     {
+        CalibrateIMU();
         SceneManager.LoadScene("SampleScene");
+        
     }
 
     public void GoToMenu()
     {
         SceneManager.LoadScene("MenuScene");
+    }
+
+    
+
+    public void CalibrateIMU()
+    {
+        if (SerialManager.Instance != null)
+        {
+            // Get the most recent rotation from the queue
+            Quaternion currentRotation = SerialManager.Instance.GetLastRotation();
+
+            // Set the new calibration point
+            SerialManager.Instance.SetFirstPos(currentRotation);
+
+            Debug.Log("IMU calibrated. New firstPos set to: " + currentRotation);
+        }
+        else
+        {
+            Debug.LogError("Error in StartManager!");
+        }
     }
 }

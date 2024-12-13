@@ -42,6 +42,7 @@ public class TargetShooter : MonoBehaviour
         SerialManager.Instance.OnDataReceivedRFID += readMag;
 
         audioSource = GetComponent<AudioSource>();
+        cam = GameObject.Find("Main Camera").GetComponent<Camera>();
     }
 
     // Update is called once per frame
@@ -149,13 +150,14 @@ public class TargetShooter : MonoBehaviour
     {
         //Debug.Log("ShootRay() called");
         Ray ray = cam.ScreenPointToRay(lastIMUReading);
-
-        GameEvents.current.ShotFired();
+        if(GameEvents.current)
+        {
+            GameEvents.current.ShotFired();
+        }
 
         if (isJammed)
         {
             Debug.Log("Cannot fire; gun is jammed.");
-            AddAmmo(1);
             return;
         }
         if (Random.value < jamRandVal && currentAmmoCount>= 0)
