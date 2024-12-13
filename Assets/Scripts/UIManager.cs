@@ -13,6 +13,7 @@ public class UIManager : MonoBehaviour
     public TMP_Text textJamWarning;
     public TMP_Text textOutOfAmmo;
     public TMP_Text textScore;
+    public TMP_Text textAddToScore;
 
 
     public TargetShooter TargetShooter;
@@ -26,6 +27,10 @@ public class UIManager : MonoBehaviour
     public float displayDurationOutOfAmmo = 1.5f;
     public float blinkingSpeedFactor = 2f;
 
+    private float addToScoreDelay;
+
+    private int scoreToAdd;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -37,6 +42,9 @@ public class UIManager : MonoBehaviour
         UpdateAmmoCount();
         textJamWarning.enabled = false; 
         textOutOfAmmo.enabled = false;
+        textScore.text = "Score: " + Score.score.ToString();
+        textAddToScore.gameObject.SetActive(false);
+
     }
 
     void Update()
@@ -49,7 +57,7 @@ public class UIManager : MonoBehaviour
         textTotalAmmoCount.text = "Ammo: " + TargetShooter.totalAmmoCount.ToString();
         textHealth.text = "Health: " + player.currentHP.ToString();
         textRound.text = "Round: " + spawnManager.round.ToString();
-        textScore.text = "Score: " + Score.score.ToString();
+        //textScore.text = "Score: " + Score.score.ToString();
 
         if (player.currentHP <= 0)
         {
@@ -68,6 +76,36 @@ public class UIManager : MonoBehaviour
             //textJamWarning.alpha = Mathf.PingPong(Time.time, 0.5f); 
             float alpha = Mathf.Clamp01((Mathf.Sin(Time.time * Mathf.PI * blinkingSpeedFactor) + 1f) / 1.5f);
             textJamWarning.alpha = alpha;
+        }
+        if (Time.time - addToScoreDelay > 3)
+        {
+            if (textAddToScore.gameObject.activeSelf)
+            {
+                Score.score += scoreToAdd;
+            }
+            scoreToAdd = 0;
+            textScore.text = "Score: " + Score.score.ToString();
+            
+            textAddToScore.gameObject.SetActive(false);
+        }
+    }
+    public int timesCalled = 0;
+    public void updateScore(int newScoreToAdd)
+    {
+        timesCalled++;
+        Debug.Log(timesCalled);
+        if (textAddToScore.gameObject.activeSelf)
+        {
+            scoreToAdd = newScoreToAdd + scoreToAdd;
+            textAddToScore.text = "+ " + scoreToAdd.ToString();
+            addToScoreDelay = Time.time;
+        }
+        else
+        {
+            scoreToAdd = newScoreToAdd;
+            textAddToScore.gameObject.SetActive(true);
+            textAddToScore.text = "+ " + scoreToAdd.ToString();
+            addToScoreDelay = Time.time;
         }
     }
 
@@ -102,5 +140,4 @@ public class UIManager : MonoBehaviour
         yield return new WaitForSeconds(displayDurationOutOfAmmo); // Wait for the specified duration
         textOutOfAmmo.enabled = false; // Hide the message
     }
-    
 }

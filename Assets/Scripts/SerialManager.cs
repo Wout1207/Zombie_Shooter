@@ -5,6 +5,8 @@ using System.IO.Ports;
 using System;
 using System.Threading;
 using Unity.VisualScripting;
+using UnityEngine.SceneManagement;
+using System.Globalization;
 
 public class SerialManager : MonoBehaviour
 {
@@ -25,6 +27,8 @@ public class SerialManager : MonoBehaviour
     private Quaternion firstPos;
 
     private static SerialManager instance;
+
+    private string currentSceneName;
 
     public static SerialManager Instance
     {
@@ -151,6 +155,7 @@ public class SerialManager : MonoBehaviour
 
     public void ParseAndStoreData(string data)
     {
+        Debug.Log(data);
         if (string.IsNullOrWhiteSpace(data)) return;
 
         string[] values = data.Split('/');
@@ -179,13 +184,18 @@ public class SerialManager : MonoBehaviour
         //if (values[0] == "r" && values.Length == 5)
         if (values.Length == 5)
         {
-            if (float.TryParse(values[1], out float w) &&
+            if (float.TryParse(values[1], NumberStyles.Float, CultureInfo.InvariantCulture, out float w) &&
+                float.TryParse(values[2], NumberStyles.Float, CultureInfo.InvariantCulture, out float x) &&
+                float.TryParse(values[3], NumberStyles.Float, CultureInfo.InvariantCulture, out float y) &&
+                float.TryParse(values[4], NumberStyles.Float, CultureInfo.InvariantCulture, out float z))
+                /*if (float.TryParse(values[1], out float w) &&
                 float.TryParse(values[2], out float x) &&
                 float.TryParse(values[3], out float y) &&
-                float.TryParse(values[4], out float z))
+                float.TryParse(values[4], out float z))*/
             {
-                Quaternion rotation = new Quaternion(x, -z, y, w); //ESP32 bread board
-                //Quaternion rotation = new Quaternion(y, x, -z, w); //ESP32 actual gun
+
+                //Quaternion rotation = new Quaternion(z, x, -y, w); //ESP32 bread board
+                Quaternion rotation = new Quaternion(x, -z, y, w); //ESP32 actual gun
                 if (firstTime)
                 {
                     firstTime = false;
@@ -194,6 +204,7 @@ public class SerialManager : MonoBehaviour
 
                 // Calculate absolute rotation relative to the initial offset
                 rotation = Quaternion.Inverse(firstPos) * rotation;
+                Debug.Log(rotation);
 
                 rotationQueue.Enqueue(rotation); // Enqueue rotation for Update
             }
@@ -206,6 +217,17 @@ public class SerialManager : MonoBehaviour
         {
             SerialManager.EnqueueToMainThread(() =>
             {
+                currentSceneName = SceneManager.GetActiveScene().name;
+                if (currentSceneName == "MenuScene" || currentSceneName == "GameOverScene")
+                {
+                    // Find the StartManager and call StartGame
+                    StartManager startManager = FindObjectOfType<StartManager>();
+                    if (startManager != null)
+                    {
+                        startManager.StartGame();
+                    }
+                }
+
                 OnDataReceivedTrigger?.Invoke();
             });
         }

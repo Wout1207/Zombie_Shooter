@@ -4,74 +4,53 @@ using UnityEngine;
 
 public class WalkingSoundScript : MonoBehaviour
 {
-    public List<GameObject> floorList = new List<GameObject>();
     public bool isWalking;
     public AudioSource audioSource;
-    public AudioClip grass;
-    public AudioClip sand;
-    public AudioClip concrete;
-    public AudioClip dirt;
-
-    private void OnTriggerEnter(Collider other)
-    {
-        string name = other.name;
-        if (name.Contains("Ground_Tile") || name.Contains("Concrete_Block") || name.Contains("Mountain") || name.Contains("Road") || name.Contains("Dirt_Rows"))
-        {
-            floorList.Add(other.gameObject);
-        }
-    }
-
-    private void OnTriggerExit(Collider other)
-    {
-        if (floorList.Contains(other.gameObject))
-        {
-            floorList.Remove(other.gameObject);
-        }
-    }
+    public AudioClip[] terrainSounds;
 
     private void Update()
     {
         if (isWalking)
         {
-            PlayFootstepSound();
-        }
-        else
-        {
-            audioSource.Stop();
+            int terrainIndex = GetActiveTerrainTexture(transform.position);
+            if (terrainIndex >= 0 && terrainIndex < terrainSounds.Length)
+            {
+                audioSource.clip = terrainSounds[terrainIndex];
+                if (!audioSource.isPlaying)
+                {
+                    audioSource.Play();
+                }
+            }
         }
     }
-
-    private void PlayFootstepSound()
+    int GetActiveTerrainTexture(Vector3 position)
     {
-        if (floorList.Count > 0)
+        Terrain terrain = Terrain.activeTerrain;
+        TerrainData terrainData = terrain.terrainData;
+
+        Vector3 terrainPosition = position - terrain.transform.position;
+        Vector3 terrainSize = terrainData.size;
+
+        float xCoord = terrainPosition.x / terrainSize.x;
+        float zCoord = terrainPosition.z / terrainSize.z;
+
+        float[,,] splatmapData = terrainData.GetAlphamaps(
+            (int)(xCoord * terrainData.alphamapWidth),
+            (int)(zCoord * terrainData.alphamapHeight),
+            1, 1
+        );
+
+        int maxIndex = 0;
+        float maxWeight = 0f;
+
+        for (int i = 0; i < terrainData.alphamapLayers; i++)
         {
-            // Determine the floor type
-            GameObject currentFloor = floorList[0]; // Take the last floor entered
-            string name = currentFloor.name;
-
-            // Map floor types to sounds
-            if (name.Contains("Grass"))
+            if (splatmapData[0, 0, i] > maxWeight)
             {
-                audioSource.clip = grass;
-            }
-            else if (name.Contains("Sand"))
-            {
-                audioSource.clip = sand;
-            }
-            else if (name.Contains("Concrete"))
-            {
-                audioSource.clip = concrete;
-            }
-            else if (name.Contains("Dirt"))
-            {
-                audioSource.clip = dirt;
-            }
-
-            // Play sound if it's not already playing
-            if (!audioSource.isPlaying)
-            {
-                audioSource.Play();
+                maxWeight = splatmapData[0, 0, i];
+                maxIndex = i;
             }
         }
+        return maxIndex;
     }
 }
