@@ -20,7 +20,6 @@ public class Target : MonoBehaviour
     public float distanceToAttackThreshold;
     protected private bool firstWithinRange = true;
     protected private bool playerDeadInvoked = false;
-    private bool isDead = false;
 
     public AudioSource audioSource;
     public AudioClip hitPlayer;

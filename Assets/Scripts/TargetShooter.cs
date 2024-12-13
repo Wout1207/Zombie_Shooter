@@ -170,6 +170,7 @@ public class TargetShooter : MonoBehaviour
         if (Physics.Raycast(ray, out RaycastHit hit))
         {
             DoorController controller = hit.collider.gameObject.GetComponent<DoorController>();
+            Debug.Log((hit.collider.name));
             if (controller)
             {
                 controller.hit();
