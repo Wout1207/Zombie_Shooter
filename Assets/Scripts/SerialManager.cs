@@ -5,11 +5,8 @@ using System.IO.Ports;
 using System;
 using System.Threading;
 using Unity.VisualScripting;
-<<<<<<< Updated upstream
 using UnityEngine.SceneManagement;
-=======
 using System.Globalization;
->>>>>>> Stashed changes
 
 public class SerialManager : MonoBehaviour
 {
