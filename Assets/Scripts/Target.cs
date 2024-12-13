@@ -62,14 +62,6 @@ public class Target : MonoBehaviour
             audioSource.clip = groans[Random.Range(0, groans.Count - 1)];
             audioSource.Play();
         }
-        if (hp <= 0 && !isDead)
-        {
-            isDead = true;
-            destroyTarget();
-            animator.SetTrigger("zombie_death");
-            animator.SetBool("zombie_isDead", true);
-            //Destroy(this.gameObject);
-        }
     }
 
     private void targetAnimations()
@@ -174,8 +166,7 @@ public class Target : MonoBehaviour
     public void destroyTarget()
     {
         uiManager.updateScore(score);
-        Destroy(gameObject);
-        Score.score += score;
+        Destroy(gameObject,3f);
     }
     public void OnAttackAnimationEnd()
     {
