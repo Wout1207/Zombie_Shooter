@@ -1,12 +1,11 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Grenade : MonoBehaviour
 {
-    public List<GameObject> objectsToHit = new List<GameObject>();
-    private float time;
-    private bool explode = false;
+    public HashSet<GameObject> objectsToHit = new HashSet<GameObject>(); // Use HashSet to prevent duplicates
+    private float startTime;
+    private bool hasExploded = false;
     public float duration;
     public float damage;
     public GameObject explosionVFXPrefab;
@@ -15,73 +14,90 @@ public class Grenade : MonoBehaviour
     public AudioSource audioSource;
     public AudioClip pinAudio;
     public AudioClip explosionAudio;
-    // Start is called before the first frame update
+
     private void Start()
     {
-        time = Time.time;
-        audioSource.clip = pinAudio;
-        audioSource.Play();
+        if (!explosionVFXPrefab || !audioSource || !pinAudio || !explosionAudio)
+        {
+            Debug.LogError("Missing references in Grenade script.");
+            return;
+        }
+
+        startTime = Time.time;
+        audioSource.PlayOneShot(pinAudio);
     }
 
     private void Update()
     {
-        if (!explode && Time.time - time > duration)
+        if (!hasExploded && Time.time - startTime > duration)
         {
-            for (int i = 0; i < objectsToHit.Count; i++)
-            {
-                if (objectsToHit[i])
-                {
-                    Debug.Log(damage);
-                    Debug.Log(objectsToHit[i].name);
-                    if (objectsToHit[i].TryGetComponent<Player>(out Player player))
-                    {
-                        player.TakeDamage(damage);
-                    }
-                    if (objectsToHit[i].TryGetComponent<Target>(out Target target))
-                    {
-                        target.Hit(damage);
-                    }
-                }
-            }
-            explosionVFX = Instantiate(explosionVFXPrefab);
-            explosionVFX.transform.position = transform.position;
-            explode = true;
-            audioSource.clip = explosionAudio;
-            audioSource.Play();
-            foreach (MeshRenderer mesh in GetComponentsInChildren<MeshRenderer>())
-            {
-                mesh.enabled = false;
-            }
-        }
-        if (Time.time - time > duration+20)
-        {
-            Destroy(gameObject);
+            Explode();
         }
     }
+
+    private void Explode()
+    {
+        hasExploded = true;
+
+        // Apply damage to all objects in range
+        foreach (GameObject obj in objectsToHit)
+        {
+            if (obj)
+            {
+               
+
+                if (obj.TryGetComponent<Player>(out Player player))
+                {
+                    player.TakeDamage(damage);
+                }
+                if (obj.TryGetComponent<Target>(out Target target))
+                {
+                    target.Hit(damage);
+                    Debug.Log($"Damaging: {obj.name}");
+                }
+                else
+                {
+                    Debug.Log($"Hit something that is not a target: {obj.name}");
+                }
+            }
+        }
+
+        // Instantiate explosion effect
+        explosionVFX = Instantiate(explosionVFXPrefab, transform.position, Quaternion.identity);
+        audioSource.PlayOneShot(explosionAudio);
+
+        // Hide grenade visuals
+        foreach (MeshRenderer mesh in GetComponentsInChildren<MeshRenderer>())
+        {
+            mesh.enabled = false;
+        }
+
+        // Clear targets and destroy grenade after a delay
+        objectsToHit.Clear();
+        Destroy(gameObject, 5f);
+    }
+
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.tag.Equals("Player") || other.gameObject.tag.Equals("Target"))
+        if (other.CompareTag("Player") || other.CompareTag("Target"))
         {
-            if(!objectsToHit.Contains(other.gameObject))
-            {
-                objectsToHit.Add(other.gameObject);
-            }
+            objectsToHit.Add(other.gameObject);
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.gameObject.tag.Equals("Player") || other.gameObject.tag.Equals("Target"))
+        if (other.CompareTag("Player") || other.CompareTag("Target"))
         {
-            if (objectsToHit.Contains(other.gameObject))
-            {
-                objectsToHit.Remove(other.gameObject);
-            }
+            objectsToHit.Remove(other.gameObject);
         }
     }
 
     private void OnDestroy()
     {
-        Destroy(explosionVFX);
+        if (explosionVFX)
+        {
+            Destroy(explosionVFX);
+        }
     }
 }

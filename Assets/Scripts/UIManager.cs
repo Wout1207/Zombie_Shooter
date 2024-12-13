@@ -29,6 +29,8 @@ public class UIManager : MonoBehaviour
 
     private float addToScoreDelay;
 
+    private int scoreToAdd;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -77,21 +79,30 @@ public class UIManager : MonoBehaviour
         }
         if (Time.time - addToScoreDelay > 3)
         {
+            if (textAddToScore.gameObject.activeSelf)
+            {
+                Score.score += scoreToAdd;
+            }
+            scoreToAdd = 0;
             textScore.text = "Score: " + Score.score.ToString();
+            
             textAddToScore.gameObject.SetActive(false);
         }
     }
-
-    public void updateScore(int scoreToAdd)
+    public int timesCalled = 0;
+    public void updateScore(int newScoreToAdd)
     {
+        timesCalled++;
+        Debug.Log(timesCalled);
         if (textAddToScore.gameObject.activeSelf)
         {
-            int newAddingScore = int.Parse(textAddToScore.text) + scoreToAdd;
-            textAddToScore.text = "+ " + newAddingScore.ToString();
+            scoreToAdd = newScoreToAdd + scoreToAdd;
+            textAddToScore.text = "+ " + scoreToAdd.ToString();
             addToScoreDelay = Time.time;
         }
         else
         {
+            scoreToAdd = newScoreToAdd;
             textAddToScore.gameObject.SetActive(true);
             textAddToScore.text = "+ " + scoreToAdd.ToString();
             addToScoreDelay = Time.time;
