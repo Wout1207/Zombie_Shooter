@@ -188,10 +188,16 @@ public class SerialManager : MonoBehaviour
                 float.TryParse(values[2], NumberStyles.Float, CultureInfo.InvariantCulture, out float x) &&
                 float.TryParse(values[3], NumberStyles.Float, CultureInfo.InvariantCulture, out float y) &&
                 float.TryParse(values[4], NumberStyles.Float, CultureInfo.InvariantCulture, out float z))
+
                 /*if (float.TryParse(values[1], out float w) &&
                 float.TryParse(values[2], out float x) &&
                 float.TryParse(values[3], out float y) &&
                 float.TryParse(values[4], out float z))*/
+
+            //if (float.TryParse(values[1], out float w) &&
+            //    float.TryParse(values[2], out float x) &&
+            //    float.TryParse(values[3], out float y) &&
+
             {
 
                 //Quaternion rotation = new Quaternion(z, x, -y, w); //ESP32 bread board
