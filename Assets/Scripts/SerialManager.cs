@@ -73,7 +73,8 @@ public class SerialManager : MonoBehaviour
             { "tr", HandleTriggerData },
             { "mg", HandleRFIDData },
             { "m", HandleMovementData },
-            { "g", HandleGrenadeData }
+            { "g", HandleGrenadeData },
+            { "i", HandlePointerReset }
         };
 
         Debug.Log("SerialManager Awake");
@@ -265,6 +266,17 @@ public class SerialManager : MonoBehaviour
         {
             SerialManager.EnqueueToMainThread(() => {
                 OnDataReceivedGrenade?.Invoke();
+            });
+        }
+    }
+
+    private void HandlePointerReset(string[] values)
+    {
+        if (values.Length == 1)
+        {
+            SerialManager.EnqueueToMainThread(() =>
+            {
+                firstTime = true;
             });
         }
     }
