@@ -34,6 +34,10 @@ public class TargetShooter : MonoBehaviour
     public ParticleSystem shotParticles;
     int prevMag = -1;
 
+    public GameObject reticle;
+
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -156,7 +160,7 @@ public class TargetShooter : MonoBehaviour
     public void ShootRay()
     {
         //Debug.Log("ShootRay() called");
-        Ray ray = cam.ScreenPointToRay(lastIMUReading);
+        Ray ray = cam.ScreenPointToRay(reticle.transform.position);
         if(GameEvents.current)
         {
             GameEvents.current.ShotFired();
