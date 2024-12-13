@@ -5,7 +5,6 @@ using System.IO.Ports;
 using System;
 using System.Threading;
 using Unity.VisualScripting;
-using System.Linq;
 
 public class SerialManager : MonoBehaviour
 {

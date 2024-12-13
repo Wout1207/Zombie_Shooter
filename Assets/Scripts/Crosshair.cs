@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using System.Globalization;
 
 public class Crosshair : MonoBehaviour
@@ -28,6 +29,9 @@ public class Crosshair : MonoBehaviour
 
     private Coroutine pointerUpdateCoroutine;
 
+    [SerializeField] private Image leftArrow;
+    [SerializeField] private Image rightArrow;
+
 
     // Start is called before the first frame update
     void Start()
@@ -47,6 +51,8 @@ public class Crosshair : MonoBehaviour
         }
 
         pointerUpdateCoroutine = StartCoroutine(UpdatePointerRoutine());
+        leftArrow.enabled = false;
+        rightArrow.enabled = false;
     }
 
     // Update is called once per frame
@@ -102,13 +108,18 @@ public class Crosshair : MonoBehaviour
             screenPos.x = Mathf.Clamp(screenPoint.x, 0, Screen.width);
             screenPos.y = Mathf.Clamp(screenPoint.y, 0, Screen.height);
 
+            leftArrow.enabled = false;
+            rightArrow.enabled = false;
+
             if (screenPos.x < rotationBoarder * Screen.width)
             {
                 player.transform.Rotate(new Vector3(0, -rotationSpeed));
+                leftArrow.enabled = true;
             }
             else if (screenPos.x > Screen.width - rotationBoarder * Screen.width)
             {
                 player.transform.Rotate(new Vector3(0, rotationSpeed));
+                rightArrow.enabled = true;
             }
 
             Vector2 currentPos = pointerUIElement.anchoredPosition;
