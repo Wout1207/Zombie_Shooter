@@ -185,7 +185,7 @@ public class SerialManager : MonoBehaviour
                 float.TryParse(values[4], out float z))
             {
                 //Quaternion rotation = new Quaternion(z, x, -y, w); //ESP32 bread board
-                Quaternion rotation = new Quaternion(y, x, -z, w); //ESP32 actual gun
+                Quaternion rotation = new Quaternion(x, -z, y, w); //ESP32 actual gun
                 if (firstTime)
                 {
                     firstTime = false;
@@ -194,6 +194,7 @@ public class SerialManager : MonoBehaviour
 
                 // Calculate absolute rotation relative to the initial offset
                 rotation = Quaternion.Inverse(firstPos) * rotation;
+                Debug.Log(rotation);
 
                 rotationQueue.Enqueue(rotation); // Enqueue rotation for Update
             }
