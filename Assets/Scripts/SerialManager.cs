@@ -205,14 +205,13 @@ public class SerialManager : MonoBehaviour
 
     private void HandleTriggerData(String[] values)
     {
-        currentSceneName = SceneManager.GetActiveScene().name;
-
         if (values[1] == "0") //is inverted 
         {
             //Debug.Log("Trigger pressed in handleTriggerData");
             //OnDataReceivedTrigger?.Invoke(values);
             SerialManager.EnqueueToMainThread(() =>
             {
+                currentSceneName = SceneManager.GetActiveScene().name;
                 if (currentSceneName == "MenuScene" || currentSceneName == "GameOverScene")
                 {
                     // Find the StartManager and call StartGame
