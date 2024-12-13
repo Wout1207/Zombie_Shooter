@@ -31,6 +31,7 @@ public class Crosshair : MonoBehaviour
 
     [SerializeField] private Image leftArrow;
     [SerializeField] private Image rightArrow;
+    private bool isRotating = false;
 
 
     // Start is called before the first frame update
@@ -111,15 +112,25 @@ public class Crosshair : MonoBehaviour
             leftArrow.enabled = false;
             rightArrow.enabled = false;
 
+            isRotating = false;
+
             if (screenPos.x < rotationBoarder * Screen.width)
             {
                 player.transform.Rotate(new Vector3(0, -rotationSpeed));
                 leftArrow.enabled = true;
+                isRotating = true;
             }
             else if (screenPos.x > Screen.width - rotationBoarder * Screen.width)
             {
                 player.transform.Rotate(new Vector3(0, rotationSpeed));
                 rightArrow.enabled = true;
+                isRotating = true;
+            }
+
+            if (!isRotating)
+            {
+                leftArrow.enabled = false;
+                rightArrow.enabled = false;
             }
 
             Vector2 currentPos = pointerUIElement.anchoredPosition;
