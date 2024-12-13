@@ -71,6 +71,13 @@ public class TargetShooter : MonoBehaviour
         {
             prevMag = currentMag;
             maxAmmoCountInMag = System.Convert.ToInt32(data[3]);
+            if (currentMag == 3) {
+                isFireAmmo = true;
+            }
+            else
+            {
+                isFireAmmo = false;
+            }
             StartCoroutine(Reload());
         }
     }
