@@ -89,6 +89,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 9054413e3d3df7a40b4ddb9a9886c154, type: 3}
   - {fileID: 8300000, guid: 309d8e65ce177284797e5cd79f2a0bd8, type: 3}
   score: 50
+  damageText: {fileID: 3060676507906640865, guid: 6a48897845762a64f88603f50ac5a8d5, type: 3}
 --- !u!195 &3956500483479747868
 NavMeshAgent:
   m_ObjectHideFlags: 0

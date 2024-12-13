@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
@@ -19,12 +20,17 @@ public class Target : MonoBehaviour
     public float distanceToAttackThreshold;
     protected private bool firstWithinRange = true;
     protected private bool playerDeadInvoked = false;
+    private bool isDead = false;
 
     public AudioSource audioSource;
     public AudioClip hitPlayer;
     public List<AudioClip> groans;
 
     public int score;
+
+    public GameObject damageText;
+
+    private UIManager uiManager;
 
     // Start is called before the first frame update
     void Start()
@@ -38,7 +44,9 @@ public class Target : MonoBehaviour
         }
 
         animator = GetComponent<Animator>();
-        
+
+        uiManager = GameObject.Find("Canvas").GetComponent<UIManager>();
+
         GameEvents.current.onPlayerDead += playerDied;
     }
 
@@ -53,6 +61,14 @@ public class Target : MonoBehaviour
         {
             audioSource.clip = groans[Random.Range(0, groans.Count - 1)];
             audioSource.Play();
+        }
+        if (hp <= 0 && !isDead)
+        {
+            isDead = true;
+            destroyTarget();
+            animator.SetTrigger("zombie_death");
+            animator.SetBool("zombie_isDead", true);
+            //Destroy(this.gameObject);
         }
     }
 
@@ -116,9 +132,15 @@ public class Target : MonoBehaviour
     }
     public void Hit(float damage)
     {
+        Quaternion textRotation = new Quaternion();
+        textRotation.eulerAngles = new Vector3(0, Mathf.Cos(player.transform.position.x - transform.position.x), 0);
+        GameObject text = Instantiate(damageText,transform);
+        text.transform.rotation = textRotation;
+        text.GetComponent<TMP_Text>().text = damage.ToString();
         hp -= damage;
         if (hp <= 0)
         {
+            destroyTarget();
             animator.SetTrigger("zombie_death");
             animator.SetBool("zombie_isDead", true);
             //Destroy(this.gameObject);
@@ -133,9 +155,15 @@ public class Target : MonoBehaviour
 
     public void fireHit(float damage)
     {
+        Quaternion textRotation = new Quaternion();
+        textRotation.eulerAngles = new Vector3(0, Mathf.Cos(player.transform.position.x - transform.position.x), 0);
+        GameObject text = Instantiate(damageText, transform);
+        text.transform.rotation = textRotation;
+        text.GetComponent<TMP_Text>().text = damage.ToString();
         hp -= damage;
         if (hp <= 0)
         {
+            destroyTarget();
             animator.SetBool("zombie_isDead", true);
             animator.SetTrigger("zombie_death");
             
@@ -145,6 +173,7 @@ public class Target : MonoBehaviour
 
     public void destroyTarget()
     {
+        uiManager.updateScore(score);
         Destroy(gameObject);
         Score.score += score;
     }

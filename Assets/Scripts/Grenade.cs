@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Grenade : MonoBehaviour
 {
-    private List<GameObject> objectsToHit = new List<GameObject>();
+    public List<GameObject> objectsToHit = new List<GameObject>();
     private float time;
     private bool explode = false;
     public float duration;
@@ -27,17 +27,17 @@ public class Grenade : MonoBehaviour
     {
         if (!explode && Time.time - time > duration)
         {
-            foreach (GameObject obj in objectsToHit)
+            for (int i = 0; i < objectsToHit.Count; i++)
             {
-                if (obj)
+                if (objectsToHit[i])
                 {
-                    Player player = obj.GetComponent<Player>();
-                    if (player)
+                    Debug.Log(damage);
+                    Debug.Log(objectsToHit[i].name);
+                    if (objectsToHit[i].TryGetComponent<Player>(out Player player))
                     {
                         player.TakeDamage(damage);
                     }
-                    Target target = obj.GetComponent<Target>();
-                    if (target)
+                    if (objectsToHit[i].TryGetComponent<Target>(out Target target))
                     {
                         target.Hit(damage);
                     }
@@ -71,7 +71,7 @@ public class Grenade : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.gameObject.name.Equals("Player") || other.gameObject.name.Contains("Target"))
+        if (other.gameObject.tag.Equals("Player") || other.gameObject.tag.Equals("Target"))
         {
             if (objectsToHit.Contains(other.gameObject))
             {
