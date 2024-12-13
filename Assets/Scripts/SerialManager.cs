@@ -5,6 +5,7 @@ using System.IO.Ports;
 using System;
 using System.Threading;
 using Unity.VisualScripting;
+using UnityEngine.SceneManagement;
 
 public class SerialManager : MonoBehaviour
 {
@@ -25,6 +26,8 @@ public class SerialManager : MonoBehaviour
     private Quaternion firstPos;
 
     private static SerialManager instance;
+
+    private string currentSceneName;
 
     public static SerialManager Instance
     {
@@ -202,12 +205,24 @@ public class SerialManager : MonoBehaviour
 
     private void HandleTriggerData(String[] values)
     {
+        currentSceneName = SceneManager.GetActiveScene().name;
+
         if (values[1] == "0") //is inverted 
         {
             //Debug.Log("Trigger pressed in handleTriggerData");
             //OnDataReceivedTrigger?.Invoke(values);
             SerialManager.EnqueueToMainThread(() =>
             {
+                if (currentSceneName == "MenuScene" || currentSceneName == "GameOverScene")
+                {
+                    // Find the StartManager and call StartGame
+                    StartManager startManager = FindObjectOfType<StartManager>();
+                    if (startManager != null)
+                    {
+                        startManager.StartGame();
+                    }
+                }
+
                 OnDataReceivedTrigger?.Invoke();
             });
         }
