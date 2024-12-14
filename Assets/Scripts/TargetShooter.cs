@@ -36,9 +36,6 @@ public class TargetShooter : MonoBehaviour
     public ParticleSystem shotParticles;
     int prevMag = -1;
 
-    public GameObject reticle;
-
-
 
     // Start is called before the first frame update
     void Start()
