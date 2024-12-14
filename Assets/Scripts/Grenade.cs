@@ -44,15 +44,18 @@ public class Grenade : MonoBehaviour
         {
             if (obj)
             {
-               
-
                 if (obj.TryGetComponent<Player>(out Player player))
                 {
                     player.TakeDamage(damage);
                 }
-                if (obj.TryGetComponent<Target>(out Target target))
+                else if (obj.TryGetComponent<Target>(out Target target))
                 {
                     target.Hit(damage);
+                    Debug.Log($"Damaging: {obj.name}");
+                }
+                else if (obj.TryGetComponent<DoorController>(out DoorController doorController))
+                {
+                    doorController.Hit(damage);
                     Debug.Log($"Damaging: {obj.name}");
                 }
                 else

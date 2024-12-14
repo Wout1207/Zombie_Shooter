@@ -34,7 +34,7 @@ public class SpawnManager : MonoBehaviour
         switch (state)
         {
             case SpawningState.start:
-                if(Time.time - time > 5)
+                if(Time.time - time > 3)
                 {
                     round++;
                     state = SpawningState.newRound;
@@ -62,7 +62,7 @@ public class SpawnManager : MonoBehaviour
                 }
                 break;
             case SpawningState.timeBetweenSpawns:
-                if (Time.time - time > 5)
+                if (Time.time - time > 3)
                 {
                     state = SpawningState.spawning;
                 }
@@ -76,7 +76,7 @@ public class SpawnManager : MonoBehaviour
                 }
                 break;
             case SpawningState.newRoundDelay:
-                if (Time.time - time > 10)
+                if (Time.time - time > 7)
                 {
                     state = SpawningState.newRound;
                 }
@@ -99,8 +99,8 @@ public class SpawnManager : MonoBehaviour
         {
             randomIndex = Random.Range(0, zombies.Count);
         }
-        float minRadius = 75f;
-        float maxRadius = 90f;
+        float minRadius = 70f;
+        float maxRadius = 85f;
         float angle = Random.Range(0f, Mathf.PI * 2);
         float radius = Random.Range(minRadius, maxRadius);
         Vector3 spawnPosition = targetShooter.transform.position + new Vector3(Mathf.Cos(angle) * radius, 0, Mathf.Sin(angle) * radius);

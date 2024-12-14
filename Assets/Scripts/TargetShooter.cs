@@ -34,6 +34,7 @@ public class TargetShooter : MonoBehaviour
     public AudioSource audioSource;
 
     public ParticleSystem shotParticles;
+    public GameObject hitParticles;
     int prevMag = -1;
 
 
@@ -183,14 +184,6 @@ public class TargetShooter : MonoBehaviour
 
         if (Physics.Raycast(ray, out RaycastHit hit))
         {
-            DoorController controller = hit.collider.gameObject.GetComponent<DoorController>();
-            Debug.Log((hit.collider.name));
-            if (controller)
-            {
-                controller.hit();
-                return;
-            }
-
             Exit exit = hit.collider.gameObject.GetComponent<Exit>();
             if (exit)
             {
@@ -220,6 +213,21 @@ public class TargetShooter : MonoBehaviour
                 return;
             }
             AddAmmo(-1);
+            GameObject particles = Instantiate(hitParticles);
+            particles.transform.position = hit.point;
+            particles.transform.rotation = Quaternion.LookRotation(hit.normal);
+            Destroy(particles, 5);
+            DoorController controller = hit.collider.gameObject.GetComponent<DoorController>();
+            Debug.Log((controller));
+            if (controller && currentAmmoCount > 0)
+            {
+                audioSource.clip = shootingSound;
+                audioSource.Play();
+                shotParticles.Play();
+                controller.Hit(10);
+                return;
+            }
+
             Target target = hit.collider.gameObject.GetComponent<Target>();
 
             if (target != null && currentAmmoCount > 0)

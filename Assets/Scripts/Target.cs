@@ -20,6 +20,7 @@ public class Target : MonoBehaviour
     public float distanceToAttackThreshold;
     protected private bool firstWithinRange = true;
     protected private bool playerDeadInvoked = false;
+    private bool isDead = false;
 
     public AudioSource audioSource;
     public AudioClip hitPlayer;
@@ -120,14 +121,15 @@ public class Target : MonoBehaviour
     }
     public void Hit(float damage)
     {
-        Quaternion textRotation = new Quaternion();
-        textRotation.eulerAngles = new Vector3(0, Mathf.Cos(player.transform.position.x - transform.position.x), 0);
         GameObject text = Instantiate(damageText,transform);
-        text.transform.rotation = textRotation;
+        text.transform.LookAt(player.transform);
+        text.transform.position += new Vector3(0, 4, 0);
+        text.transform.Rotate(0, 180, 0);
         text.GetComponent<TMP_Text>().text = damage.ToString();
         hp -= damage;
-        if (hp <= 0)
+        if (hp <= 0 && !isDead)
         {
+            isDead = true;
             destroyTarget();
             animator.SetTrigger("zombie_death");
             animator.SetBool("zombie_isDead", true);
@@ -143,14 +145,15 @@ public class Target : MonoBehaviour
 
     public void fireHit(float damage)
     {
-        Quaternion textRotation = new Quaternion();
-        textRotation.eulerAngles = new Vector3(0, Mathf.Cos(player.transform.position.x - transform.position.x), 0);
         GameObject text = Instantiate(damageText, transform);
-        text.transform.rotation = textRotation;
+        text.transform.LookAt(player.transform);
+        text.transform.position += new Vector3(0, 2, 0);
+        text.transform.Rotate(0, 180, 0);
         text.GetComponent<TMP_Text>().text = damage.ToString();
         hp -= damage;
-        if (hp <= 0)
+        if (hp <= 0 && !isDead)
         {
+            isDead = true;
             destroyTarget();
             animator.SetBool("zombie_isDead", true);
             animator.SetTrigger("zombie_death");
