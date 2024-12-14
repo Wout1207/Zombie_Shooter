@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using System.Globalization;
 
 public class UIManager : MonoBehaviour
 {
@@ -130,7 +131,8 @@ public class UIManager : MonoBehaviour
     void ShowOutOfAmmo(string[] values)
     {
         textOutOfAmmo.text = values[0];
-        displayDurationOutOfAmmo = float.Parse(values[1]);
+        //displayDurationOutOfAmmo = float.Parse(values[1]);
+        float.TryParse(values[1], NumberStyles.Float, CultureInfo.InvariantCulture, out float displayDurationOutOfAmmo);
         //textOutOfAmmo.enabled = true;
         StartCoroutine(ShowOutOfAmmoCoroutine());
     }

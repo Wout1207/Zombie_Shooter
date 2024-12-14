@@ -73,7 +73,8 @@ public class SerialManager : MonoBehaviour
             { "tr", HandleTriggerData },
             { "mg", HandleRFIDData },
             { "m", HandleMovementData },
-            { "g", HandleGrenadeData }
+            { "g", HandleGrenadeData },
+            { "i", HandlePointerReset }
         };
 
         Debug.Log("SerialManager Awake");
@@ -99,10 +100,10 @@ public class SerialManager : MonoBehaviour
         }
 
         //Debug.Log($"Rotation queue count: {rotationQueue.Count}");
-        int tresholdToClear = 10;
+        int tresholdToClear = 5;
         if (rotationQueue.Count > tresholdToClear)
         {
-            Debug.LogWarning($"rotationQueue count: {tresholdToClear} --> Clearing rotation queue");
+            Debug.Log($"rotationQueue count: {tresholdToClear} --> Clearing rotation queue");
             rotationQueue.Clear();
         }
     }
@@ -188,11 +189,18 @@ public class SerialManager : MonoBehaviour
                 float.TryParse(values[2], NumberStyles.Float, CultureInfo.InvariantCulture, out float x) &&
                 float.TryParse(values[3], NumberStyles.Float, CultureInfo.InvariantCulture, out float y) &&
                 float.TryParse(values[4], NumberStyles.Float, CultureInfo.InvariantCulture, out float z))
+
                 /*if (float.TryParse(values[1], out float w) &&
                 float.TryParse(values[2], out float x) &&
                 float.TryParse(values[3], out float y) &&
                 float.TryParse(values[4], out float z))*/
+
+            //if (float.TryParse(values[1], out float w) &&
+            //    float.TryParse(values[2], out float x) &&
+            //    float.TryParse(values[3], out float y) &&
+
             {
+
                 //Quaternion rotation = new Quaternion(z, x, -y, w); //ESP32 bread board
                 Quaternion rotation = new Quaternion(x, -z, y, w); //ESP32 actual gun
                 if (firstTime)
@@ -214,8 +222,6 @@ public class SerialManager : MonoBehaviour
     {
         if (values[1] == "0") //is inverted 
         {
-            //Debug.Log("Trigger pressed in handleTriggerData");
-            //OnDataReceivedTrigger?.Invoke(values);
             SerialManager.EnqueueToMainThread(() =>
             {
                 currentSceneName = SceneManager.GetActiveScene().name;
@@ -260,6 +266,17 @@ public class SerialManager : MonoBehaviour
         {
             SerialManager.EnqueueToMainThread(() => {
                 OnDataReceivedGrenade?.Invoke();
+            });
+        }
+    }
+
+    private void HandlePointerReset(string[] values)
+    {
+        if (values.Length == 1)
+        {
+            SerialManager.EnqueueToMainThread(() =>
+            {
+                firstTime = true;
             });
         }
     }
