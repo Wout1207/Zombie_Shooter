@@ -75,6 +75,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hp: 100
   damage: 10
+  distanceToPlayerThreshold: 100
   distanceToAttackThreshold: 20
   audioSource: {fileID: -2679695447252348768}
   hitPlayer: {fileID: 8300000, guid: 4c319ed171b6fd3408916bc589291b6d, type: 3}

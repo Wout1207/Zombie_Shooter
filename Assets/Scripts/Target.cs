@@ -16,7 +16,7 @@ public class Target : MonoBehaviour
     protected private bool playerInCollider = false;
     protected private float hitTimerDelay;
     protected private float distanceToPlayer;
-    static protected private float distanceToPlayerThreshold = 30;
+    public float distanceToPlayerThreshold;
     public float distanceToAttackThreshold;
     protected private bool firstWithinRange = true;
     protected private bool playerDeadInvoked = false;
@@ -75,10 +75,7 @@ public class Target : MonoBehaviour
 
         else if (distanceToPlayer < distanceToPlayerThreshold)
         {
-            if ((transform.position - player.transform.position).magnitude < 30)
-            {
-                agent.SetDestination(player.transform.position);
-            }
+            agent.SetDestination(player.transform.position);
             agent.isStopped = distanceToPlayer <= distanceToAttackThreshold || agent.pathStatus == NavMeshPathStatus.PathPartial || !agent.hasPath && player.GetComponent<Player>().currentHP > 0;
             if (firstWithinRange)
             {
