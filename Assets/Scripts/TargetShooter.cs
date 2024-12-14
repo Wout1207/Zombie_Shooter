@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using static UnityEngine.GraphicsBuffer;
 
 public class TargetShooter : MonoBehaviour
@@ -19,6 +20,7 @@ public class TargetShooter : MonoBehaviour
     private int shakeCount = 0; 
     private Vector3 lastIMUReading = Vector3.zero;
     [SerializeField] public float jamRandVal = 0.1f;
+    public GameObject reticle;
 
     private float lastClickTime = 0f;  // Time of the last valid button press
     public float clickCooldown = 0.2f; // Time (in seconds) to wait between clicks
@@ -113,6 +115,10 @@ public class TargetShooter : MonoBehaviour
 
     public void TriggerJam()
     {
+        if(!SceneManager.GetActiveScene().name.Equals("SampleScene"))
+        {
+            return;
+        }
         if (isJammed) return;
 
         isJammed = true;

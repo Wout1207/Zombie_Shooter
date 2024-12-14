@@ -90,11 +90,8 @@ public class UIManager : MonoBehaviour
             textAddToScore.gameObject.SetActive(false);
         }
     }
-    public int timesCalled = 0;
     public void updateScore(int newScoreToAdd)
     {
-        timesCalled++;
-        Debug.Log(timesCalled);
         if (textAddToScore.gameObject.activeSelf)
         {
             scoreToAdd = newScoreToAdd + scoreToAdd;

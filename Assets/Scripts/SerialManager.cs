@@ -156,7 +156,6 @@ public class SerialManager : MonoBehaviour
 
     public void ParseAndStoreData(string data)
     {
-        Debug.Log(data);
         if (string.IsNullOrWhiteSpace(data)) return;
 
         string[] values = data.Split('/');
@@ -211,7 +210,6 @@ public class SerialManager : MonoBehaviour
 
                 // Calculate absolute rotation relative to the initial offset
                 rotation = Quaternion.Inverse(firstPos) * rotation;
-                Debug.Log(rotation);
 
                 rotationQueue.Enqueue(rotation); // Enqueue rotation for Update
             }
