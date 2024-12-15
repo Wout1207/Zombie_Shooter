@@ -24,7 +24,7 @@ public class SpawnManager : MonoBehaviour
     void Start()
     {
         state = SpawningState.start;
-        amountToSpawn = new List<int> { 0, 0, 0, 0 };
+        amountToSpawn = new List<int> { 0, 0, 0, 0, 0 };
         time = Time.time;
     }
 
@@ -90,6 +90,7 @@ public class SpawnManager : MonoBehaviour
         amountToSpawn[1] = round / 3;
         amountToSpawn[2] = (round / 2) * 4;
         amountToSpawn[3] = (round / 3) * 4;
+        amountToSpawn[4] = round / 2;
     }
 
     public void spawnEnemy()
@@ -112,8 +113,7 @@ public class SpawnManager : MonoBehaviour
             spawnPosition = targetShooter.transform.position + new Vector3(Mathf.Cos(angle) * radius, 0, Mathf.Sin(angle) * radius);
             floorIndex = GetActiveTerrainTexture(spawnPosition);
         }
-        GameObject obj = Instantiate(zombies[randomIndex], transform);
-        obj.transform.position = spawnPosition;
+        Instantiate(zombies[randomIndex], spawnPosition, Quaternion.identity, transform);
         amountToSpawn[randomIndex] --;
     }
 
