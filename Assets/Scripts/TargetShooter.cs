@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 using static UnityEngine.GraphicsBuffer;
 
 public class TargetShooter : MonoBehaviour
@@ -136,36 +138,69 @@ public class TargetShooter : MonoBehaviour
 
     public void Shoot()
     {
-        //Debug.Log("Shoot() called");
-/*        if (isJammed)
+        if (SceneManager.GetActiveScene().name != "MenuScene")
         {
-            Debug.Log("Gun is jammed! Cannot shoot.");
-            return;
-        }*/
+            float currentTime = Time.time;
 
-        //Debug.Log("Shoot() called");
-        float currentTime = Time.time;
-        
-        //if (currentTime - lastClickTime >= clickCooldown && !isReloading) // Check if enough time has passed since the last click
-        if (currentTime - lastClickTime >= clickCooldown) // Check if enough time has passed since the last click
-        {
-            lastClickTime = currentTime;
 
-            //Debug.Log("Shooting...");
-            ShootRay();
-            
-            if (currentAmmoCount == 0)
+            if (currentTime - lastClickTime >= clickCooldown) // Check if enough time has passed since the last click
             {
-                Debug.Log("Out of ammo!");
+                lastClickTime = currentTime;
+
+                //Debug.Log("Shooting...");
+                ShootRay();
+
+                if (currentAmmoCount == 0)
+                {
+                    Debug.Log("Out of ammo!");
+                }
             }
         }
+        else
+        {
+            ShootRay();
+        }
+
     }
 
     public void ShootRay()
     {
-        //Debug.Log("ShootRay() called");
         Ray ray = cam.ScreenPointToRay(reticle.transform.position);
-        if(GameEvents.current)
+        
+        if (SceneManager.GetActiveScene().name == "MenuScene")
+        {
+            //Debug.Log("Ray shot");
+            //if (Physics.Raycast(ray, out RaycastHit h)) { 
+            //    Button button = h.collider.gameObject.GetComponent<Button>();
+            //    if (button)
+            //    {
+            //        button.onClick.Invoke();
+            //        Debug.Log("Button clicked");
+            //    }
+            //}
+            //return;
+
+            if (SceneManager.GetActiveScene().name == "MenuScene")
+            {
+                // Perform a UI Raycast
+                GameObject clickedObject = GetUIElementUnderReticle();
+                Debug.Log(clickedObject.name);
+                if (clickedObject != null)
+                {
+                    Button button = clickedObject.GetComponent<Button>();
+                    if (button != null)
+                    {
+                        button.onClick.Invoke();
+                        Debug.Log("Button clicked");
+                    }
+                }
+
+                return;
+            }
+
+        }
+
+        if (GameEvents.current)
         {
             GameEvents.current.ShotFired();
         }
@@ -290,6 +325,29 @@ public class TargetShooter : MonoBehaviour
         {
             AddAmmo(1);
         }
+    }
+
+    private GameObject GetUIElementUnderReticle()
+    {
+        // Convert the reticle position into a screen position
+        Vector2 screenPoint = RectTransformUtility.WorldToScreenPoint(cam, reticle.transform.position);
+
+        // Create a PointerEventData object
+        PointerEventData pointerEventData = new PointerEventData(EventSystem.current)
+        {
+            position = screenPoint // The position of the reticle on the screen
+        };
+
+        // Perform a GraphicRaycaster Raycast
+        var raycastResults = new System.Collections.Generic.List<RaycastResult>();
+        EventSystem.current.RaycastAll(pointerEventData, raycastResults);
+
+        if (raycastResults.Count > 0)
+        {
+            return raycastResults[0].gameObject; // Return the first hit UI element
+        }
+
+        return null;
     }
 
     private IEnumerator Reload()

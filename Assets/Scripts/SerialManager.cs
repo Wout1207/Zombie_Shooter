@@ -20,7 +20,6 @@ public class SerialManager : MonoBehaviour
 
     [Header("Serial Port Settings")]
     public string portName = "COM16"; // Change depending on your system
-    //public int baudRate = 115200;
     public int baudRate = 1000000;
 
     public bool firstTime = true;
@@ -201,7 +200,7 @@ public class SerialManager : MonoBehaviour
             {
 
                 //Quaternion rotation = new Quaternion(z, x, -y, w); //ESP32 bread board
-                Quaternion rotation = new Quaternion(x, -z, y, w); //ESP32 actual gun
+                Quaternion rotation = new Quaternion(y, x, -z, w); //ESP32 actual gun
                 if (firstTime)
                 {
                     firstTime = false;
