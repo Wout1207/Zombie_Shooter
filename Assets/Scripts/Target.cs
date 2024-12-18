@@ -119,7 +119,7 @@ public class Target : MonoBehaviour
         animator.SetFloat("speed", agent.velocity.magnitude);
 
     }
-    public void Hit(float damage)
+    public virtual void Hit(float damage)
     {
         GameObject text = Instantiate(damageText,transform);
         text.transform.LookAt(player.transform);
@@ -143,7 +143,7 @@ public class Target : MonoBehaviour
         //OnTargetHit?.Invoke();
     }
 
-    public void fireHit(float damage)
+    public virtual void fireHit(float damage)
     {
         GameObject text = Instantiate(damageText, transform);
         text.transform.LookAt(player.transform);
