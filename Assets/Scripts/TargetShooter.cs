@@ -237,9 +237,28 @@ public class TargetShooter : MonoBehaviour
                 audioSource.clip = shootingSound;
                 audioSource.Play();
                 shotParticles.Play();
+
                 //AddAmmo(-1);
-                target.Hit(10);
-                if(isFireAmmo)
+                //target.Hit(10);
+
+                if (target is FireResistantZombie fireZombie)
+                {
+                    if (isFireAmmo)
+                    {
+                        fireZombie.fireHit(10);
+                        Debug.Log("Fire bullet hit FireResistantZombie!");
+                    }
+                    else
+                    {
+                        Debug.Log("Normal bullets have no effect on FireResistantZombie!");
+                    }
+                }
+                else
+                {
+                    target.Hit(10);
+                }
+
+                if (isFireAmmo)
                 {
                     FireEffect fire = target.transform.GetComponentInChildren<FireEffect>();
                     if (fire)
@@ -251,7 +270,7 @@ public class TargetShooter : MonoBehaviour
                         Instantiate(fireEffect, target.transform);
                     }
                 }
-                
+
             }
             //else if(currentAmmoCount < 0)
             //{
