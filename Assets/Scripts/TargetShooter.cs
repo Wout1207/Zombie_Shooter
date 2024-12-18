@@ -184,7 +184,7 @@ public class TargetShooter : MonoBehaviour
             {
                 // Perform a UI Raycast
                 GameObject clickedObject = GetUIElementUnderReticle();
-                Debug.Log(clickedObject.name);
+                //Debug.Log(clickedObject.name);
                 if (clickedObject != null)
                 {
                     Button button = clickedObject.GetComponent<Button>();
@@ -272,10 +272,6 @@ public class TargetShooter : MonoBehaviour
                 audioSource.clip = shootingSound;
                 audioSource.Play();
                 shotParticles.Play();
-
-                //AddAmmo(-1);
-                //target.Hit(10);
-
                 if (target is FireResistantZombie fireZombie)
                 {
                     if (isFireAmmo)
@@ -305,7 +301,7 @@ public class TargetShooter : MonoBehaviour
                         Instantiate(fireEffect, target.transform);
                     }
                 }
-
+                
             }
             //else if(currentAmmoCount < 0)
             //{
