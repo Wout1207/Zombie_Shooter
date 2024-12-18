@@ -11,7 +11,7 @@ public class StartManager : MonoBehaviour
     public void StartGame()
     {
         CalibrateIMU();
-        SceneManager.LoadScene("SampleScene");
+        SceneManager.LoadScene("CutScene");
         
     }
 

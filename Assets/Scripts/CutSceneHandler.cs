@@ -3,20 +3,28 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Video;
 
-public class BroadcastEndHandler : MonoBehaviour
+public class CutSceneHandler : MonoBehaviour
 {
     public VideoPlayer videoPlayer;           // Video Player component to play the video
     public AudioSource audioSource;           // AudioSource to play the voice line
     public AudioClip[] voiceLines;            // Array of random audio clips
     public Camera mainCamera;                 // Explicit reference to the main camera
     public float rotationAngle = 40f;         // Amount of rotation in degrees (relative rotation)
+    public float tiltAmount = 10f;            // Amount to tilt the camera down (in degrees)
     public float rotationDuration = 15f;      // Duration for camera rotation (slower speed)
     public float delayBeforeTurn = 70f;       // Delay before camera starts turning (in seconds)
+    public float delayAfterVoice = 1f;        // Delay after voice line ended before loading scene (in seconds)
     private bool hasPlayed = false;           // Ensures the end logic triggers only once
+    public float fadeDuration = 2f;           // Duration of the fade
+    public float startFOV = 10f;              // Initial small FOV for black screen effect
+    public float normalFOV = 60f;             // Normal FOV
+    public float zoomFOV = 40f;               // Zoom FOV for the end
 
     // Start is called before the first frame update
     void Start()
     {
+        mainCamera.fieldOfView = startFOV;
+        StartCoroutine(FadeIn());
         // Start the delay timer as soon as the video starts playing
         videoPlayer.Play();  // Ensure the video starts playing
         StartCoroutine(DelayedTurnAndVoice());
@@ -38,6 +46,22 @@ public class BroadcastEndHandler : MonoBehaviour
         }
     }
 
+    private IEnumerator FadeIn()
+    {
+        float timeElapsed = 0f;
+
+        // Gradually increase the FOV from startFOV to endFOV
+        while (timeElapsed < fadeDuration)
+        {
+            mainCamera.fieldOfView = Mathf.Lerp(startFOV, normalFOV, timeElapsed / fadeDuration);
+            timeElapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        // Ensure FOV is exactly at the end value
+        mainCamera.fieldOfView = normalFOV;
+    }
+
     // Coroutine to delay the camera turn and play voice line
     IEnumerator DelayedTurnAndVoice()
     {
@@ -48,32 +72,39 @@ public class BroadcastEndHandler : MonoBehaviour
         StartCoroutine(RotateCameraAndPlayVoice());
     }
 
-    // Coroutine to rotate the camera smoothly, then play the voice line
+    // Coroutine to rotate the camera smoothly, tilt it, and play the voice line
     IEnumerator RotateCameraAndPlayVoice()
     {
+        // Play the voice line BEFORE rotation and zoom
+        PlayVoiceLine();
+
         float time = 0;
         Quaternion startRotation = mainCamera.transform.rotation;
 
         // Calculate the target rotation relative to the current rotation (rotate around Y-axis)
-        Quaternion endRotation = Quaternion.Euler(mainCamera.transform.eulerAngles + new Vector3(0, rotationAngle, 0));
+        Quaternion endRotation = Quaternion.Euler(mainCamera.transform.eulerAngles + new Vector3(tiltAmount, rotationAngle, 0));
 
-        // Smoothly rotate the camera using an ease-in-out curve (quadratic ease-out)
+        // Smoothly rotate the camera, tilt it, and zoom
         while (time < rotationDuration)
         {
             float t = time / rotationDuration;
             t = t * t * (3f - 2f * t); // Quadratic ease-in-out
 
+            // Rotate the camera smoothly
             mainCamera.transform.rotation = Quaternion.Slerp(startRotation, endRotation, t);
+
+            // Zoom the camera smoothly
+            mainCamera.fieldOfView = Mathf.Lerp(normalFOV, zoomFOV, t);
+
             time += Time.deltaTime;
             yield return null;
         }
 
-        // Final rotation after the rotation is done
+        // Final rotation and FOV after the transition is done
         mainCamera.transform.rotation = endRotation;
-
-        // Play the voice line AFTER rotation
-        PlayVoiceLine();
+        mainCamera.fieldOfView = zoomFOV;
     }
+
 
     // Plays a random voice line
     void PlayVoiceLine()
@@ -94,7 +125,17 @@ public class BroadcastEndHandler : MonoBehaviour
     void OnAudioEnd()
     {
         Debug.Log("Audio has finished playing!");
-        // Add your custom logic here
+
+        // Start a coroutine to delay the scene load by 1 second
+        StartCoroutine(DelayedSceneLoad());
+    }
+
+    IEnumerator DelayedSceneLoad()
+    {
+        // Wait for 1 second before loading the scene
+        yield return new WaitForSeconds(delayAfterVoice);
+
+        // Load the scene after the delay
         SceneManager.LoadScene("SampleScene");
     }
 }
