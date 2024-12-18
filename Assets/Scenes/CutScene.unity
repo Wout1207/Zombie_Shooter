@@ -17,7 +17,7 @@ RenderSettings:
   m_Fog: 1
   m_FogColor: {r: 0.27450982, g: 0.27450982, b: 0.27450982, a: 1}
   m_FogMode: 3
-  m_FogDensity: 0.005
+  m_FogDensity: 0.02
   m_LinearFogStart: 0
   m_LinearFogEnd: 300
   m_AmbientSkyColor: {r: 0.40392157, g: 0.40784314, b: 0.4627451, a: 1}
@@ -13035,7 +13035,7 @@ MonoBehaviour:
   mainCamera: {fileID: 1787690493}
   rotationAngle: 35
   rotationDuration: 1.5
-  delayBeforeTurn: 71
+  delayBeforeTurn: 72
 --- !u!4 &1442373596
 Transform:
   m_ObjectHideFlags: 0
