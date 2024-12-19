@@ -32,6 +32,8 @@ public class UIManager : MonoBehaviour
 
     private int scoreToAdd;
 
+    public GameObject P90Animation;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -45,7 +47,7 @@ public class UIManager : MonoBehaviour
         textOutOfAmmo.enabled = false;
         textScore.text = "Score: " + Score.score.ToString();
         textAddToScore.gameObject.SetActive(false);
-
+        P90Animation.SetActive(false);
     }
 
     void Update()
@@ -118,11 +120,13 @@ public class UIManager : MonoBehaviour
     {
         textJamWarning.text = "Gun Jammed! Shake to clear.";
         textJamWarning.enabled = true;
+        P90Animation.SetActive(true);
     }
 
     void HideJamWarning()
     {
         textJamWarning.enabled = false;
+        P90Animation.SetActive(false);
     }
 
     void ShowOutOfAmmo(string[] values)
