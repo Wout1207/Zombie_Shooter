@@ -17,7 +17,7 @@ RenderSettings:
   m_Fog: 1
   m_FogColor: {r: 0.27450982, g: 0.27450982, b: 0.27450982, a: 1}
   m_FogMode: 3
-  m_FogDensity: 0.005
+  m_FogDensity: 0.02
   m_LinearFogStart: 0
   m_LinearFogEnd: 300
   m_AmbientSkyColor: {r: 0.40392157, g: 0.40784314, b: 0.4627451, a: 1}
@@ -12791,7 +12791,7 @@ GameObject:
   - component: {fileID: 1412282047}
   - component: {fileID: 1412282051}
   m_Layer: 0
-  m_Name: Plane
+  m_Name: VideoPlayer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -12909,7 +12909,7 @@ VideoPlayer:
   m_TargetAudioSources:
   - {fileID: 0}
   m_DirectAudioVolumes:
-  - 0.3
+  - 0.4
   m_Url: 
   m_EnabledAudioTracks: 01
   m_DirectAudioMutes: 00
@@ -13009,7 +13009,7 @@ GameObject:
   - component: {fileID: 1442373596}
   - component: {fileID: 1442373595}
   m_Layer: 0
-  m_Name: BradcastEndScript
+  m_Name: CutSceneHandler
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -13030,12 +13030,22 @@ MonoBehaviour:
   videoPlayer: {fileID: 1412282051}
   audioSource: {fileID: 1516499529}
   voiceLines:
-  - {fileID: 8300000, guid: 8250cb55046d45146a1170c0a0eade85, type: 3}
-  - {fileID: 8300000, guid: 930a35450a34f0048824ed1476b77962, type: 3}
+  - {fileID: 8300000, guid: b000dd8480f2b0b469d2035ddc796651, type: 3}
+  - {fileID: 8300000, guid: 3ff84962cbfdac7468b73e40c2096b81, type: 3}
+  - {fileID: 8300000, guid: 71b6ab6ce7bf35948919c0311d1b3ca9, type: 3}
+  - {fileID: 8300000, guid: ec08daa37d7cf0c4f9c66a7236a5dad8, type: 3}
+  - {fileID: 8300000, guid: 51d28aa8ca3402642b902a885ee7924a, type: 3}
+  - {fileID: 8300000, guid: a84a58d433d7e81439e4201ba6abf849, type: 3}
   mainCamera: {fileID: 1787690493}
-  rotationAngle: 35
-  rotationDuration: 1.5
-  delayBeforeTurn: 71
+  rotationAngle: 65
+  tiltAmount: 6
+  rotationDuration: 5
+  delayBeforeTurn: 72
+  delayAfterVoice: 3
+  fadeDuration: 5
+  startFOV: 1
+  normalFOV: 60
+  zoomFOV: 20
 --- !u!4 &1442373596
 Transform:
   m_ObjectHideFlags: 0
@@ -13740,10 +13750,10 @@ AudioSource:
   SpatializePostEffects: 0
   Priority: 256
   DopplerLevel: 1
-  MinDistance: 2.6524162
-  MaxDistance: 500
+  MinDistance: 0
+  MaxDistance: 5000
   Pan2D: 0
-  rolloffMode: 0
+  rolloffMode: 1
   BypassEffects: 0
   BypassListenerEffects: 0
   BypassReverbZones: 0

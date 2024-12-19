@@ -21,6 +21,10 @@ public class Player : MonoBehaviour
 
     private float deadTime;
 
+    public RandomAudioPlayer startGamePlayer;
+    public RandomAudioPlayer grenadePlayer;
+    public RandomAudioPlayer damagePlayer;
+
     void Start()
     {
         currentHP = maxHP;
@@ -33,16 +37,19 @@ public class Player : MonoBehaviour
             SerialManager.Instance.OnDataReceivedGrenade += readGrenadeData;
         }
         Score.score = 0;
+        startGamePlayer.PlayVoiceLine();
     }
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.G))
         {
             throwGrenade();
+            grenadePlayer.PlayVoiceLine();
         }
         if (grenadeToBeThrown)
         {
             throwGrenade();
+            grenadePlayer.PlayVoiceLine();
             grenadeToBeThrown = false;
         }
         if (!alive && Time.time - deadTime > 5)
@@ -70,7 +77,7 @@ public class Player : MonoBehaviour
                 walkingSoundScript.isWalking = false;
             }
             transform.Translate(new Vector3(horizontalMovement * Time.deltaTime * speed, 0, verticalMovement * Time.deltaTime * speed));
-            transform.Translate(movementDirection * speed * Time.deltaTime);
+            transform.Translate(movementDirection.normalized * speed * Time.deltaTime);
         }
     }
 
@@ -84,6 +91,7 @@ public class Player : MonoBehaviour
         {
             PlayerDied();
         }
+        damagePlayer.PlayVoiceLine();
     }
 
     public void PlayerDied()
@@ -117,19 +125,19 @@ public class Player : MonoBehaviour
                 switch (pin)
                 {
                     case 1: // Pin 1 is forward
-                        movementDirection = state == 1 ? Vector3.forward : Vector3.zero;
+                        movementDirection = state == 1 ? movementDirection + Vector3.forward : movementDirection - Vector3.forward;
                         break;
 
                     case 2: // Pin 2 is right
-                        movementDirection = state == 1 ? Vector3.right : Vector3.zero;
+                        movementDirection = state == 1 ? movementDirection + Vector3.right : movementDirection - Vector3.right;
                         break;
 
                     case 3: // Pin 3 is backward
-                        movementDirection = state == 1 ? Vector3.back : Vector3.zero;
+                        movementDirection = state == 1 ? movementDirection + Vector3.back : movementDirection - Vector3.back;
                         break;
 
                     case 4: // Pin 4 is left
-                        movementDirection = state == 1 ? Vector3.left : Vector3.zero;
+                        movementDirection = state == 1 ? movementDirection + Vector3.left : movementDirection - Vector3.left;
                         break;
 
                     default:
