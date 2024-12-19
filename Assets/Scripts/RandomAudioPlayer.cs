@@ -19,6 +19,27 @@ public class RandomAudioPlayer : MonoBehaviour
         
     }
 
+    // Plays all voice lines (non-blocking using Coroutine)
+    public void PlayAllVoiceLines()
+    {
+        if (audioSource != null && voiceLines.Length > 0)
+        {
+            StartCoroutine(PlayAllVoiceLinesCoroutine());
+        }
+    }
+
+    private IEnumerator PlayAllVoiceLinesCoroutine()
+    {
+        yield return new WaitWhile(() => audioSource.isPlaying);
+        for (int i = 0; i < voiceLines.Length; i++)
+        {
+            audioSource.clip = voiceLines[i];
+            audioSource.Play();
+            // Wait until the clip finishes playing
+            yield return new WaitWhile(() => audioSource.isPlaying);
+        }
+    }
+
     // Plays a random voice line
     public void PlayVoiceLine()
     {
