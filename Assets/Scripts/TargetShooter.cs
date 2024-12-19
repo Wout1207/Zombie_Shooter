@@ -39,6 +39,10 @@ public class TargetShooter : MonoBehaviour
     public GameObject hitParticles;
     int prevMag = -1;
 
+    public RandomAudioPlayer outOfAmmoPlayer;
+    public RandomAudioPlayer reloadingPlayer;
+    public RandomAudioPlayer victoryPlayer;
+
 
     // Start is called before the first frame update
     void Start()
@@ -153,6 +157,7 @@ public class TargetShooter : MonoBehaviour
                 if (currentAmmoCount == 0)
                 {
                     Debug.Log("Out of ammo!");
+                    outOfAmmoPlayer.PlayVoiceLine();
                 }
             }
         }
@@ -225,6 +230,7 @@ public class TargetShooter : MonoBehaviour
                 if (exit.hit())
                 {
                     Debug.Log("Congratulations. You have escaped");
+                    victoryPlayer.PlayVoiceLine();
                 }
                 else
                 {
@@ -351,6 +357,7 @@ public class TargetShooter : MonoBehaviour
         if (isJammed) yield break; 
         isReloading = true;
         Debug.Log("Reloading...");
+        reloadingPlayer.PlayVoiceLine();
         audioSource.clip = reloadSound;
         audioSource.Play();
         yield return new WaitForSeconds(reloadTime); // Wait for reload time
