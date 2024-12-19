@@ -262,8 +262,8 @@ public class TargetShooter : MonoBehaviour
                 {
                     if (isFireAmmo)
                     {
-                        //fireZombie.fireHit(10);
-                        fireZombie.Hit(0);
+                        fireZombie.fireHit(10);
+                        //fireZombie.Hit(0);
 
                         Debug.Log("Fire bullet hit FireResistantZombie!");
                     }
@@ -276,18 +276,17 @@ public class TargetShooter : MonoBehaviour
                 else
                 {
                     target.Hit(10);
-                }
-
-                if (isFireAmmo)
-                {
-                    FireEffect fire = target.transform.GetComponentInChildren<FireEffect>();
-                    if (fire)
+                    if (isFireAmmo)
                     {
-                        fire.duration += fireEffect.GetComponent<FireEffect>().duration;
-                    }
-                    else
-                    {
-                        Instantiate(fireEffect, target.transform);
+                        FireEffect fire = target.transform.GetComponentInChildren<FireEffect>();
+                        if (fire)
+                        {
+                            fire.duration += fireEffect.GetComponent<FireEffect>().duration;
+                        }
+                        else
+                        {
+                            Instantiate(fireEffect, target.transform);
+                        }
                     }
                 }
                 
