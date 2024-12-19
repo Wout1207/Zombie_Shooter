@@ -4,40 +4,52 @@ using UnityEngine;
 
 public class WeaponAnim : MonoBehaviour
 {
+    [SerializeField] private float recoilAmount = 0.1f;
+    [SerializeField] private float recoilBackSpeed = 20f;
+    [SerializeField] private float recoilReturnSpeed = 20f;
 
-    [SerializeField] private float recoilAmount = 0.2f;
-    [SerializeField] private float recoilSmoothness = 5f;
-
-    [HideInInspector] public bool isRecoiling = false;
+    private bool isRecoiling = false;
     private Vector3 currentRecoil = Vector3.zero;
+    private Vector3 initialPosition;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        initialPosition = transform.localPosition;
     }
 
     // Update is called once per frame
     void Update()
     {
-        applyRecoil();
+        ApplyRecoil();
     }
 
-    private void applyRecoil()
+    public void TriggerRecoil()
+    {
+        isRecoiling = true;
+    }
+
+    private void ApplyRecoil()
     {
         Vector3 targetRecoil = Vector3.zero;
 
-        if (isRecoiling )
+        if (isRecoiling)
         {
-            targetRecoil = new Vector3(0, 0, -recoilAmount);
+            targetRecoil = new Vector3(0, 0, -recoilAmount); // Visual backward movement
 
-            if (Vector3.Distance(currentRecoil, targetRecoil) < 0.1f)
+            if (Vector3.Distance(currentRecoil, targetRecoil) < 0.01f)
             {
-                isRecoiling = false;
-            } 
+                isRecoiling = false; // Begin returning to original position
+            }
+
+            currentRecoil = Vector3.Lerp(currentRecoil, targetRecoil, Time.deltaTime * recoilBackSpeed);
+        }
+        else
+        {
+            // Return to initial position
+            currentRecoil = Vector3.Lerp(currentRecoil, Vector3.zero, Time.deltaTime * recoilReturnSpeed);
         }
 
-        currentRecoil = Vector3.Lerp(currentRecoil, targetRecoil, Time.deltaTime * recoilSmoothness);
-        transform.localPosition -= currentRecoil;
+        transform.localPosition = initialPosition + currentRecoil;
     }
 }

@@ -155,7 +155,6 @@ public class TargetShooter : MonoBehaviour
 
                 //Debug.Log("Shooting...");
                 ShootRay();
-                weaponAnim.isRecoiling = true;
 
                 if (currentAmmoCount == 0)
                 {
@@ -168,7 +167,7 @@ public class TargetShooter : MonoBehaviour
         {
             ShootRay();
         }
-
+        weaponAnim.TriggerRecoil();
     }
 
     public void ShootRay()
