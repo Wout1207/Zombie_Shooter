@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Globalization;
+using UnityEngine.SceneManagement;
 
 public class Crosshair : MonoBehaviour
 {
@@ -52,41 +53,18 @@ public class Crosshair : MonoBehaviour
         }
 
         pointerUpdateCoroutine = StartCoroutine(UpdatePointerRoutine());
-        leftArrow.enabled = false;
-        rightArrow.enabled = false;
+
+        //if (leftArrow != null && rightArrow != null)
+        //{
+            leftArrow.enabled = false;
+            rightArrow.enabled = false;
+        //}
     }
 
     // Update is called once per frame
     void Update()
     {
-        // Update the position of the UI element
-        //if (pointerUIElement != null)
-        //{
-        //    Vector2 screenPoint = MapQuaternionToScreen(absoluteRotation);
-
-        //    Vector2 screenPos = new Vector2();
-        //    screenPos.x = Mathf.Clamp(screenPoint.x, 0, Screen.width);
-        //    screenPos.y = Mathf.Clamp(screenPoint.y, 0, Screen.height);
-
-        //    if (screenPos.x < rotationBoarder * Screen.width)
-        //    {
-        //        player.transform.Rotate(new Vector3(0, -rotationSpeed));
-        //    }
-        //    else if (screenPos.x > Screen.width - rotationBoarder * Screen.width)
-        //    {
-        //        player.transform.Rotate(new Vector3(0, rotationSpeed));
-        //    }
-
-        //    Vector2 currentPos = pointerUIElement.anchoredPosition;
-        //    Vector2 smoothedPos = Vector2.Lerp(currentPos, screenPos, Time.deltaTime * speedFactor);
-
-        //    //pointerUIElement.anchoredPosition = screenPoint;
-        //    pointerUIElement.anchoredPosition = smoothedPos;
-        //}
-
-        // Debug: Draw a point where the IMU points on the screen
-        //Debug.DrawLine(Camera.main.transform.position, Camera.main.ScreenToWorldPoint(new Vector3(screenPoint.x, screenPoint.y, 10)), Color.red);
-        //Debug.Log($"Screen point: {screenPoint}");
+        
     }
 
 
@@ -101,6 +79,7 @@ public class Crosshair : MonoBehaviour
 
     void UpdatePointerPosition()
     {
+        Scene currentScene = SceneManager.GetActiveScene();
         if (pointerUIElement != null)
         {
             Vector2 screenPoint = MapQuaternionToScreen(absoluteRotation);
@@ -109,28 +88,31 @@ public class Crosshair : MonoBehaviour
             screenPos.x = Mathf.Clamp(screenPoint.x, 0, Screen.width);
             screenPos.y = Mathf.Clamp(screenPoint.y, 0, Screen.height);
 
-            leftArrow.enabled = false;
-            rightArrow.enabled = false;
-
-            isRotating = false;
-
-            if (screenPos.x < rotationBoarder * Screen.width)
-            {
-                player.transform.Rotate(new Vector3(0, -rotationSpeed));
-                leftArrow.enabled = true;
-                isRotating = true;
-            }
-            else if (screenPos.x > Screen.width - rotationBoarder * Screen.width)
-            {
-                player.transform.Rotate(new Vector3(0, rotationSpeed));
-                rightArrow.enabled = true;
-                isRotating = true;
-            }
-
-            if (!isRotating)
+            if (currentScene.name == "Sample Scene")
             {
                 leftArrow.enabled = false;
                 rightArrow.enabled = false;
+
+                isRotating = false;
+
+                if (screenPos.x < rotationBoarder * Screen.width)
+                {
+                    player.transform.Rotate(new Vector3(0, -rotationSpeed));
+                    leftArrow.enabled = true;
+                    isRotating = true;
+                }
+                else if (screenPos.x > Screen.width - rotationBoarder * Screen.width)
+                {
+                    player.transform.Rotate(new Vector3(0, rotationSpeed));
+                    rightArrow.enabled = true;
+                    isRotating = true;
+                }
+
+                if (!isRotating)
+                {
+                    leftArrow.enabled = false;
+                    rightArrow.enabled = false;
+                }
             }
 
             Vector2 currentPos = pointerUIElement.anchoredPosition;
