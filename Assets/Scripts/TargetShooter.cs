@@ -260,18 +260,16 @@ public class TargetShooter : MonoBehaviour
                 audioSource.Play();
                 shotParticles.Play();
                 weaponAnim.TriggerRecoil();
-                if (target is FireResistantZombie fireZombie)
+                if (target is BulletImuneZombie bulletZombie)
                 {
                     if (isFireAmmo)
                     {
-                        fireZombie.fireHit(10);
-                        //fireZombie.Hit(0);
-
+                        bulletZombie.fireHit(10);
                         Debug.Log("Fire bullet hit FireResistantZombie!");
                     }
                     else
                     {
-                        fireZombie.Hit(10);
+                        bulletZombie.Hit(10);
                         immuneZombie.PlayVoiceLine();
                         Debug.Log("Normal bullets have no effect on FireResistantZombie!");
                     }
@@ -279,20 +277,20 @@ public class TargetShooter : MonoBehaviour
                 else
                 {
                     target.Hit(10);
-                    if (isFireAmmo)
+                }
+                if (isFireAmmo)
+                {
+                    FireEffect fire = target.transform.GetComponentInChildren<FireEffect>();
+                    if (fire)
                     {
-                        FireEffect fire = target.transform.GetComponentInChildren<FireEffect>();
-                        if (fire)
-                        {
-                            fire.duration += fireEffect.GetComponent<FireEffect>().duration;
-                        }
-                        else
-                        {
-                            Instantiate(fireEffect, target.transform);
-                        }
+                        fire.duration += fireEffect.GetComponent<FireEffect>().duration;
+                    }
+                    else
+                    {
+                        Instantiate(fireEffect, target.transform);
                     }
                 }
-                
+
             }
             else
             {

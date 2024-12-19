@@ -122,6 +122,7 @@ public class Player : MonoBehaviour
             if (int.TryParse(values[1], out pin) && int.TryParse(values[2], out state))
             {
                 // Modify movementDirection based on the pin and state
+                Debug.Log("Reading movement data, Pin: " + pin + ", State: " + state);
                 switch (pin)
                 {
                     case 1: // Pin 1 is forward

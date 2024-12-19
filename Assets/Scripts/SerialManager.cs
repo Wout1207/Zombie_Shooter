@@ -161,6 +161,7 @@ public class SerialManager : MonoBehaviour
         if (values.Length == 0) return;
 
         string dataType = values[0];
+        Debug.Log("Current data type: " + dataType);
         if (dataHandlers.TryGetValue(dataType, out Action<string[]> handler))
         {
             try
