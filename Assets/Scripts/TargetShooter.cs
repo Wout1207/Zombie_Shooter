@@ -167,37 +167,18 @@ public class TargetShooter : MonoBehaviour
     {
         Ray ray = cam.ScreenPointToRay(reticle.transform.position);
         
-        if (SceneManager.GetActiveScene().name == "MenuScene")
+        if (SceneManager.GetActiveScene().name != "SampleScene")
         {
-            //Debug.Log("Ray shot");
-            //if (Physics.Raycast(ray, out RaycastHit h)) { 
-            //    Button button = h.collider.gameObject.GetComponent<Button>();
-            //    if (button)
-            //    {
-            //        button.onClick.Invoke();
-            //        Debug.Log("Button clicked");
-            //    }
-            //}
-            //return;
-
-            if (SceneManager.GetActiveScene().name == "MenuScene")
+            GameObject clickedObject = GetUIElementUnderReticle();
+            if (clickedObject != null)
             {
-                // Perform a UI Raycast
-                GameObject clickedObject = GetUIElementUnderReticle();
-                //Debug.Log(clickedObject.name);
-                if (clickedObject != null)
+                Button button = clickedObject.GetComponent<Button>();
+                if (button != null)
                 {
-                    Button button = clickedObject.GetComponent<Button>();
-                    if (button != null)
-                    {
-                        button.onClick.Invoke();
-                        Debug.Log("Button clicked");
-                    }
+                    button.onClick.Invoke();
                 }
-
-                return;
             }
-
+            return;
         }
 
         if (GameEvents.current)
@@ -303,18 +284,11 @@ public class TargetShooter : MonoBehaviour
                 }
                 
             }
-            //else if(currentAmmoCount < 0)
-            //{
-            //    AddAmmo(1);
-            //    audioSource.clip = emptyGunSound;
-            //    audioSource.Play();
-            //}
             else
             {
                 audioSource.clip = shootingSound;
                 audioSource.Play();
                 shotParticles.Play();
-                //OnTargetMissed?.Invoke();
             }
         }
         else if (currentAmmoCount < 0)
@@ -326,7 +300,7 @@ public class TargetShooter : MonoBehaviour
     private GameObject GetUIElementUnderReticle()
     {
         // Convert the reticle position into a screen position
-        Vector2 screenPoint = RectTransformUtility.WorldToScreenPoint(cam, reticle.transform.position);
+        Vector2 screenPoint = reticle.transform.position;
 
         // Create a PointerEventData object
         PointerEventData pointerEventData = new PointerEventData(EventSystem.current)
@@ -340,6 +314,7 @@ public class TargetShooter : MonoBehaviour
 
         if (raycastResults.Count > 0)
         {
+            Debug.Log("UI element hit: " + raycastResults[0].gameObject.name);
             return raycastResults[0].gameObject; // Return the first hit UI element
         }
 
