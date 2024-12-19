@@ -167,7 +167,6 @@ public class TargetShooter : MonoBehaviour
         {
             ShootRay();
         }
-        weaponAnim.TriggerRecoil();
     }
 
     public void ShootRay()
@@ -244,6 +243,7 @@ public class TargetShooter : MonoBehaviour
                 audioSource.Play();
                 shotParticles.Play();
                 controller.Hit(10);
+                weaponAnim.TriggerRecoil();
                 return;
             }
 
@@ -258,6 +258,7 @@ public class TargetShooter : MonoBehaviour
                 audioSource.clip = shootingSound;
                 audioSource.Play();
                 shotParticles.Play();
+                weaponAnim.TriggerRecoil();
                 if (target is FireResistantZombie fireZombie)
                 {
                     if (isFireAmmo)
@@ -296,6 +297,7 @@ public class TargetShooter : MonoBehaviour
                 audioSource.clip = shootingSound;
                 audioSource.Play();
                 shotParticles.Play();
+                weaponAnim.TriggerRecoil();
             }
         }
         else if (currentAmmoCount < 0)
