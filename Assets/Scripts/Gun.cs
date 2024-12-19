@@ -51,6 +51,6 @@ public class Gun : MonoBehaviour
     public void SendAmmoData()
     {
         string message = $"A:{currentBullets}\n"; 
-        SerialManager.Instance.SendDataToESP32(message);
+        SerialManager.instance.SendDataToESP32(message);
     }
 }

@@ -31,10 +31,10 @@ public class Player : MonoBehaviour
         currentGrenadeAmount = maxGrenadeAmount;
         //SendHealthData();
         //SerialManager.Instance.OnDataReceivedMovement += readMovement;
-        if (SerialManager.Instance != null)
+        if (SerialManager.instance != null)
         {
-            SerialManager.Instance.OnDataReceivedMovement += readMovement;
-            SerialManager.Instance.OnDataReceivedGrenade += readGrenadeData;
+            SerialManager.instance.OnDataReceivedMovement += readMovement;
+            SerialManager.instance.OnDataReceivedGrenade += readGrenadeData;
         }
         Score.score = 0;
         startGamePlayer.PlayVoiceLine();
@@ -106,7 +106,7 @@ public class Player : MonoBehaviour
     public void SendHealthData()
     {
         string message = $"H:{currentHP}\n";
-        SerialManager.Instance.SendDataToESP32(message);
+        SerialManager.instance.SendDataToESP32(message);
     }
 
     public void readMovement(string[] data) // The data is in the format "m/pin/state"
@@ -173,7 +173,7 @@ public class Player : MonoBehaviour
 
     private void OnDestroy()
     {
-        if (SerialManager.Instance != null)
+        if (SerialManager.instance != null)
         {
             //SerialManager.Instance.OnDataReceivedMovement -= readMovement;
         }

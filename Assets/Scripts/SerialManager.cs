@@ -25,21 +25,21 @@ public class SerialManager : MonoBehaviour
     public bool firstTime = true;
     private Quaternion firstPos;
 
-    private static SerialManager instance;
+    public static SerialManager instance;
 
     private string currentSceneName;
 
-    public static SerialManager Instance
-    {
-        get
-        {
-            if (instance == null)
-            {
-                instance = FindObjectOfType<SerialManager>();
-            }
-            return instance;
-        }
-    }
+    //public static SerialManager Instance
+    //{
+    //    get
+    //    {
+    //        if (instance == null)
+    //        {
+    //            instance = FindObjectOfType<SerialManager>();
+    //        }
+    //        return instance;
+    //    }
+    //}
 
     // Events to broadcast received data
     public event Action<Quaternion> OnDataReceivedIMU;
@@ -54,16 +54,29 @@ public class SerialManager : MonoBehaviour
 
     void Awake()
     {
-        if (instance == null)
+        Debug.Log("SerialManager Awake");
+
+        if (instance != null)
         {
-            instance = this;
-            DontDestroyOnLoad(gameObject);
-            OpenSerialPort();
+            Destroy(gameObject); // Destroy this object if an instance already exists
+            return;
         }
-        else
-        {
-            Destroy(gameObject); // Ensure only one instance exists
-        }
+
+        instance = this;
+        DontDestroyOnLoad(gameObject); // Keep this object between scenes
+
+        OpenSerialPort();
+
+        //if (instance == null)
+        //{
+        //    instance = this;
+        //    DontDestroyOnLoad(gameObject);
+        //    OpenSerialPort();
+        //}
+        //else
+        //{
+        //    Destroy(gameObject); // Ensure only one instance exists
+        //}
 
         // Initialize the data handlers
         dataHandlers = new Dictionary<string, Action<string[]>>
@@ -232,7 +245,6 @@ public class SerialManager : MonoBehaviour
                         startManager.StartGame();
                     }
                 }
-
                 OnDataReceivedTrigger?.Invoke();
             });
         }
@@ -326,10 +338,15 @@ public class SerialManager : MonoBehaviour
         CloseSerialPort();
     }
 
-    public void SetFirstPos(Quaternion newFirstPos)
+    //public void SetFirstPos(Quaternion newFirstPos)
+    //{
+    //    firstPos = newFirstPos;
+    //    firstTime = false; // Prevent reinitializing
+    //}
+
+    public void ResetFirstPos()
     {
-        firstPos = newFirstPos;
-        firstTime = false; // Prevent reinitializing
+        firstTime = true;
     }
 
     public Quaternion GetLastRotation()

@@ -32,6 +32,11 @@ public class CutSceneHandler : MonoBehaviour
 
     void Update()
     {
+        if (Input.GetKeyDown("s"))
+        {
+            SceneManager.LoadScene("SampleScene");
+        }
+
         // Check if the audio has finished playing
         if (!audioSource.isPlaying && hasPlayed)
         {
