@@ -8,6 +8,7 @@ public class CutsceneManager : MonoBehaviour
     public GameObject cutsceneCamera;
     public GameObject canvas;
     public Animator animator;
+    public RandomAudioPlayer cutSceneEndPlayer;
 
     private bool isCutscenePlaying = false;
 
@@ -44,5 +45,6 @@ public class CutsceneManager : MonoBehaviour
         animator.SetBool("playAnimation", true);
 
         Time.timeScale = 1;
+        cutSceneEndPlayer.PlayVoiceLine();
     }
 }
