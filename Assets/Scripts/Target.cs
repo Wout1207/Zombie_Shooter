@@ -8,7 +8,7 @@ using UnityEngine.AI;
 public class Target : MonoBehaviour
 {
     //public static Action OnTargetHit;
-    protected private GameObject player;
+    public GameObject player;
     protected private NavMeshAgent agent;
     protected private Animator animator;
     public float hp;
@@ -172,7 +172,11 @@ public class Target : MonoBehaviour
     {
         audioSource.clip = hitPlayer;
         audioSource.Play();
-        player.GetComponent<Player>().TakeDamage(damage);
+        if(player)
+        {
+            player.GetComponent<Player>().TakeDamage(damage);
+        }
+
         // Add your logic here, such as transitioning to the next state
     }
 

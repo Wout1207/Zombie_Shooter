@@ -304,6 +304,10 @@ public class TargetShooter : MonoBehaviour
         {
             AddAmmo(1);
         }
+        else if (currentAmmoCount > 0)
+        {
+            AddAmmo(-1);
+        }
     }
 
     private void RandomGenJam()
