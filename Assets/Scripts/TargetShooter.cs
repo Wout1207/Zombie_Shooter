@@ -309,6 +309,10 @@ public class TargetShooter : MonoBehaviour
         else if (currentAmmoCount > 0)
         {
             AddAmmo(-1);
+            audioSource.clip = shootingSound;
+            audioSource.Play();
+            shotParticles.Play();
+            weaponAnim.TriggerRecoil();
         }
     }
 
