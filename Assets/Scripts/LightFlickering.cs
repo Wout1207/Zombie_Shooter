@@ -4,9 +4,10 @@ using UnityEngine;
 
 public class LightFlickering : MonoBehaviour
 {
-    public float time;
-    public float toggleDuration;
+    private float time;
+    private float toggleDuration;
     private Light lightComponent;
+    public GameObject lightOnView;
 
     // Start is called before the first frame update
     void Start()
@@ -30,5 +31,16 @@ public class LightFlickering : MonoBehaviour
     private void ToggleLight()
     {
         lightComponent.intensity = (lightComponent.intensity > 0) ? 0 : Random.Range(2f, 5f);
+        if(lightOnView)
+        {
+            if (lightComponent.intensity == 0)
+            {
+                lightOnView.SetActive(false);
+            }
+            else
+            {
+                lightOnView.SetActive(true);
+            }
+        }
     }
 }

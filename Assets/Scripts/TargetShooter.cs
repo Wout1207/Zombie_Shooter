@@ -199,12 +199,7 @@ public class TargetShooter : MonoBehaviour
             Debug.Log("Cannot fire; gun is jammed.");
             return;
         }
-        if (Random.value < jamRandVal && currentAmmoCount>= 0)
-        {
-            Debug.Log("rand val is below 10%");
-            TriggerJam();
-            return;
-        }
+        
 
         if (Physics.Raycast(ray, out RaycastHit hit))
         {
@@ -252,6 +247,8 @@ public class TargetShooter : MonoBehaviour
                 controller.Hit(10);
                 return;
             }
+
+            RandomGenJam();
 
             Target target = hit.collider.gameObject.GetComponent<Target>();
 
@@ -305,6 +302,16 @@ public class TargetShooter : MonoBehaviour
         else if (currentAmmoCount < 0)
         {
             AddAmmo(1);
+        }
+    }
+
+    private void RandomGenJam()
+    {
+        if (Random.value < jamRandVal && currentAmmoCount >= 0)
+        {
+            Debug.Log("rand val is below 10%");
+            TriggerJam();
+            return;
         }
     }
 
