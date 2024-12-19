@@ -10,7 +10,7 @@ public class StartManager : MonoBehaviour
     private SerialManager serialManager;
     public void StartGame()
     {
-        CalibrateIMU();
+        //CalibrateIMU();
         SceneManager.LoadScene("CutScene");
         
     }
@@ -30,21 +30,21 @@ public class StartManager : MonoBehaviour
 
 
 
-    public void CalibrateIMU()
-    {
-        if (SerialManager.Instance != null)
-        {
-            // Get the most recent rotation from the queue
-            Quaternion currentRotation = SerialManager.Instance.GetLastRotation();
+    //public void CalibrateIMU()
+    //{
+    //    if (SerialManager.instance != null)
+    //    {
+    //        // Get the most recent rotation from the queue
+    //        Quaternion currentRotation = SerialManager.instance.GetLastRotation();
 
-            // Set the new calibration point
-            SerialManager.Instance.SetFirstPos(currentRotation);
+    //        // Set the new calibration point
+    //        SerialManager.instance.SetFirstPos(currentRotation);
 
-            Debug.Log("IMU calibrated. New firstPos set to: " + currentRotation);
-        }
-        else
-        {
-            Debug.LogError("Error in StartManager!");
-        }
-    }
+    //        Debug.Log("IMU calibrated. New firstPos set to: " + currentRotation);
+    //    }
+    //    else
+    //    {
+    //        Debug.LogError("Error in StartManager!");
+    //    }
+    //}
 }

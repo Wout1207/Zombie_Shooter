@@ -21,7 +21,7 @@ public class TargetShooter : MonoBehaviour
     [SerializeField] private float shakeThreshold = 5f; 
     private int shakeCount = 0; 
     private Vector3 lastIMUReading = Vector3.zero;
-    [SerializeField] public float jamRandVal = 0.1f;
+    [SerializeField] public float jamRandVal = 0.02f;
     public GameObject reticle;
 
     private float lastClickTime = 0f;  // Time of the last valid button press
@@ -50,9 +50,9 @@ public class TargetShooter : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        SerialManager.Instance.OnDataReceivedIMU += ReadIMU;
-        SerialManager.Instance.OnDataReceivedTrigger += Shoot;
-        SerialManager.Instance.OnDataReceivedRFID += readMag;
+        SerialManager.instance.OnDataReceivedIMU += ReadIMU;
+        SerialManager.instance.OnDataReceivedTrigger += Shoot;
+        SerialManager.instance.OnDataReceivedRFID += readMag;
 
         audioSource = GetComponent<AudioSource>();
         cam = GameObject.Find("Main Camera").GetComponent<Camera>();
@@ -70,7 +70,7 @@ public class TargetShooter : MonoBehaviour
 
         if ((Input.GetKeyDown("b") || Input.GetMouseButtonDown(0)) && !isReloading)
         {
-            SerialManager.Instance.SendDataToESP32("tr/0");
+            SerialManager.instance.SendDataToESP32("tr/0");
             Shoot(); // Simulate the shoot locally
         }
     }
@@ -145,7 +145,7 @@ public class TargetShooter : MonoBehaviour
 
     public void Shoot()
     {
-        if (SceneManager.GetActiveScene().name != "MenuScene")
+        if (SceneManager.GetActiveScene().name == "SampleScene")
         {
             float currentTime = Time.time;
 
@@ -168,6 +168,8 @@ public class TargetShooter : MonoBehaviour
         {
             ShootRay();
         }
+
+        if (weaponAnim != null) { weaponAnim.TriggerRecoil(); }
     }
 
     public void ShootRay()
@@ -328,7 +330,6 @@ public class TargetShooter : MonoBehaviour
     {
         if (Random.value < jamRandVal && currentAmmoCount >= 0)
         {
-            Debug.Log("rand val is below 10%");
             TriggerJam();
             return;
         }
@@ -388,7 +389,7 @@ public class TargetShooter : MonoBehaviour
         if (type == "rb" || type == "b")
         {
             string message = type + "/" + maxAmmoCountInMag + "/" + currentAmmoCount;
-            SerialManager.Instance.SendDataToESP32(message);
+            SerialManager.instance.SendDataToESP32(message);
         }
         else
         {
@@ -405,11 +406,11 @@ public class TargetShooter : MonoBehaviour
 
     private void OnDestroy()
     {
-        if (SerialManager.Instance != null)
+        if (SerialManager.instance != null)
         {
-            SerialManager.Instance.OnDataReceivedIMU -= ReadIMU;
-            SerialManager.Instance.OnDataReceivedTrigger -= Shoot;
-            SerialManager.Instance.OnDataReceivedRFID -= readMag;
+            SerialManager.instance.OnDataReceivedIMU -= ReadIMU;
+            SerialManager.instance.OnDataReceivedTrigger -= Shoot;
+            SerialManager.instance.OnDataReceivedRFID -= readMag;
         }
     }
 }

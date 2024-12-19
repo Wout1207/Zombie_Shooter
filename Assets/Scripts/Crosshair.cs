@@ -47,9 +47,9 @@ public class Crosshair : MonoBehaviour
         screenWidth = Screen.width;
         screenHeight = Screen.height;
 
-        if (SerialManager.Instance != null)
+        if (SerialManager.instance != null)
         {
-            SerialManager.Instance.OnDataReceivedIMU += ReceiveIMUData;
+            SerialManager.instance.OnDataReceivedIMU += ReceiveIMUData;
         }
 
         pointerUpdateCoroutine = StartCoroutine(UpdatePointerRoutine());
@@ -151,9 +151,9 @@ public class Crosshair : MonoBehaviour
 
     void OnDestroy()
     {
-        if (SerialManager.Instance != null)
+        if (SerialManager.instance != null)
         {
-            SerialManager.Instance.OnDataReceivedIMU -= ReceiveIMUData;
+            SerialManager.instance.OnDataReceivedIMU -= ReceiveIMUData;
         }
     }
 }
