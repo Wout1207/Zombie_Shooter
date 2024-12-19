@@ -121,7 +121,7 @@ public class Target : MonoBehaviour
     }
     public virtual void Hit(float damage)
     {
-        Debug.Log("Base Target Hit method called.");
+        //Debug.Log("Base Target Hit method called.");
         GameObject text = Instantiate(damageText,transform);
         text.transform.LookAt(player.transform);
         text.transform.position += new Vector3(0, 4, 0);
