@@ -37,6 +37,8 @@ public class TargetShooter : MonoBehaviour
 
     public ParticleSystem shotParticles;
     public GameObject hitParticles;
+    public GameObject NormalHitParticles;
+    public GameObject ZombieHitParticles;
     int prevMag = -1;
 
     public RandomAudioPlayer outOfAmmoPlayer;
@@ -108,7 +110,7 @@ public class TargetShooter : MonoBehaviour
             if (imuDelta > shakeThreshold)
             {
                 shakeCount++;
-                Debug.Log($"Shake detected! Shake count: {shakeCount}/{shakesRequiredToDejam}");
+                //Debug.Log($"Shake detected! Shake count: {shakeCount}/{shakesRequiredToDejam}");
 
                 if (shakeCount >= shakesRequiredToDejam)
                 {
@@ -130,7 +132,7 @@ public class TargetShooter : MonoBehaviour
 
         isJammed = true;
         shakeCount = 0;
-        Debug.Log("Gun jammed! Shake to clear.");
+        //Debug.Log("Gun jammed! Shake to clear.");
         GameEvents.current.GunJammed();
     }
 
@@ -138,7 +140,7 @@ public class TargetShooter : MonoBehaviour
     {
         isJammed = false;
         shakeCount = 0;
-        Debug.Log("Gun de-jammed!");
+        //Debug.Log("Gun de-jammed!");
         GameEvents.current.GunDejammed(); 
     }
 
@@ -159,7 +161,7 @@ public class TargetShooter : MonoBehaviour
 
                 if (currentAmmoCount == 0)
                 {
-                    Debug.Log("Out of ammo!");
+                    //Debug.Log("Out of ammo!");
                     outOfAmmoPlayer.PlayVoiceLine();
                 }
             }
@@ -219,7 +221,7 @@ public class TargetShooter : MonoBehaviour
             }
             if (isReloading)
             {
-                Debug.Log("Cannot shoot while reloading.");
+                //Debug.Log("Cannot shoot while reloading.");
                 string[] strings = { "Still reloading!", "0.5" };
                 GameEvents.current.OutofAmmo(strings);
                 return;
@@ -233,10 +235,9 @@ public class TargetShooter : MonoBehaviour
                 return;
             }
             AddAmmo(-1);
-            GameObject particles = Instantiate(hitParticles);
-            particles.transform.position = hit.point;
-            particles.transform.rotation = Quaternion.LookRotation(hit.normal);
-            Destroy(particles, 5);
+            GameObject particles;
+            particles = Instantiate(NormalHitParticles);
+            
             DoorController controller = hit.collider.gameObject.GetComponent<DoorController>();
             Debug.Log((controller));
             if (controller && currentAmmoCount > 0)
@@ -255,8 +256,7 @@ public class TargetShooter : MonoBehaviour
 
             if (target != null && currentAmmoCount > 0)
             {
-
-                Debug.Log("target hit");
+                particles = Instantiate(ZombieHitParticles);
                 audioSource.clip = shootingSound;
                 audioSource.Play();
                 shotParticles.Play();
@@ -310,6 +310,10 @@ public class TargetShooter : MonoBehaviour
                 shotParticles.Play();
                 weaponAnim.TriggerRecoil();
             }
+
+            particles.transform.position = hit.point;
+            particles.transform.rotation = Quaternion.LookRotation(hit.normal);
+            Destroy(particles, 5);
         }
         else if (currentAmmoCount < 0)
         {
@@ -351,7 +355,7 @@ public class TargetShooter : MonoBehaviour
 
         if (raycastResults.Count > 0)
         {
-            Debug.Log("UI element hit: " + raycastResults[0].gameObject.name);
+            //Debug.Log("UI element hit: " + raycastResults[0].gameObject.name);
             return raycastResults[0].gameObject; // Return the first hit UI element
         }
 
@@ -362,7 +366,7 @@ public class TargetShooter : MonoBehaviour
     {
         if (isJammed) yield break; 
         isReloading = true;
-        Debug.Log("Reloading...");
+        //Debug.Log("Reloading...");
         reloadingPlayer.PlayVoiceLine();
         audioSource.clip = reloadSound;
         audioSource.Play();
