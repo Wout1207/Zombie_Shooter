@@ -16,6 +16,7 @@ public class SpawnManager : MonoBehaviour
     {
         start,
         newRoundDelay,
+        cutscene,
         spawning,
         timeBetweenSpawns,
         waitForEndRound,
@@ -45,9 +46,20 @@ public class SpawnManager : MonoBehaviour
                 startNewRound();
                 if (round == 4)
                 {
+                    state = SpawningState.cutscene;
+                    time = Time.time;
                     cutscene.StartCutscene();
                 }
-                state = SpawningState.spawning;
+                else
+                {
+                    state = SpawningState.spawning;
+                }
+                break;
+            case SpawningState.cutscene:
+                if (Time.time - time > 1)
+                {
+                    state = SpawningState.spawning;
+                }
                 break;
             case SpawningState.spawning:
                 spawnEnemy();

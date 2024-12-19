@@ -8,7 +8,7 @@ using UnityEngine.AI;
 public class Target : MonoBehaviour
 {
     //public static Action OnTargetHit;
-    protected private GameObject player;
+    public GameObject player;
     protected private NavMeshAgent agent;
     protected private Animator animator;
     public float hp;
@@ -30,7 +30,7 @@ public class Target : MonoBehaviour
 
     public GameObject damageText;
 
-    private UIManager uiManager;
+    public UIManager uiManager;
 
     // Start is called before the first frame update
     void Start()
@@ -45,7 +45,10 @@ public class Target : MonoBehaviour
 
         animator = GetComponent<Animator>();
 
-        uiManager = GameObject.Find("Canvas").GetComponent<UIManager>();
+        if (!uiManager)
+        {
+            uiManager = GameObject.Find("Canvas").GetComponent<UIManager>();
+        }
 
         GameEvents.current.onPlayerDead += playerDied;
     }
@@ -172,7 +175,11 @@ public class Target : MonoBehaviour
     {
         audioSource.clip = hitPlayer;
         audioSource.Play();
-        player.GetComponent<Player>().TakeDamage(damage);
+        if(player)
+        {
+            player.GetComponent<Player>().TakeDamage(damage);
+        }
+
         // Add your logic here, such as transitioning to the next state
     }
 

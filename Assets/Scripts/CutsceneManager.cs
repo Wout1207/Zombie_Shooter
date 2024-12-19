@@ -12,7 +12,9 @@ public class CutsceneManager : MonoBehaviour
 
     public void StartCutscene()
     {
-        animator.gameObject.SetActive(true);
+        animator.gameObject.GetComponent<Target>().enabled = true;
+        animator.gameObject.transform.GetChild(3).gameObject.SetActive(true);
+        animator.gameObject.transform.GetChild(0).gameObject.SetActive(true);
 
         mainCamera.SetActive(false);
         cutsceneCamera.SetActive(true);
