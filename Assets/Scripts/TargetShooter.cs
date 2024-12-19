@@ -58,6 +58,8 @@ public class TargetShooter : MonoBehaviour
 
         audioSource = GetComponent<AudioSource>();
         cam = GameObject.Find("Main Camera").GetComponent<Camera>();
+
+        SerialManager.instance.SendDataToESP32("rb/0/0");
     }
 
     // Update is called once per frame
@@ -409,6 +411,8 @@ public class TargetShooter : MonoBehaviour
 
     private void OnDestroy()
     {
+        SerialManager.instance.SendDataToESP32("rb/0/0");
+
         if (SerialManager.instance != null)
         {
             SerialManager.instance.OnDataReceivedIMU -= ReadIMU;

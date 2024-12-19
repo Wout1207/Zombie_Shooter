@@ -94,6 +94,8 @@ public class SerialManager : MonoBehaviour
         serialThread = new Thread(ReadSerialPort);
         serialThread.IsBackground = true; // Allow the thread to exit with the app
         serialThread.Start();
+
+        //SendDataToESP32("rb/0/0"); // clear screen
     }
 
     void Update()
@@ -329,6 +331,7 @@ public class SerialManager : MonoBehaviour
 
     void OnApplicationQuit()
     {
+        SendDataToESP32("rb/0/0"); // clear screen
         isRunning = false; // Stop the thread
 
         if (serialThread != null && serialThread.IsAlive)
