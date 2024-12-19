@@ -42,6 +42,7 @@ public class TargetShooter : MonoBehaviour
     public RandomAudioPlayer outOfAmmoPlayer;
     public RandomAudioPlayer reloadingPlayer;
     public RandomAudioPlayer victoryPlayer;
+    public RandomAudioPlayer immuneZombie;
 
     public WeaponAnim weaponAnim;
 
@@ -155,7 +156,6 @@ public class TargetShooter : MonoBehaviour
 
                 //Debug.Log("Shooting...");
                 ShootRay();
-                weaponAnim.isRecoiling = true;
 
                 if (currentAmmoCount == 0)
                 {
@@ -168,7 +168,7 @@ public class TargetShooter : MonoBehaviour
         {
             ShootRay();
         }
-
+        weaponAnim.TriggerRecoil();
     }
 
     public void ShootRay()
@@ -264,30 +264,31 @@ public class TargetShooter : MonoBehaviour
                     if (isFireAmmo)
                     {
                         fireZombie.fireHit(10);
+                        //fireZombie.Hit(0);
 
                         Debug.Log("Fire bullet hit FireResistantZombie!");
                     }
                     else
                     {
-                        fireZombie.Hit(0);
+                        fireZombie.Hit(10);
+                        immuneZombie.PlayVoiceLine();
                         Debug.Log("Normal bullets have no effect on FireResistantZombie!");
                     }
                 }
                 else
                 {
                     target.Hit(10);
-                }
-
-                if (isFireAmmo)
-                {
-                    FireEffect fire = target.transform.GetComponentInChildren<FireEffect>();
-                    if (fire)
+                    if (isFireAmmo)
                     {
-                        fire.duration += fireEffect.GetComponent<FireEffect>().duration;
-                    }
-                    else
-                    {
-                        Instantiate(fireEffect, target.transform);
+                        FireEffect fire = target.transform.GetComponentInChildren<FireEffect>();
+                        if (fire)
+                        {
+                            fire.duration += fireEffect.GetComponent<FireEffect>().duration;
+                        }
+                        else
+                        {
+                            Instantiate(fireEffect, target.transform);
+                        }
                     }
                 }
                 
