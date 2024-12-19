@@ -30,7 +30,7 @@ public class Gun : MonoBehaviour
     public void Reload()
     {
         currentBullets = maxBullets;
-        Debug.Log("Gun reloaded.");
+        //Debug.Log("Gun reloaded.");
         SendAmmoData();
     }
 
@@ -39,12 +39,12 @@ public class Gun : MonoBehaviour
         if (currentBullets > 0)
         {
             currentBullets--;
-            Debug.Log("Fired! Bullets left: " + currentBullets);
+            //Debug.Log("Fired! Bullets left: " + currentBullets);
             SendAmmoData();
         }
         else
         {
-            Debug.Log("Out of ammo! Reload.");
+            //Debug.Log("Out of ammo! Reload.");
         }
     }
 

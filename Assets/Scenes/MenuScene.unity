@@ -833,6 +833,7 @@ MonoBehaviour:
   maxAmmoCountInMag: 10
   totalAmmoCount: 100
   reloadTime: 3
+  isJammed: 0
   shakesRequiredToDejam: 3
   shakeThreshold: 1.5
   jamRandVal: 0.1
@@ -846,6 +847,11 @@ MonoBehaviour:
   audioSource: {fileID: 1651601993}
   shotParticles: {fileID: 0}
   hitParticles: {fileID: 0}
+  outOfAmmoPlayer: {fileID: 0}
+  reloadingPlayer: {fileID: 0}
+  victoryPlayer: {fileID: 0}
+  immuneZombie: {fileID: 0}
+  weaponAnim: {fileID: 0}
 --- !u!4 &922820417
 Transform:
   m_ObjectHideFlags: 0
@@ -1901,7 +1907,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speedFactor: 15
-  portName: COM16
+  portName: COM17
   baudRate: 1000000
   firstTime: 1
 --- !u!4 &1705379045

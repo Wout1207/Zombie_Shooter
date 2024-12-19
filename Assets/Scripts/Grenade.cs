@@ -44,6 +44,7 @@ public class Grenade : MonoBehaviour
         {
             if (obj)
             {
+                //Debug.Log($"Damaging something with grenade");
                 if (obj.TryGetComponent<Player>(out Player player))
                 {
                     player.TakeDamage(damage);
@@ -51,16 +52,16 @@ public class Grenade : MonoBehaviour
                 else if (obj.TryGetComponent<Target>(out Target target))
                 {
                     target.Hit(damage);
-                    Debug.Log($"Damaging: {obj.name}");
+                    //Debug.Log($"Damaging: {obj.name}");
                 }
                 else if (obj.TryGetComponent<DoorController>(out DoorController doorController))
                 {
                     doorController.Hit(damage);
-                    Debug.Log($"Damaging: {obj.name}");
+                    //Debug.Log($"Damaging: {obj.name}");
                 }
                 else
                 {
-                    Debug.Log($"Hit something that is not a target: {obj.name}");
+                    //Debug.Log($"Hit something that is not a target: {obj.name}");
                 }
             }
         }

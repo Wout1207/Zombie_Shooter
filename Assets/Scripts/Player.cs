@@ -86,7 +86,7 @@ public class Player : MonoBehaviour
         currentHP -= damage;
         currentHP = Mathf.Clamp(currentHP, 0, maxHP);
         SendHealthData();
-        Debug.Log("Current HP: " + currentHP);
+        //Debug.Log("Current HP: " + currentHP);
         if (currentHP <= 0 && alive)
         {
             PlayerDied();
@@ -113,7 +113,7 @@ public class Player : MonoBehaviour
     {
         string[] values = data;
 
-        Debug.Log("Reading movement data: " + data);
+        //Debug.Log("Reading movement data: " + data);
 
         if (values.Length == 3)
         {
@@ -122,6 +122,7 @@ public class Player : MonoBehaviour
             if (int.TryParse(values[1], out pin) && int.TryParse(values[2], out state))
             {
                 // Modify movementDirection based on the pin and state
+                Debug.Log("Moving pin: " + pin + ", state: " + state);
                 switch (pin)
                 {
                     case 1: // Pin 1 is forward
