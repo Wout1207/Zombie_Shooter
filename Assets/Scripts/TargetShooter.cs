@@ -262,13 +262,14 @@ public class TargetShooter : MonoBehaviour
                 {
                     if (isFireAmmo)
                     {
-                        fireZombie.fireHit(10);
+                        //fireZombie.fireHit(10);
+                        fireZombie.Hit(0);
 
                         Debug.Log("Fire bullet hit FireResistantZombie!");
                     }
                     else
                     {
-                        fireZombie.Hit(0);
+                        fireZombie.Hit(10);
                         Debug.Log("Normal bullets have no effect on FireResistantZombie!");
                     }
                 }
