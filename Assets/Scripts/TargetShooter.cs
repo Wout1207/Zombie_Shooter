@@ -42,6 +42,7 @@ public class TargetShooter : MonoBehaviour
     public RandomAudioPlayer outOfAmmoPlayer;
     public RandomAudioPlayer reloadingPlayer;
     public RandomAudioPlayer victoryPlayer;
+    public RandomAudioPlayer immuneZombie;
 
     public WeaponAnim weaponAnim;
 
@@ -270,6 +271,7 @@ public class TargetShooter : MonoBehaviour
                     else
                     {
                         fireZombie.Hit(10);
+                        immuneZombie.PlayVoiceLine();
                         Debug.Log("Normal bullets have no effect on FireResistantZombie!");
                     }
                 }
