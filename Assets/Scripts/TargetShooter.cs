@@ -43,6 +43,8 @@ public class TargetShooter : MonoBehaviour
     public RandomAudioPlayer reloadingPlayer;
     public RandomAudioPlayer victoryPlayer;
 
+    public WeaponAnim weaponAnim;
+
 
     // Start is called before the first frame update
     void Start()
@@ -153,6 +155,7 @@ public class TargetShooter : MonoBehaviour
 
                 //Debug.Log("Shooting...");
                 ShootRay();
+                weaponAnim.isRecoiling = true;
 
                 if (currentAmmoCount == 0)
                 {
