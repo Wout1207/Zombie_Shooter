@@ -9,6 +9,7 @@ public class SpawnManager : MonoBehaviour
     public int round = 0;
     public TargetShooter targetShooter;
     public float time;
+    public CutsceneManager cutscene;
     // Start is called before the first frame update
 
     public enum SpawningState
@@ -42,6 +43,10 @@ public class SpawnManager : MonoBehaviour
                 break;
             case SpawningState.newRound:
                 startNewRound();
+                if (round == 4)
+                {
+                    cutscene.StartCutscene();
+                }
                 state = SpawningState.spawning;
                 break;
             case SpawningState.spawning:
@@ -86,7 +91,7 @@ public class SpawnManager : MonoBehaviour
 
     public void startNewRound()
     {
-        amountToSpawn[0] = round * 9;
+        amountToSpawn[0] = 7 + round * 2;
         amountToSpawn[1] = round / 3;
         amountToSpawn[2] = (round / 2) * 4;
         amountToSpawn[3] = (round / 3) * 4;
