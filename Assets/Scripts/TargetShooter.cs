@@ -168,11 +168,8 @@ public class TargetShooter : MonoBehaviour
         {
             ShootRay();
         }
-<<<<<<< Updated upstream
-=======
 
         if (weaponAnim != null) { weaponAnim.TriggerRecoil(); }
->>>>>>> Stashed changes
     }
 
     public void ShootRay()
