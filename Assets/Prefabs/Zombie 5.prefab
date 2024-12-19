@@ -3432,7 +3432,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 18f587098f8a6c141a79fb52678954e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hp: 20
+  player: {fileID: 0}
+  hp: 50
   damage: 10
   distanceToPlayerThreshold: 100
   distanceToAttackThreshold: 3
@@ -3448,8 +3449,9 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 6a72ca10257204c4385faa137f101f6d, type: 3}
   - {fileID: 8300000, guid: 9054413e3d3df7a40b4ddb9a9886c154, type: 3}
   - {fileID: 8300000, guid: 309d8e65ce177284797e5cd79f2a0bd8, type: 3}
-  score: 10
+  score: 20
   damageText: {fileID: 3060676507906640865, guid: 6a48897845762a64f88603f50ac5a8d5, type: 3}
+  uiManager: {fileID: 0}
 --- !u!114 &-7273530347549804842
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3462,6 +3464,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 09dc8e51316af8144be42fa88cc76521, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  player: {fileID: 0}
   hp: 20
   damage: 10
   distanceToPlayerThreshold: 100
@@ -3480,6 +3483,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 309d8e65ce177284797e5cd79f2a0bd8, type: 3}
   score: 10
   damageText: {fileID: 3060676507906640865, guid: 6a48897845762a64f88603f50ac5a8d5, type: 3}
+  uiManager: {fileID: 0}
 --- !u!82 &3294722496080796708
 AudioSource:
   m_ObjectHideFlags: 0

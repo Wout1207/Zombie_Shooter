@@ -10,12 +10,13 @@ GameObject:
   m_Component:
   - component: {fileID: 5526651711007894201}
   - component: {fileID: 5993534658078419856}
+  - component: {fileID: -8993003105261190230}
   - component: {fileID: 1548105609706135336}
   - component: {fileID: 3956500483479747868}
   - component: {fileID: 1494974051117884190}
   - component: {fileID: 7961886254474093877}
-  - component: {fileID: 3400962229661732083}
   - component: {fileID: -4721072929677808291}
+  - component: {fileID: 3400962229661732083}
   m_Layer: 0
   m_Name: Zombie 3
   m_TagString: Target
@@ -62,6 +63,38 @@ CapsuleCollider:
   m_Height: 1.9
   m_Direction: 1
   m_Center: {x: 0, y: 0.95, z: 0}
+--- !u!114 &-8993003105261190230
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8347813307358543414}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c2bc007d49e1f9040a118f994fc0024d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 0}
+  hp: 40
+  damage: 15
+  distanceToPlayerThreshold: 100
+  distanceToAttackThreshold: 3
+  audioSource: {fileID: -4721072929677808291}
+  hitPlayer: {fileID: 8300000, guid: 4c319ed171b6fd3408916bc589291b6d, type: 3}
+  groans:
+  - {fileID: 8300000, guid: 67ea2d77f8ddd1943ba51f1d42e80d8b, type: 3}
+  - {fileID: 8300000, guid: d369b2bca08a9df49b84471cc107bc31, type: 3}
+  - {fileID: 8300000, guid: b51ed49e60b4cef4a894edb2d44907bf, type: 3}
+  - {fileID: 8300000, guid: 4b4b47ce7cd066247b90756097ae4a1c, type: 3}
+  - {fileID: 8300000, guid: 1dfc80250cc886d4ba390a9831e6d376, type: 3}
+  - {fileID: 8300000, guid: 7ab928cb99d03524096f1d99af726f1a, type: 3}
+  - {fileID: 8300000, guid: 6a72ca10257204c4385faa137f101f6d, type: 3}
+  - {fileID: 8300000, guid: 9054413e3d3df7a40b4ddb9a9886c154, type: 3}
+  - {fileID: 8300000, guid: 309d8e65ce177284797e5cd79f2a0bd8, type: 3}
+  score: 30
+  damageText: {fileID: 3060676507906640865, guid: 6a48897845762a64f88603f50ac5a8d5, type: 3}
+  uiManager: {fileID: 0}
 --- !u!114 &1548105609706135336
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -74,6 +107,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 09dc8e51316af8144be42fa88cc76521, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  player: {fileID: 0}
   hp: 100
   damage: 10
   distanceToPlayerThreshold: 100
@@ -92,6 +126,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 309d8e65ce177284797e5cd79f2a0bd8, type: 3}
   score: 30
   damageText: {fileID: 3060676507906640865, guid: 6a48897845762a64f88603f50ac5a8d5, type: 3}
+  uiManager: {fileID: 0}
 --- !u!195 &3956500483479747868
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -156,33 +191,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!54 &3400962229661732083
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8347813307358543414}
-  serializedVersion: 4
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 1
-  m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 112
-  m_CollisionDetection: 0
 --- !u!82 &-4721072929677808291
 AudioSource:
   m_ObjectHideFlags: 0
@@ -279,6 +287,33 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!54 &3400962229661732083
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8347813307358543414}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 112
+  m_CollisionDetection: 0
 --- !u!1001 &5345715907514723152
 PrefabInstance:
   m_ObjectHideFlags: 0
