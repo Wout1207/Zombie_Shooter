@@ -16,7 +16,7 @@ public class TargetShooter : MonoBehaviour
     [SerializeField] public int totalAmmoCount = 100;
     [SerializeField] public float reloadTime = 3f;
 
-    private bool isJammed = false; 
+    public bool isJammed = false; 
     [SerializeField] private int shakesRequiredToDejam = 3; 
     [SerializeField] private float shakeThreshold = 5f; 
     private int shakeCount = 0; 
