@@ -10,19 +10,9 @@ public class CutsceneManager : MonoBehaviour
     public Animator animator;
     public RandomAudioPlayer cutSceneEndPlayer;
 
-    private bool isCutscenePlaying = false;
-
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.P) && !isCutscenePlaying)
-        {
-            StartCutscene();
-        }
-    }
-
     public void StartCutscene()
     {
-        isCutscenePlaying = true;
+        animator.gameObject.SetActive(true);
 
         mainCamera.SetActive(false);
         cutsceneCamera.SetActive(true);
@@ -36,8 +26,6 @@ public class CutsceneManager : MonoBehaviour
 
     public void EndCutscene()
     {
-        isCutscenePlaying = false;
-
         cutsceneCamera.SetActive(false);
         mainCamera.SetActive(true);
 
@@ -45,6 +33,7 @@ public class CutsceneManager : MonoBehaviour
         animator.SetBool("playAnimation", true);
 
         Time.timeScale = 1;
+
         cutSceneEndPlayer.PlayVoiceLine();
     }
 }
