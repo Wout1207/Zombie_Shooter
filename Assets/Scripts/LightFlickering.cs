@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class LightFlickering : MonoBehaviour
 {
-    public float time;
-    public float toggleDuration;
+    private float time;
+    private float toggleDuration;
     private Light lightComponent;
 
     // Start is called before the first frame update

@@ -96,6 +96,16 @@ public class SpawnManager : MonoBehaviour
         amountToSpawn[2] = (round / 2) * 4;
         amountToSpawn[3] = (round / 3) * 4;
         amountToSpawn[4] = round / 2;
+
+        int total = 0;
+        if (round > 1)
+        {
+            foreach(int i in amountToSpawn)
+            {
+                total += i;
+            }
+            targetShooter.totalAmmoCount += (int)(total * 1.5);
+        }
     }
 
     public void spawnEnemy()

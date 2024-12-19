@@ -200,7 +200,8 @@ public class SerialManager : MonoBehaviour
             {
 
                 //Quaternion rotation = new Quaternion(z, x, -y, w); //ESP32 bread board
-                Quaternion rotation = new Quaternion(y, x, -z, w); //ESP32 actual gun
+                Quaternion rotation = new Quaternion(y, x, -z, w); //ESP32 actual gun front
+                //Quaternion rotation = new Quaternion(x, -z, y, w); //ESP32 actual gun back
                 if (firstTime)
                 {
                     firstTime = false;

@@ -56,7 +56,7 @@ public class Crosshair : MonoBehaviour
 
         //if (leftArrow != null && rightArrow != null)
         //{
-            leftArrow.enabled = false;
+        leftArrow.enabled = false;
         rightArrow.enabled = false;
         //}
     }
@@ -88,7 +88,7 @@ public class Crosshair : MonoBehaviour
             screenPos.x = Mathf.Clamp(screenPoint.x, 0, Screen.width);
             screenPos.y = Mathf.Clamp(screenPoint.y, 0, Screen.height);
 
-            if (currentScene.name == "Sample Scene")
+            if (currentScene.name == "SampleScene")
             {
                 leftArrow.enabled = false;
                 rightArrow.enabled = false;
