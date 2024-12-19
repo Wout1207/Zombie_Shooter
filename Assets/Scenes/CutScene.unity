@@ -12909,7 +12909,7 @@ VideoPlayer:
   m_TargetAudioSources:
   - {fileID: 0}
   m_DirectAudioVolumes:
-  - 0.25
+  - 0.4
   m_Url: 
   m_EnabledAudioTracks: 01
   m_DirectAudioMutes: 00
@@ -13030,12 +13030,12 @@ MonoBehaviour:
   videoPlayer: {fileID: 1412282051}
   audioSource: {fileID: 1516499529}
   voiceLines:
-  - {fileID: 8300000, guid: 7c102edb25b9cf84b90d8070bb8cefcc, type: 3}
-  - {fileID: 8300000, guid: d476ee4a2a7c92640ac5ed519133bfdc, type: 3}
-  - {fileID: 8300000, guid: 68877784283d9bd47ab017f0f6c59112, type: 3}
-  - {fileID: 8300000, guid: 56507fe235aa42544b7075a0755aab54, type: 3}
-  - {fileID: 8300000, guid: 5cd8fd691ed9bbf498a15316a4a74727, type: 3}
-  - {fileID: 8300000, guid: 2d9fd484cfc43f845a611054f050a8f4, type: 3}
+  - {fileID: 8300000, guid: b000dd8480f2b0b469d2035ddc796651, type: 3}
+  - {fileID: 8300000, guid: 3ff84962cbfdac7468b73e40c2096b81, type: 3}
+  - {fileID: 8300000, guid: 71b6ab6ce7bf35948919c0311d1b3ca9, type: 3}
+  - {fileID: 8300000, guid: ec08daa37d7cf0c4f9c66a7236a5dad8, type: 3}
+  - {fileID: 8300000, guid: 51d28aa8ca3402642b902a885ee7924a, type: 3}
+  - {fileID: 8300000, guid: a84a58d433d7e81439e4201ba6abf849, type: 3}
   mainCamera: {fileID: 1787690493}
   rotationAngle: 65
   tiltAmount: 6
@@ -13043,7 +13043,7 @@ MonoBehaviour:
   delayBeforeTurn: 72
   delayAfterVoice: 3
   fadeDuration: 5
-  startFOV: 0
+  startFOV: 1
   normalFOV: 60
   zoomFOV: 20
 --- !u!4 &1442373596

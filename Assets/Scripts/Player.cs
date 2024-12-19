@@ -21,6 +21,10 @@ public class Player : MonoBehaviour
 
     private float deadTime;
 
+    public RandomAudioPlayer startGamePlayer;
+    public RandomAudioPlayer grenadePlayer;
+    public RandomAudioPlayer damagePlayer;
+
     void Start()
     {
         currentHP = maxHP;
@@ -33,16 +37,19 @@ public class Player : MonoBehaviour
             SerialManager.Instance.OnDataReceivedGrenade += readGrenadeData;
         }
         Score.score = 0;
+        startGamePlayer.PlayVoiceLine();
     }
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.G))
         {
             throwGrenade();
+            grenadePlayer.PlayVoiceLine();
         }
         if (grenadeToBeThrown)
         {
             throwGrenade();
+            grenadePlayer.PlayVoiceLine();
             grenadeToBeThrown = false;
         }
         if (!alive && Time.time - deadTime > 5)
@@ -84,6 +91,7 @@ public class Player : MonoBehaviour
         {
             PlayerDied();
         }
+        damagePlayer.PlayVoiceLine();
     }
 
     public void PlayerDied()

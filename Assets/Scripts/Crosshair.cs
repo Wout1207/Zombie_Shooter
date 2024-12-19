@@ -57,7 +57,7 @@ public class Crosshair : MonoBehaviour
         //if (leftArrow != null && rightArrow != null)
         //{
             leftArrow.enabled = false;
-            rightArrow.enabled = false;
+        rightArrow.enabled = false;
         //}
     }
 
