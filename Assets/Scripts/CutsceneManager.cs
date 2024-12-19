@@ -45,6 +45,7 @@ public class CutsceneManager : MonoBehaviour
         animator.SetBool("playAnimation", true);
 
         Time.timeScale = 1;
+
         cutSceneEndPlayer.PlayVoiceLine();
     }
 }
