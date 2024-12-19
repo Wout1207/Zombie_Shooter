@@ -30,7 +30,7 @@ public class Target : MonoBehaviour
 
     public GameObject damageText;
 
-    private UIManager uiManager;
+    public UIManager uiManager;
 
     // Start is called before the first frame update
     void Start()
@@ -45,7 +45,10 @@ public class Target : MonoBehaviour
 
         animator = GetComponent<Animator>();
 
-        uiManager = GameObject.Find("Canvas").GetComponent<UIManager>();
+        if (!uiManager)
+        {
+            uiManager = GameObject.Find("Canvas").GetComponent<UIManager>();
+        }
 
         GameEvents.current.onPlayerDead += playerDied;
     }

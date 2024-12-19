@@ -47,6 +47,7 @@ public class SpawnManager : MonoBehaviour
                 if (round == 4)
                 {
                     state = SpawningState.cutscene;
+                    time = Time.time;
                     cutscene.StartCutscene();
                 }
                 else
@@ -55,7 +56,10 @@ public class SpawnManager : MonoBehaviour
                 }
                 break;
             case SpawningState.cutscene:
-                state = SpawningState.spawning;
+                if (Time.time - time > 1)
+                {
+                    state = SpawningState.spawning;
+                }
                 break;
             case SpawningState.spawning:
                 spawnEnemy();
