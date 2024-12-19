@@ -103,7 +103,7 @@ public class TargetShooter : MonoBehaviour
         if (isJammed)
         {
             float imuDelta = Vector3.Distance(currentIMUReading, lastIMUReading);
-            Debug.Log($"IMU delta: {imuDelta}, Threshold: {shakeThreshold}");
+            //Debug.Log($"IMU delta: {imuDelta}, Threshold: {shakeThreshold}");
 
             if (imuDelta > shakeThreshold)
             {
@@ -169,7 +169,6 @@ public class TargetShooter : MonoBehaviour
             ShootRay();
         }
 
-        if (weaponAnim != null) { weaponAnim.TriggerRecoil(); }
     }
 
     public void ShootRay()
@@ -197,7 +196,7 @@ public class TargetShooter : MonoBehaviour
 
         if (isJammed)
         {
-            Debug.Log("Cannot fire; gun is jammed.");
+            //Debug.Log("Cannot fire; gun is jammed.");
             return;
         }
         
@@ -221,7 +220,7 @@ public class TargetShooter : MonoBehaviour
             if (isReloading)
             {
                 Debug.Log("Cannot shoot while reloading.");
-                string[] strings = { "still reloading", "0.5" };
+                string[] strings = { "Still reloading!", "0.5" };
                 GameEvents.current.OutofAmmo(strings);
                 return;
             }
@@ -229,7 +228,7 @@ public class TargetShooter : MonoBehaviour
             {
                 audioSource.clip = emptyGunSound;
                 audioSource.Play();
-                string[] strings = { "out of ammo reload", "0.5" };
+                string[] strings = { "Out of ammo! Reload!", "0.5" };
                 GameEvents.current.OutofAmmo(strings);
                 return;
             }

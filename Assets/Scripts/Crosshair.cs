@@ -54,11 +54,11 @@ public class Crosshair : MonoBehaviour
 
         pointerUpdateCoroutine = StartCoroutine(UpdatePointerRoutine());
 
-        //if (leftArrow != null && rightArrow != null)
-        //{
-        leftArrow.enabled = false;
-        rightArrow.enabled = false;
-        //}
+        if (leftArrow != null && rightArrow != null)
+        {
+            leftArrow.enabled = false;
+            rightArrow.enabled = false;
+        }
     }
 
     // Update is called once per frame

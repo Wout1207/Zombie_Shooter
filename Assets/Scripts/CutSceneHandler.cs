@@ -129,7 +129,7 @@ public class CutSceneHandler : MonoBehaviour
     // This method will be called when the audio ends
     void OnAudioEnd()
     {
-        Debug.Log("Audio has finished playing!");
+        //Debug.Log("Audio has finished playing!");
 
         // Start a coroutine to delay the scene load by 1 second
         StartCoroutine(DelayedSceneLoad());
