@@ -189,20 +189,6 @@ public class TargetShooter : MonoBehaviour
 
         if (Physics.Raycast(ray, out RaycastHit hit))
         {
-            Exit exit = hit.collider.gameObject.GetComponent<Exit>();
-            if (exit)
-            {
-                if (exit.hit())
-                {
-                    Debug.Log("Congratulations. You have escaped");
-                    victoryPlayer.PlayVoiceLine();
-                }
-                else
-                {
-                    Debug.Log("Your score is not high enough");
-                }
-                return;
-            }
             if (isReloading)
             {
                 string[] strings = { "Still reloading!", "0.5" };

@@ -44,7 +44,7 @@ public class SpawnManager : MonoBehaviour
                 break;
             case SpawningState.newRound:
                 startNewRound();
-                if (round == 4)
+                if (round == 3)
                 {
                     state = SpawningState.cutscene;
                     time = Time.time;
@@ -103,11 +103,25 @@ public class SpawnManager : MonoBehaviour
 
     public void startNewRound()
     {
-        amountToSpawn[0] = 7 + round * 2;
-        amountToSpawn[1] = round / 3;
-        amountToSpawn[2] = (round / 2) * 4;
-        amountToSpawn[3] = (round / 3) * 4;
-        amountToSpawn[4] = round / 2;
+        if (round >= 5)
+        {
+            amountToSpawn[0] = 20 + round * (int)Mathf.Pow(2,round);
+            amountToSpawn[1] = (int)Mathf.Round(round * Mathf.Pow(1.1f, round));
+            amountToSpawn[2] = (int)Mathf.Round(round * Mathf.Pow(1.2f, round));
+            amountToSpawn[3] = (int)Mathf.Round(round * Mathf.Pow(1.15f, round));
+            amountToSpawn[4] = (int)Mathf.Round(round * Mathf.Pow(1.3f, round));
+        }
+        else
+        {
+            amountToSpawn[0] = 7 + round * 2;
+            amountToSpawn[1] = (round / 3);
+            amountToSpawn[2] = (round / 2) * 4;
+            if (round >= 2)
+            {
+                amountToSpawn[3] = round - 1;
+            }
+            amountToSpawn[4] = round * 2;
+        }
 
         int total = 0;
         if (round > 1)

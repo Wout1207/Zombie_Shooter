@@ -5,13 +5,21 @@ using UnityEngine;
 public class Exit : MonoBehaviour
 {
     public bool exit = false;
-    public bool hit()
+    private float time;
+
+    private void Start()
     {
-        if(Score.score >= 100)
+        time = Time.time;
+    }
+    private void Update()
+    {
+        if (exit)
         {
-            exit = true;
-            return true;
+
         }
-        return false;
+    }
+    private void OnTriggerEnter(Collider other)
+    {
+        exit = true;
     }
 }
