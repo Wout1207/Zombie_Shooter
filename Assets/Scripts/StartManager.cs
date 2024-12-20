@@ -12,12 +12,16 @@ public class StartManager : MonoBehaviour
     {
         //CalibrateIMU();
         SceneManager.LoadScene("CutScene");
-        
+        Debug.Log("Game started!");
     }
 
     public void GoToMenu()
     {
         SceneManager.LoadScene("MenuScene");
+    }
+    public void GoToCalibration()
+    {
+        SceneManager.LoadScene("Calibration");
     }
 
     public void ExitGame()

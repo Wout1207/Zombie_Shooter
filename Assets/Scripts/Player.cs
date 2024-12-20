@@ -56,6 +56,10 @@ public class Player : MonoBehaviour
         {
             SceneManager.LoadScene("GameOverScene");
         }
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            SerialManager.instance.ResetFirstPos();
+        }
     }
 
     void FixedUpdate()

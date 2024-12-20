@@ -25,7 +25,7 @@ public class TargetShooter : MonoBehaviour
     public GameObject reticle;
 
     private float lastClickTime = 0f;  // Time of the last valid button press
-    public float clickCooldown = 0.2f; // Time (in seconds) to wait between clicks
+    private float clickCooldown = 0.2f; // Time (in seconds) to wait between clicks
     private bool isReloading = false;
     public bool isFireAmmo = true;
     public GameObject fireEffect;
@@ -107,13 +107,10 @@ public class TargetShooter : MonoBehaviour
         if (isJammed)
         {
             float imuDelta = Vector3.Distance(currentIMUReading, lastIMUReading);
-            //Debug.Log($"IMU delta: {imuDelta}, Threshold: {shakeThreshold}");
 
             if (imuDelta > shakeThreshold)
             {
                 shakeCount++;
-                //Debug.Log($"Shake detected! Shake count: {shakeCount}/{shakesRequiredToDejam}");
-
                 if (shakeCount >= shakesRequiredToDejam)
                 {
                     ClearJam();
@@ -134,7 +131,6 @@ public class TargetShooter : MonoBehaviour
 
         isJammed = true;
         shakeCount = 0;
-        //Debug.Log("Gun jammed! Shake to clear.");
         GameEvents.current.GunJammed();
     }
 
@@ -142,37 +138,24 @@ public class TargetShooter : MonoBehaviour
     {
         isJammed = false;
         shakeCount = 0;
-        //Debug.Log("Gun de-jammed!");
         GameEvents.current.GunDejammed(); 
     }
 
 
     public void Shoot()
     {
-        if (SceneManager.GetActiveScene().name == "SampleScene")
+        float currentTime = Time.time;
+        if (currentTime - lastClickTime >= clickCooldown) // Check if enough time has passed since the last click
         {
-            float currentTime = Time.time;
-
-
-            if (currentTime - lastClickTime >= clickCooldown) // Check if enough time has passed since the last click
-            {
-                lastClickTime = currentTime;
-
-                //Debug.Log("Shooting...");
-                ShootRay();
-
-                if (currentAmmoCount == 0)
-                {
-                    //Debug.Log("Out of ammo!");
-                    outOfAmmoPlayer.PlayVoiceLine();
-                }
-            }
-        }
-        else
-        {
+            Debug.Log("Shooting...");
             ShootRay();
+            lastClickTime = currentTime;
+            
+            if (currentAmmoCount == 0 && SceneManager.GetActiveScene().name == "SampleScene")
+            {
+                outOfAmmoPlayer.PlayVoiceLine();
+            } 
         }
-
     }
 
     public void ShootRay()
@@ -200,7 +183,6 @@ public class TargetShooter : MonoBehaviour
 
         if (isJammed)
         {
-            //Debug.Log("Cannot fire; gun is jammed.");
             return;
         }
         
@@ -223,7 +205,6 @@ public class TargetShooter : MonoBehaviour
             }
             if (isReloading)
             {
-                //Debug.Log("Cannot shoot while reloading.");
                 string[] strings = { "Still reloading!", "0.5" };
                 GameEvents.current.OutofAmmo(strings);
                 return;
@@ -241,7 +222,7 @@ public class TargetShooter : MonoBehaviour
             particles = Instantiate(NormalHitParticles);
             
             DoorController controller = hit.collider.gameObject.GetComponent<DoorController>();
-            Debug.Log((controller));
+            //Debug.Log((controller));
             if (controller && currentAmmoCount > 0)
             {
                 audioSource.clip = shootingSound;
@@ -357,7 +338,7 @@ public class TargetShooter : MonoBehaviour
 
         if (raycastResults.Count > 0)
         {
-            //Debug.Log("UI element hit: " + raycastResults[0].gameObject.name);
+            Debug.Log("UI element hit: " + raycastResults[0].gameObject.name);
             return raycastResults[0].gameObject; // Return the first hit UI element
         }
 
@@ -368,7 +349,6 @@ public class TargetShooter : MonoBehaviour
     {
         if (isJammed) yield break; 
         isReloading = true;
-        //Debug.Log("Reloading...");
         reloadingPlayer.PlayVoiceLine();
         audioSource.clip = reloadSound;
         audioSource.Play();
@@ -384,7 +364,6 @@ public class TargetShooter : MonoBehaviour
             totalAmmoCount = 0;
         }
         sendToGun("rb"); // "rb" for reloading, "b" for bullet update/shot 
-        Debug.Log("Reload complete! Ammo refilled.");
         isReloading = false;
     }
 
@@ -411,8 +390,6 @@ public class TargetShooter : MonoBehaviour
 
     private void OnDestroy()
     {
-        SerialManager.instance.SendDataToESP32("rb/0/0");
-
         if (SerialManager.instance != null)
         {
             SerialManager.instance.OnDataReceivedIMU -= ReadIMU;

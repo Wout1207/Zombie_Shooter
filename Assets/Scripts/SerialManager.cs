@@ -89,8 +89,6 @@ public class SerialManager : MonoBehaviour
             { "i", HandlePointerReset }
         };
 
-        Debug.Log("SerialManager Awake");
-
         serialThread = new Thread(ReadSerialPort);
         serialThread.IsBackground = true; // Allow the thread to exit with the app
         serialThread.Start();
@@ -238,16 +236,16 @@ public class SerialManager : MonoBehaviour
         {
             SerialManager.EnqueueToMainThread(() =>
             {
-                currentSceneName = SceneManager.GetActiveScene().name;
-                if (currentSceneName == "MenuScene" || currentSceneName == "GameOverScene")
-                {
-                    // Find the StartManager and call StartGame
-                    StartManager startManager = FindObjectOfType<StartManager>();
-                    if (startManager != null)
-                    {
-                        startManager.StartGame();
-                    }
-                }
+                //currentSceneName = SceneManager.GetActiveScene().name;
+                //if (currentSceneName == "MenuScene" || currentSceneName == "GameOverScene")
+                //{
+                //    // Find the StartManager and call StartGame
+                //    StartManager startManager = FindObjectOfType<StartManager>();
+                //    if (startManager != null)
+                //    {
+                //        startManager.StartGame();
+                //    }
+                //}
                 OnDataReceivedTrigger?.Invoke();
             });
         }
