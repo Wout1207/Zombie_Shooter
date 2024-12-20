@@ -145,9 +145,19 @@ public class TargetShooter : MonoBehaviour
     public void Shoot()
     {
         float currentTime = Time.time;
-        if (currentTime - lastClickTime >= clickCooldown) // Check if enough time has passed since the last click
+        float cool;
+
+        if (SceneManager.GetActiveScene().name != "SampleScene")
         {
-            Debug.Log("Shooting...");
+            cool = 0.7f;
+        }
+        else
+        {
+            cool = clickCooldown;
+        }
+
+        if (currentTime - lastClickTime >= cool) // Check if enough time has passed since the last click
+        {
             ShootRay();
             lastClickTime = currentTime;
             
