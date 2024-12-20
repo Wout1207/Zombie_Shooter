@@ -6,12 +6,17 @@ public class DoorController : MonoBehaviour
 {
     private float hp = 30;
     public List<GameObject> text;
+    public GameObject zombieArea;
     
     public void Hit(float damage)
     {
         hp -= damage;
         if (hp <= 0)
         {
+            if (zombieArea)
+            {
+                zombieArea.SetActive(true);
+            }
             Destroy(gameObject);
         }
     }
