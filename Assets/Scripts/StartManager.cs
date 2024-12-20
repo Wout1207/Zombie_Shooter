@@ -6,13 +6,15 @@ using UnityEngine.SceneManagement;
 public class StartManager : MonoBehaviour
 {
     //private CalibrationManager calibrationManager;
-    [SerializeField]
+    //[SerializeField]
     private SerialManager serialManager;
     public void StartGame()
     {
         //CalibrateIMU();
         SceneManager.LoadScene("CutScene");
-        Debug.Log("Game started!");
+
+        serialManager = FindObjectOfType<SerialManager>();
+        
     }
 
     public void GoToMenu()
@@ -30,6 +32,19 @@ public class StartManager : MonoBehaviour
         #if UNITY_EDITOR
             UnityEditor.EditorApplication.isPlaying = false;
         #endif
+    }
+
+    public void Calibrate()
+    {
+        if (SerialManager.instance != null)
+        {
+            //Debug.Log("in Clibrate");
+            SerialManager.instance.ResetFirstPos();
+        }
+        else
+        {
+            Debug.LogError("No Serialmanger found!");
+        }
     }
 
 

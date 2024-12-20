@@ -170,6 +170,7 @@ public class TargetShooter : MonoBehaviour
                 Button button = clickedObject.GetComponent<Button>();
                 if (button != null)
                 {
+                    Debug.Log("Button clicked: " + button.name);
                     button.onClick.Invoke();
                 }
             }

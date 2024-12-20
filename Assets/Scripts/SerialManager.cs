@@ -348,6 +348,7 @@ public class SerialManager : MonoBehaviour
 
     public void ResetFirstPos()
     {
+        Debug.Log("Resetting first position.");
         firstTime = true;
     }
 
