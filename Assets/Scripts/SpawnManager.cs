@@ -154,7 +154,8 @@ public class SpawnManager : MonoBehaviour
             spawnPosition = targetShooter.transform.position + new Vector3(Mathf.Cos(angle) * radius, 0, Mathf.Sin(angle) * radius);
             floorIndex = GetActiveTerrainTexture(spawnPosition);
         }
-        Instantiate(zombies[randomIndex], spawnPosition, Quaternion.identity, transform);
+        GameObject obj = Instantiate(zombies[randomIndex], spawnPosition, Quaternion.identity, transform);
+        obj.SetActive(true);
         amountToSpawn[randomIndex] --;
     }
 
