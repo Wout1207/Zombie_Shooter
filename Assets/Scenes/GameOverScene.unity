@@ -764,7 +764,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 41435bb27c997b648a7740280836fed2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  serialManager: {fileID: 0}
 --- !u!4 &930960354
 Transform:
   m_ObjectHideFlags: 0
@@ -1586,9 +1585,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'GAME OVER
-
-    YOU DIED'
+  m_text: GAME OVER
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 125cb55b44b24c4393181402bc6200e6, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 125cb55b44b24c4393181402bc6200e6, type: 2}
