@@ -25,7 +25,7 @@ public class TargetShooter : MonoBehaviour
     public GameObject reticle;
 
     private float lastClickTime = 0f;  // Time of the last valid button press
-    private float clickCooldown = 0.2f; // Time (in seconds) to wait between clicks
+    private float clickCooldown = 0.3f; // Time (in seconds) to wait between clicks
     private bool isReloading = false;
     public bool isFireAmmo = true;
     public GameObject fireEffect;
